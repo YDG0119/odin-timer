@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>보스 알리미 V20 - 전술형 관제</title>
+    <title>보스 알리미 V21 - 배틀 엔진</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,37 +15,34 @@
         body.system-off { filter: grayscale(1) brightness(0.8); pointer-events: none; }
         body.system-off header, body.system-off .global-power { pointer-events: auto !important; filter: none !important; }
 
-        /* 사이드바 */
         nav { width: var(--sidebar-w); background: #fff; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); z-index: 1000; }
-        .nav-item { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #777; font-size: 20px; }
+        .nav-item { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #777; font-size: 20px; transition: 0.2s; }
         .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(142, 36, 170, 0.3); }
 
-        /* 메인 프레임 */
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         header { height: 60px; background: #fff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em; position: relative; }
-        .global-power { position: absolute; right: 25px; font-size: 1.8em; cursor: pointer; color: var(--danger); }
+        .global-power { position: absolute; right: 25px; font-size: 1.8em; cursor: pointer; color: var(--danger); transition: 0.3s; }
         .global-power.is-on { color: var(--success); text-shadow: 0 0 10px rgba(68, 189, 50, 0.3); }
 
-        .content { flex: 1; padding: 25px; overflow-y: auto; }
+        .content { flex: 1; padding: 20px; overflow-y: auto; }
         .pane { display: none; max-width: 1200px; margin: 0 auto; }
         .pane.active { display: block; animation: fadeIn 0.3s ease; }
         .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
 
-        /* 🧮 정밀 광폭화 계산기 (V20 핵심 개편) */
-        .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .kwang-panel { display: flex; gap: 15px; margin: 15px 0; }
-        .kwang-unit { flex: 1; background: #f9fafb; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #eee; position: relative; }
-        .val-big { font-family: 'Orbitron'; font-size: 2.8em; display: block; line-height: 1.2; }
-        .label-sub { font-size: 0.8em; color: #888; font-weight: bold; margin-bottom: 5px; display: block; }
-        .over-text { color: var(--danger); font-weight: bold; font-size: 1.2em; position: absolute; bottom: 10px; width: 100%; left: 0; display: none; }
-        .is-over .over-text { display: block; }
+        /* 🧮 전술 배틀 보드 (광폭화 계산기 통합) */
+        .battle-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+        .battle-unit { background: #f9fafb; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #eee; }
+        .val-big { font-family: 'Orbitron'; font-size: 2.5em; display: block; line-height: 1.2; }
+        .label-top { font-size: 0.8em; color: #888; font-weight: bold; margin-bottom: 8px; display: block; }
+        .over-alert { color: var(--danger); font-weight: bold; display: none; margin-top: 5px; }
         .is-over .val-big { color: var(--danger); }
+        .is-over .over-alert { display: block; }
 
-        /* 버튼군 */
-        .calc-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .c-btn { padding: 15px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; font-size: 1.1em; }
+        .calc-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .c-btn { padding: 18px; border: none; border-radius: 10px; font-weight: bold; color: white; cursor: pointer; font-size: 1.2em; transition: 0.2s; }
+        .c-btn:active { transform: scale(0.95); }
 
-        /* 스케줄러 & 텍스트 설정 (기존 우수 기능 유지) */
+        /* 테이블 & 텍스트 설정 */
         .tab-group { display: flex; gap: 5px; margin-bottom: 15px; }
         .tab-btn { padding: 10px 25px; background: #e0e0e0; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .tab-btn.active { background: var(--accent); color: white; }
@@ -65,66 +62,72 @@
     <div class="nav-item active" onclick="tab('dash')">🏠</div>
     <div class="nav-item" onclick="tab('boss-set')">🕒</div>
     <div class="nav-item" onclick="tab('sched')">📅</div>
-    <div class="nav-item" onclick="tab('calc')">🧮</div>
+    <div class="nav-item" onclick="tab('calc')">⚔️</div>
     <div class="nav-item" onclick="togglePIP()">📺</div>
 </nav>
 
 <main>
     <header>
-        보스 관제 사령부 V20
+        보스 관제 센터 V21
         <div id="pwr-btn" class="global-power is-on" onclick="toggleGlobalPower()">⏻</div>
     </header>
     <div class="content">
         <div id="dash" class="pane active">
             <div style="display:grid; grid-template-columns: 1fr 380px; gap: 25px;">
                 <div class="card" style="text-align:center; border-top:6px solid var(--accent);">
-                    <div style="font-weight:bold; color:var(--text-muted);">CURRENT TARGET</div>
+                    <div style="font-weight:bold; color:var(--text-muted);">임박한 타겟</div>
                     <div id="dash-next-name" style="font-size:2.5em; font-weight:bold; margin-top:10px;">대기 중</div>
                     <div id="dash-next-timer" style="font-family:'Orbitron'; font-size:6em; color:var(--accent); margin:15px 0;">00:00:00</div>
                     <button onclick="copyKakao()" style="background:#fee500; border:none; padding:12px 40px; border-radius:10px; font-weight:bold; cursor:pointer;">📢 카톡 공지 복사</button>
                 </div>
                 <div class="card">
                     <h3>🔔 실시간 이벤트 로그</h3>
-                    <div id="log-list" style="font-size:0.9em; line-height:1.8;"></div>
+                    <div id="log-list" style="font-size:0.9em; line-height:1.8; height:350px; overflow-y:auto;"></div>
                 </div>
             </div>
         </div>
 
         <div id="boss-set" class="pane">
             <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <h2 style="margin:0;">텍스트 동기화 설정</h2>
-                <button style="background:var(--primary); color:white; border:none; padding:10px 25px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="saveTextToTimers()">텍스트 설정 적용</button>
+                <h2 style="margin:0;">공지 텍스트 연동</h2>
+                <button style="background:var(--primary); color:white; border:none; padding:10px 25px; border-radius:8px; font-weight:bold;" onclick="saveTextToTimers()">타이머에 반영</button>
             </div>
             <textarea id="boss-text-editor" class="text-editor"></textarea>
         </div>
 
         <div id="sched" class="pane">
             <div class="tab-group">
-                <button id="srv-main" class="tab-btn active" onclick="setServer('main')">오딘(본서버)</button>
-                <button id="srv-inv" class="tab-btn" onclick="setServer('invasion')">침공서버</button>
+                <button id="srv-main" class="tab-btn active" onclick="setServer('main')">본서버</button>
+                <button id="srv-inv" class="tab-btn" onclick="setServer('inv')">침공서버</button>
             </div>
             <div id="scheduler-content"></div>
         </div>
 
         <div id="calc" class="pane">
             <div class="card">
-                <h2 style="text-align:center; margin-top:0;">🔥 전술 광폭화(광) 추적기</h2>
-                <div class="kwang-panel">
-                    <div class="kwang-unit">
-                        <span class="label-sub">사냥 시작 후 경과</span>
-                        <span class="val-big" id="g-elapsed">00:00</span>
+                <h2 style="text-align:center; margin-top:0;">⚔️ 전술 배틀 보드 (처치 예측)</h2>
+                <select id="g-boss-sel" style="width:100%; padding:15px; border-radius:10px; border:1px solid #ddd; margin-bottom:20px; font-size:1.1em; font-weight:bold;"></select>
+                
+                <div class="battle-board">
+                    <div class="battle-unit">
+                        <span class="label-top">광폭화까지 소요</span>
+                        <span class="val-big" id="g-to-kwang">00:00</span>
                     </div>
-                    <div class="kwang-unit" id="kwang-timer-box">
-                        <span class="label-sub">광폭화 이후 흐른 시간</span>
-                        <span class="val-big" id="g-after-kwang">--:--</span>
-                        <div class="over-text" id="g-over-label">OVERTIME!</div>
+                    <div class="battle-unit" id="unit-predict">
+                        <span class="label-top">남은 체력 예상 킬타임</span>
+                        <span class="val-big" id="g-pred-kill">--:--</span>
+                    </div>
+                    <div class="battle-unit" id="unit-over">
+                        <span class="label-top">예상 시간 대비 초과</span>
+                        <span class="val-big" id="g-over-sec">0초</span>
+                        <span class="over-alert">WARNING!</span>
                     </div>
                 </div>
-                <select id="g-boss-sel" style="width:100%; padding:15px; border-radius:10px; border:1px solid #ddd; margin-bottom:15px; font-size:1.1em; font-weight:bold;"></select>
+                
                 <div class="calc-btns">
-                    <button class="c-btn" style="background:#455a64;" onclick="gStartAction()">시작</button>
-                    <button class="c-btn" style="background:var(--warning);" onclick="gKwangAction()">광</button>
-                    <button class="c-btn" style="background:var(--danger);" onclick="gKillAction()">잡힘</button>
+                    <button class="c-btn" style="background:#455a64;" onclick="battleAction('start')">시작 (Start)</button>
+                    <button class="c-btn" style="background:var(--warning);" onclick="battleAction('kwang')">광 (Berserk)</button>
+                    <button class="c-btn" style="background:var(--danger);" onclick="battleAction('kill')">잡힘 (Killed)</button>
                 </div>
             </div>
         </div>
@@ -135,91 +138,91 @@
 <video id="pip-video" autoplay muted playsinline></video>
 
 <script>
-    // [보스 데이터베이스]
     const bossMaster = [
         { w: "요툰헤임", b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야룬", r:240}, {n:"티르", r:1440}] },
         { w: "니다벨리르", b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}] },
         { w: "알브헤임", b: [{n:"스바르트", r:240}, {n:"두라스로르", r:480}, {n:"모네가름", r:120}, {n:"드라우그", r:240}, {n:"굴베이그", r:480}, {n:"오딘", r:1440}] },
+        { w: "무스펠하임", b: [{n:"메기르", r:120}, {n:"신마라", r:720}, {n:"헤르가름", r:120}, {n:"탕그리스니르", r:240}, {n:"엘드룬", r:720}, {n:"우로보로스", r:1440}, {n:"수르트", r:1440}] },
+        { w: "아스가르드", b: [{n:"발리", r:120}, {n:"노트", r:480}, {n:"샤무크", r:120}, {n:"스칼드메르", r:120}, {n:"화신그로아", r:1440}, {n:"미미르", r:240}] },
+        { w: "니플하임", b: [{n:"히로킨", r:1440}, {n:"호드", r:1440}, {n:"헤이드", r:1440}, {n:"대교주", r:1440}, {n:"프레이", r:1440}, {n:"이미르", r:1440}] },
+        { w: "바나하임", b: [{n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}] },
         { w: "던전", b: [{n:"지감7층", r:480}, {n:"지감4층", r:480}, {n:"지감10층", r:480}] }
     ];
 
     let state = {
-        power: true,
-        server: 'main',
-        timers: JSON.parse(localStorage.getItem('v20_timers')) || { main: [], invasion: [] },
-        gStart: null, gKwang: null, gInterval: null,
-        alerted: { m5: [], m1: [] }
+        power: true, srv: 'main',
+        timers: JSON.parse(localStorage.getItem('v21_timers')) || { main: [], inv: [] },
+        alerted: { m5: [], m1: [] },
+        battle: { start: null, kwang: null, pred: null }
     };
 
     function init() {
-        renderSched();
-        updateTextEditor();
-        const gSel = document.getElementById('g-boss-sel');
-        bossMaster.forEach(g => g.b.forEach(b => gSel.innerHTML += `<option value="${b.n}">${b.n}</option>`));
-        setInterval(mainLoop, 100);
+        renderSched(); updateTextEditor();
+        const sel = document.getElementById('g-boss-sel');
+        bossMaster.forEach(g => g.b.forEach(b => sel.innerHTML += `<option value="${b.n}">${b.n}</option>`));
+        setInterval(tick, 100);
     }
 
-    // 💡 글로벌 전원 관리
+    // 💡 글로벌 전원
     function toggleGlobalPower() {
         state.power = !state.power;
         document.getElementById('pwr-btn').classList.toggle('is-on', state.power);
         document.body.classList.toggle('system-off', !state.power);
     }
 
-    // 💡 개편된 광폭화 계산기 로직 (초 단위 상대 시간)
-    function gStartAction() {
+    // 💡 전술 배틀 액션 로직
+    function battleAction(type) {
         if(!state.power) return;
-        state.gStart = Date.now();
-        state.gKwang = null;
-        document.getElementById('kwang-timer-box').classList.remove('is-over');
-        document.getElementById('g-after-kwang').innerText = "--:--";
-        addLog("사냥 시작 기록됨.");
+        const now = Date.now();
+        if(type === 'start') {
+            state.battle = { start: now, kwang: null, pred: null };
+            document.getElementById('unit-over').classList.remove('is-over');
+            addLog("배틀 시작! 초읽기 돌입.");
+        } else if(type === 'kwang') {
+            if(!state.battle.start) return;
+            state.battle.kwang = now;
+            const elapsedToKwang = (now - state.battle.start) / 1000;
+            // 💡 처치 예측 로직: 광폭화까지 90% 소진 가정 시 남은 10%는 T1/9초 내외 소요
+            state.battle.pred = Math.max(30, Math.floor(elapsedToKwang * 0.15)); 
+            addLog(`광폭화 확인! 예상 킬타임: ${state.battle.pred}초.`);
+        } else if(type === 'kill') {
+            if(!state.battle.start) return;
+            const name = document.getElementById('g-boss-sel').value;
+            const boss = findBoss(name);
+            if(boss) setBossTimer(name, boss.r * 60);
+            
+            const total = Math.floor((now - state.battle.start)/1000);
+            addLog(`${name} 처치 완료 (총 ${total}초 소요). 젠 예약됨.`);
+            state.battle = { start: null, kwang: null, pred: null };
+        }
     }
 
-    function gKwangAction() {
-        if(!state.gStart) return alert("시작을 먼저 눌러주세요.");
-        state.gKwang = Date.now();
-        addLog("광폭화 발생! 추적 시작.");
-    }
-
-    function gKillAction() {
-        if(!state.gStart) return;
-        const name = document.getElementById('g-boss-sel').value;
-        const boss = findBossData(name);
-        if(boss) setBossTimer(name, boss.r * 60);
-        
-        state.gStart = null; state.gKwang = null;
-        document.getElementById('g-elapsed').innerText = "00:00";
-        document.getElementById('g-after-kwang').innerText = "--:--";
-        document.getElementById('kwang-timer-box').classList.remove('is-over');
-        addLog(`${name} 처치 완료! 젠 자동 예약.`);
-    }
-
-    // 💡 메인 실시간 루프 (광폭화 타이머 처리 포함)
-    function mainLoop() {
+    // 💡 메인 틱 (실시간 계산 & 드로잉)
+    function tick() {
         if(!state.power) return;
         const now = Date.now();
 
-        // 1. 광폭화 계산기 실시간 드로잉
-        if(state.gStart) {
-            const elap = Math.floor((now - state.gStart)/1000);
-            document.getElementById('g-elapsed').innerText = `${Math.floor(elap/60).toString().padStart(2,'0')}:${(elap%60).toString().padStart(2,'0')}`;
+        // 1. 배틀 보드 실시간 카운트
+        if(state.battle.start) {
+            const elap = Math.floor((now - state.battle.start)/1000);
+            document.getElementById('g-to-kwang').innerText = formatSimple(elap);
         }
-        if(state.gKwang) {
-            const after = Math.floor((now - state.gKwang)/1000);
-            document.getElementById('g-after-kwang').innerText = `${Math.floor(after/60).toString().padStart(2,'0')}:${(after%60).toString().padStart(2,'0')}초`;
-            // 30초 이상 경과 시 오버타임 표시 (오딘 평균 킬타임 기준)
-            if(after > 30) document.getElementById('kwang-timer-box').classList.add('is-over');
+        if(state.battle.kwang) {
+            const afterKwang = Math.floor((now - state.battle.kwang)/1000);
+            document.getElementById('g-pred-kill').innerText = `${state.battle.pred}초`;
+            document.getElementById('g-over-sec').innerText = `${afterKwang}초`;
+            
+            if(afterKwang > state.battle.pred) document.getElementById('unit-over').classList.add('is-over');
         }
 
-        // 2. 대시보드 및 알림
-        const list = [...state.timers[state.server]].sort((a,b) => a.t - b.t);
+        // 2. 대시보드 & 타이머
+        const list = [...state.timers[state.srv]].sort((a,b) => a.t - b.t);
         if(list.length > 0) {
             document.getElementById('dash-next-name').innerText = list[0].n;
             document.getElementById('dash-next-timer').innerText = formatTimer(list[0].t - now);
         }
 
-        state.timers[state.server].forEach(tm => {
+        state.timers[state.srv].forEach(tm => {
             const el = document.getElementById(`zen-${tm.n}`);
             if(el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
             
@@ -230,50 +233,45 @@
         drawPIP(list);
     }
 
-    // [표준 유틸리티 로직]
+    // [표준 기능 로직]
     function renderSched() {
-        const container = document.getElementById('scheduler-content');
-        let html = '';
+        const cont = document.getElementById('scheduler-content');
+        let h = '';
         bossMaster.forEach(g => {
-            html += `<div class="world-banner">${g.w}</div><table><tbody>`;
+            h += `<div class="world-banner">${g.w}</div><table><tbody>`;
             g.b.forEach(b => {
-                const sv = localStorage.getItem(`v20_in_${b.n}`) || '';
-                html += `<tr><td class="b-name">${b.n}</td><td><input type="text" class="v-in" data-name="${b.n}" value="${sv}" placeholder="남은시간"></td><td class="zen-time-display" id="zen-${b.n}">--:--</td><td><button class="btn-killed" onclick="setBossTimer('${b.n}', ${b.r * 60})">잡음</button></td></tr>`;
+                const sv = localStorage.getItem(`v21_in_${b.n}`) || '';
+                h += `<tr><td class="b-name">${b.n}</td><td><input type="text" class="v-input" data-name="${b.n}" value="${sv}" placeholder="남은시간"></td><td id="zen-${b.n}" style="font-family:Orbitron; font-weight:bold; color:#777;">--:--</td><td><button style="background:var(--danger); color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer;" onclick="setBossTimer('${b.n}', ${b.r * 60})">잡음</button></td></tr>`;
             });
-            html += `</tbody></table>`;
+            h += `</tbody></table>`;
         });
-        container.innerHTML = html;
-        const ins = document.querySelectorAll('.v-in');
-        ins.forEach((el, i) => el.addEventListener('keydown', (e) => { if(e.key==='Enter') { const s = parseSmart(el.value); if(s>0) setBossTimer(el.dataset.name, s, el.value); if(ins[i+1]) ins[i+1].focus(); } }));
-    }
-
-    function parseSmart(s) { 
-        if(!s) return 0; const p = s.split(/[:\s]+/).map(Number);
-        if(p.length===3) return p[0]*3600+p[1]*60+p[2]; if(p.length===2) return p[0]*60+p[1]; return p[0]*60;
+        cont.innerHTML = h;
+        document.querySelectorAll('.v-input').forEach((el, i, ins) => el.addEventListener('keydown', (e) => { if(e.key==='Enter') { const s = parseSmart(el.value); if(s>0) setBossTimer(el.dataset.name, s, el.value); if(ins[i+1]) ins[i+1].focus(); } }));
     }
 
     function setBossTimer(name, sec, raw = "자동") {
         const target = Date.now() + (sec * 1000);
-        const idx = state.timers[state.server].findIndex(x => x.n === name);
-        if(idx > -1) state.timers[state.server][idx].t = target; else state.timers[state.server].push({ n: name, t: target });
-        if(raw !== "자동") localStorage.setItem(`v20_in_${name}`, raw);
+        const idx = state.timers[state.srv].findIndex(x => x.n === name);
+        if(idx > -1) state.timers[state.srv][idx].t = target; else state.timers[state.srv].push({ n: name, t: target });
+        if(raw !== "자동") localStorage.setItem(`v21_in_${name}`, raw);
         saveState(); updateTextEditor();
     }
 
-    function saveState() { localStorage.setItem('v20_timers', JSON.stringify(state.timers)); }
-    function addLog(m) { const box = document.getElementById('log-list'); box.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${m}</div>` + box.innerHTML; }
+    function saveState() { localStorage.setItem('v21_timers', JSON.stringify(state.timers)); }
     function tab(id) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); event.currentTarget.classList.add('active'); if(id==='boss-set') updateTextEditor(); }
-    function setServer(s) { state.server = s; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('srv-'+s).classList.add('active'); renderSched(); updateTextEditor(); }
-    function findBossData(n) { let res = null; bossMaster.forEach(g => g.b.forEach(b => { if(b.n===n) res=b; })); return res; }
+    function setServer(s) { state.srv = s; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('srv-'+s).classList.add('active'); renderSched(); updateTextEditor(); }
+    function findBoss(n) { let res = null; bossMaster.forEach(g => g.b.forEach(b => { if(b.n===n) res=b; })); return res; }
     function formatTimer(ms) { if(ms < 0) return "젠 완료"; const h = Math.floor(ms/3600000); const m = Math.floor((ms%3600000)/60000); const s = Math.floor((ms%60000)/1000); return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
+    function formatSimple(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
     function playTTS(m) { const u = new SpeechSynthesisUtterance(m); u.lang = 'ko-KR'; window.speechSynthesis.speak(u); }
+    function addLog(m) { const box = document.getElementById('log-list'); box.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${m}</div>` + box.innerHTML; }
     
     function drawPIP(list) {
         const ctx = document.getElementById('pip-canvas').getContext('2d');
         ctx.fillStyle = "#1e272e"; ctx.fillRect(0,0,220,100);
         if(list.length > 0) {
             const next = list[0]; const d = next.t - Date.now();
-            ctx.fillStyle = "#ffd700"; ctx.font = "bold 14px Orbitron"; ctx.fillText("NEXT BOSS", 10, 25);
+            ctx.fillStyle = "#ffd700"; ctx.font = "bold 14px Orbitron"; ctx.fillText("TARGET", 10, 25);
             ctx.fillStyle = d < 300000 ? "#ff5e57" : "#0be881"; ctx.font = "bold 20px Orbitron";
             ctx.fillText(next.n, 10, 55); ctx.fillText(formatTimer(d), 10, 85);
         }
@@ -283,8 +281,8 @@
     function updateTextEditor() {
         const now = new Date();
         let txt = `${now.getMonth()+1}.${now.getDate()}\n`;
-        const activeTimers = [...state.timers[state.server]].sort((a,b) => a.t - b.t);
-        activeTimers.forEach(tm => {
+        const active = [...state.timers[state.srv]].sort((a,b) => a.t - b.t);
+        active.forEach(tm => {
             const d = new Date(tm.t);
             txt += `${d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} ${tm.n}\n`;
         });
@@ -296,16 +294,21 @@
         let dateLine = ""; const newTimers = [];
         lines.forEach(line => {
             if(line.includes('.')) dateLine = line.trim();
-            const match = line.match(/(\d{2}:\d{2})\s+(.+)/);
-            if(match && dateLine) {
-                const [m, d] = dateLine.split('.').map(Number);
-                const [hh, mm] = match[1].split(':').map(Number);
-                const target = new Date(new Date().getFullYear(), m-1, d, hh, mm).getTime();
-                newTimers.push({ n: match[2].trim(), t: target });
+            const m = line.match(/(\d{2}:\d{2})\s+(.+)/);
+            if(m && dateLine) {
+                const [mon, day] = dateLine.split('.').map(Number);
+                const [hh, mm] = m[1].split(':').map(Number);
+                const target = new Date(new Date().getFullYear(), mon-1, day, hh, mm).getTime();
+                newTimers.push({ n: m[2].trim(), t: target });
             }
         });
-        state.timers[state.server] = newTimers;
+        state.timers[state.srv] = newTimers;
         saveState(); renderSched(); tab('dash');
+    }
+
+    function parseSmart(s) { 
+        if(!s) return 0; const p = s.split(/[:\s]+/).map(Number);
+        if(p.length===3) return p[0]*3600+p[1]*60+p[2]; if(p.length===2) return p[0]*60+p[1]; return p[0]*60;
     }
 
     init();

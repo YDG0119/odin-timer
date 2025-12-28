@@ -3,54 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ODIN BOSS MONITOR PRO</title>
+    <title>ODIN BOSS COMMANDER - SYNC PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #8e24aa; --accent: #1e88e5; --bg: #f0f2f5;
-            --card: #ffffff; --text: #333; --danger: #ff5252;
-            --jotun: #5c6bc0; --nida: #66bb6a; --alf: #ffa726; --muspel: #ef5350;
-            --as: #ab47bc; --nifl: #26c6da; --vana: #9ccc65; --dun: #78909c;
+            --primary: #8e24aa; --accent: #1e88e5; --bg: #f8f9fa;
+            --card: #ffffff; --text: #222; --danger: #ff1744;
+            --jotun: #3949ab; --nida: #43a047; --alf: #fb8c00; --muspel: #e53935;
+            --as: #8e24aa; --nifl: #00acc1; --vana: #7cb342; --dun: #546e7a;
         }
 
         body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
-        /* 사이드바 내비게이션 */
-        nav { width: 80px; background: #fff; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); }
-        .nav-item { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #777; transition: 0.3s; font-size: 22px; }
-        .nav-item:hover { background: #f0f0f0; color: var(--primary); }
-        .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(142, 36, 170, 0.3); }
+        /* 네비게이션 */
+        nav { width: 70px; background: #fff; border-right: 1px solid #dee2e6; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; }
+        .nav-item { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 10px; cursor: pointer; color: #adb5bd; transition: 0.2s; font-size: 20px; }
+        .nav-item.active { background: var(--primary); color: #fff; }
 
-        /* 메인 콘텐츠 영역 */
+        /* 메인 영역 */
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        header { height: 60px; background: #fff; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.3em; color: var(--primary); }
-        .content { flex: 1; padding: 25px; overflow-y: auto; box-sizing: border-box; }
+        header { height: 50px; background: #fff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
+        .content { flex: 1; padding: 20px; overflow-y: auto; }
 
-        /* 탭별 화면 제어 */
         .pane { display: none; }
-        .pane.active { display: block; animation: fadeIn 0.4s ease; }
+        .pane.active { display: block; }
 
-        /* 대시보드 카드 디자인 */
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
-        .card { background: var(--card); border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .focus-card { text-align: center; border: 2px solid var(--accent); }
-        .timer-main { font-family: 'Orbitron', sans-serif; font-size: 4em; color: var(--accent); margin: 15px 0; }
-        .next-boss-name { font-size: 1.8em; font-weight: bold; }
+        /* 대시보드 */
+        .dashboard-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+        .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .next-box { text-align: center; border: 2px solid var(--accent); padding: 25px; }
+        .timer-main { font-family: 'Orbitron', sans-serif; font-size: 3.5em; color: var(--accent); margin: 10px 0; }
 
-        /* 보스 스케줄러 테이블 (요청하신 순서 정렬) */
-        .world-header { padding: 10px 15px; border-radius: 8px; color: #fff; font-weight: bold; margin: 20px 0 10px 0; display: inline-block; }
-        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; }
-        th { background: #f8f9fa; padding: 15px; text-align: left; border-bottom: 2px solid #eee; font-size: 0.9em; color: #666; }
-        td { padding: 15px; border-bottom: 1px solid #eee; }
-        input[type="number"] { width: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center; }
-        .apply-btn { background: var(--primary); color: #fff; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; float: right; }
+        /* 스케줄러 (입력 최적화) */
+        .world-label { padding: 6px 12px; border-radius: 4px; color: #fff; font-weight: bold; font-size: 0.85em; margin: 15px 0 8px 0; display: inline-block; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        td { padding: 10px; border-bottom: 1px solid #f1f3f5; }
+        .boss-name-td { width: 180px; font-weight: 500; }
+        input[type="number"] { width: 100px; padding: 8px; border: 2px solid #e9ecef; border-radius: 6px; text-align: center; font-weight: bold; outline: none; transition: 0.2s; }
+        input[type="number"]:focus { border-color: var(--primary); background: #fdf2ff; }
+        .expected-time { color: #868e96; font-size: 0.9em; font-family: monospace; }
 
-        /* 로그 및 고정 알림 */
-        .log-item { padding: 10px; border-bottom: 1px dashed #eee; font-size: 0.9em; }
-        .log-time { color: var(--danger); font-weight: bold; margin-right: 10px; }
-        .fixed-alarm-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; }
+        /* 알림 로그 */
+        .log-box { height: 300px; overflow-y: auto; font-size: 0.85em; line-height: 1.6; }
+        .log-row { border-bottom: 1px solid #f1f3f5; padding: 4px 0; }
+        .log-t { color: var(--danger); font-weight: bold; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 50% { opacity: 0.7; } }
     </style>
 </head>
 <body>
@@ -58,32 +56,30 @@
 <nav>
     <div class="nav-item active" onclick="tab('dash')">🏠</div>
     <div class="nav-item" onclick="tab('sched')">📅</div>
-    <div class="nav-item" onclick="tab('calc')">🧮</div>
     <div class="nav-item" onclick="tab('logs')">📝</div>
-    <div class="nav-item" onclick="tab('sets')">⚙️</div>
     <div class="nav-item" onclick="togglePIP()">📺</div>
 </nav>
 
 <main>
-    <header>ODIN BOSS COMMANDER</header>
+    <header>ODIN COMMANDER SYNC</header>
     <div class="content">
         <div id="dash" class="pane active">
-            <div class="dashboard-grid">
+            <div class="dashboard-layout">
                 <div>
-                    <div class="card focus-card">
-                        <div style="color:#888; font-weight:bold;">NEXT TARGET</div>
-                        <div class="next-boss-name" id="main-target-name">대기 중...</div>
-                        <div class="timer-main" id="main-timer">00:00:00</div>
+                    <div class="card next-box">
+                        <div style="font-size:0.9em; color:#666;">NEXT BOSS</div>
+                        <div id="main-name" style="font-size:1.8em; font-weight:700; margin-top:5px;">--</div>
+                        <div id="main-timer" class="timer-main">00:00:00</div>
                     </div>
                     <div class="card">
-                        <h3>Upcoming Bosses</h3>
-                        <div id="upcoming-list"></div>
+                        <h3 style="margin-top:0;">Upcoming</h3>
+                        <div id="up-list"></div>
                     </div>
                 </div>
                 <div>
-                    <div class="card" style="height: 100%;">
-                        <h3>Event Logs</h3>
-                        <div id="log-display"></div>
+                    <div class="card">
+                        <h3 style="margin-top:0;">Logs</h3>
+                        <div id="log-list" class="log-box"></div>
                     </div>
                 </div>
             </div>
@@ -92,21 +88,10 @@
         <div id="sched" class="pane">
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2>Boss Scheduler</h2>
-                    <button class="apply-btn" onclick="applyTimers()">설정 저장 및 적용</button>
+                    <h2 style="margin:0;">Boss Scheduler</h2>
+                    <span style="font-size:0.8em; color:var(--primary);">* 입력 후 Enter를 누르면 즉시 저장 및 다음 보스로 이동</span>
                 </div>
-                <div id="scheduler-content"></div>
-            </div>
-        </div>
-
-        <div id="sets" class="pane">
-            <div class="card">
-                <h2>고정 알림 (발할라/침략자)</h2>
-                <div class="fixed-alarm-row"><span>12:00 대륙 침략자</span><input type="checkbox" checked></div>
-                <div class="fixed-alarm-row"><span>13:00 발할라 대전</span><input type="checkbox" checked></div>
-                <div class="fixed-alarm-row"><span>18:00 발할라 대전</span><input type="checkbox" checked></div>
-                <div class="fixed-alarm-row"><span>20:00 대륙 침략자</span><input type="checkbox" checked></div>
-                <div class="fixed-alarm-row"><span>21:00 발할라 대전</span><input type="checkbox" checked></div>
+                <div id="scheduler-body"></div>
             </div>
         </div>
     </div>
@@ -116,20 +101,75 @@
 <video id="pip-video" autoplay muted style="display:none;"></video>
 
 <script>
-    // 도균님이 제공해주신 완벽한 보스 리스트 (정렬 순서 준수)
+    // 53종 보스 리스트 - 요청하신 정렬 순서 준수
     const bossDB = [
-        { world: "요툰헤임", color: "var(--jotun)", bosses: ["파르바", "셀로비아", "흐니르", "페티", "바우티", "니드호그", "야룬", "티르"] },
-        { world: "니다벨리르", color: "var(--nida)", bosses: ["라이노르", "비요른", "헤르모드", "스칼라니르", "브륀힐드", "라타토스크", "수드리", "토르"] },
-        { world: "알브헤임", color: "var(--alf)", bosses: ["스바르트", "두라스로르", "모네가름", "드라우그", "굴베이그", "오딘"] },
-        { world: "무스펠헤임", color: "var(--muspel)", bosses: ["메기르", "신마라", "헤르가름", "탕그리스니르", "엘드룬", "우로보로스", "수르트"] },
-        { world: "아스가르드", color: "var(--as)", bosses: ["발리", "노트", "샤무크", "스칼드메르", "화신그로아", "미미르"] },
-        { world: "니플헤임", color: "var(--nifl)", bosses: ["히로킨", "호드", "헤이드", "대교주", "프레이", "이미르"] },
-        { world: "바나헤임", color: "var(--vana)", bosses: ["엘디르", "안나르엘디르", "스쿨드", "스카디", "에기르"] },
-        { world: "던전", color: "var(--dun)", bosses: ["최하층 굴베이그", "최하층 강글로티", "최하층 스네르", "4층 모네가름", "7층 드라우그", "10층 다인흘로크"] }
+        { w: "요툰헤임", c: "var(--jotun)", b: ["파르바", "셀로비아", "흐니르", "페티", "바우티", "니드호그", "야룬", "티르"] },
+        { w: "니다벨리르", c: "var(--nida)", b: ["라이노르", "비요른", "헤르모드", "스칼라니르", "브륀힐드", "라타토스크", "수드리", "토르"] },
+        { w: "알브헤임", c: "var(--alf)", b: ["스바르트", "두라스로르", "모네가름", "드라우그", "굴베이그", "오딘"] },
+        { w: "무스펠하임", c: "var(--muspel)", b: ["메기르", "신마라", "헤르가름", "탕그리스니르", "엘드룬", "우로보로스", "수르트"] },
+        { w: "아스가르드", c: "var(--as)", b: ["발리", "노트", "샤무크", "스칼드메르", "화신그로아", "미미르"] },
+        { w: "니플하임", c: "var(--nifl)", b: ["히로킨", "호드", "헤이드", "대교주", "프레이", "이미르"] },
+        { w: "바나하임", c: "var(--vana)", b: ["엘디르", "안나르엘디르", "스쿨드", "스카디", "에기르"] },
+        { w: "던전", c: "var(--dun)", b: ["최하층 굴베이그", "최하층 강글로티", "최하층 스네르", "4층 모네가름", "7층 드라우그", "10층 다인흘로크"] }
     ];
 
-    let activeTimers = JSON.parse(localStorage.getItem('odin_final_v1')) || [];
-    let logs = [];
+    let timers = JSON.parse(localStorage.getItem('odin_sync_data')) || [];
+
+    // 스케줄러 렌더링
+    function init() {
+        const container = document.getElementById('scheduler-body');
+        let html = '';
+        bossDB.forEach(group => {
+            html += `<div class="world-label" style="background:${group.c}">${group.w}</div>`;
+            html += `<table>`;
+            group.bosses.forEach(name => {
+                html += `
+                    <tr>
+                        <td class="boss-name-td">${name}</td>
+                        <td><input type="number" class="b-input" data-name="${name}" placeholder="남은 분"></td>
+                        <td class="expected-time" id="exp-${name}">--:--:--</td>
+                    </tr>`;
+            });
+            html += `</table>`;
+        });
+        container.innerHTML = html;
+
+        // 엔터 키 이벤트 리스너 등록
+        const inputs = document.querySelectorAll('.b-input');
+        inputs.forEach((input, index) => {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    // 1. 현재 입력값 즉시 반영 (오차 최소화)
+                    saveTimer(input.dataset.name, input.value);
+                    input.value = ''; // 입력창 비우기
+                    
+                    // 2. 다음 입력창으로 포커스 이동
+                    if (inputs[index + 1]) inputs[index + 1].focus();
+                }
+            });
+        });
+    }
+
+    function saveTimer(name, mins) {
+        if (!mins || mins < 0) return;
+        const target = Date.now() + (mins * 60000);
+        const idx = timers.findIndex(t => t.name === name);
+        if (idx > -1) timers[idx].target = target;
+        else timers.push({ name, target });
+        
+        localStorage.setItem('odin_sync_data', JSON.stringify(timers));
+        addLog(`${name} 동기화 완료 (${new Date(target).toLocaleTimeString()})`);
+        
+        // 스케줄러의 예상 젠 시간 텍스트 업데이트
+        document.getElementById(`exp-${name}`).innerText = new Date(target).toLocaleTimeString();
+    }
+
+    function addLog(msg) {
+        const logBox = document.getElementById('log-list');
+        const now = new Date().toLocaleTimeString();
+        const row = `<div class="log-row"><span class="log-t">[${now}]</span> ${msg}</div>`;
+        logBox.innerHTML = row + logBox.innerHTML;
+    }
 
     function tab(id) {
         document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
@@ -138,96 +178,49 @@
         event.currentTarget.classList.add('active');
     }
 
-    function initScheduler() {
-        const container = document.getElementById('scheduler-content');
-        bossDB.forEach(group => {
-            const header = document.createElement('div');
-            header.className = 'world-header';
-            header.style.backgroundColor = group.color;
-            header.innerText = group.world;
-            container.appendChild(header);
-
-            const table = document.createElement('table');
-            table.innerHTML = `<thead><tr><th>보스명</th><th>남은 시간(분)</th><th>예상 젠</th></tr></thead>`;
-            const tbody = document.createElement('tbody');
-            group.bosses.forEach(name => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${name}</strong></td>
-                    <td><input type="number" class="time-input" data-name="${name}" placeholder="분"></td>
-                    <td class="target-time" id="target-${name}">--:--:--</td>
-                `;
-                tbody.appendChild(tr);
-            });
-            table.appendChild(tbody);
-            container.appendChild(table);
-        });
-    }
-
-    function applyTimers() {
-        document.querySelectorAll('.time-input').forEach(input => {
-            const val = input.value;
-            if(val) {
-                const name = input.dataset.name;
-                const target = Date.now() + (val * 60000);
-                const idx = activeTimers.findIndex(t => t.name === name);
-                if(idx > -1) activeTimers[idx].target = target;
-                else activeTimers.push({ name, target });
-                addLog(`${name} 설정 완료`);
-            }
-        });
-        localStorage.setItem('odin_final_v1', JSON.stringify(activeTimers));
-        alert("모든 설정이 저장되었습니다.");
-    }
-
-    function addLog(msg) {
-        const now = new Date().toLocaleTimeString();
-        logs.unshift(`<div class="log-item"><span class="log-time">[${now}]</span> ${msg}</div>`);
-        document.getElementById('log-display').innerHTML = logs.slice(0, 10).join('');
-    }
-
     function update() {
         const now = Date.now();
-        activeTimers.sort((a,b) => a.target - b.target);
-        activeTimers = activeTimers.filter(t => t.target - now > -600000);
+        timers.sort((a,b) => a.target - b.target);
+        timers = timers.filter(t => t.target - now > -600000);
 
-        if(activeTimers.length > 0) {
-            const next = activeTimers[0];
+        if(timers.length > 0) {
+            const next = timers[0];
             const diff = next.target - now;
-            document.getElementById('main-target-name').innerText = next.name;
-            document.getElementById('main-timer').innerText = formatTime(diff);
-            document.getElementById('main-timer').style.color = diff < 300000 ? 'var(--danger)' : 'var(--accent)';
+            document.getElementById('main-name').innerText = next.name;
+            document.getElementById('main-timer').innerText = format(diff);
+            if(diff < 0) document.getElementById('main-timer').style.color = 'var(--danger)';
+            else document.getElementById('main-timer').style.color = 'var(--accent)';
         }
 
-        document.getElementById('upcoming-list').innerHTML = activeTimers.slice(1, 8).map(t => `
-            <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #eee;">
+        document.getElementById('up-list').innerHTML = timers.slice(1, 10).map(t => `
+            <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #f1f3f5;">
                 <span>${t.name}</span>
-                <span style="font-weight:bold; color:var(--primary)">${formatTime(t.target - now)}</span>
+                <span style="font-weight:bold; color:var(--primary);">${format(t.target - now)}</span>
             </div>
         `).join('');
 
         drawPIP();
     }
 
-    function formatTime(ms) {
-        if(ms < 0) return "출현 중";
+    function format(ms) {
+        if(ms < 0) return "APPEARED";
         const h = Math.floor(ms/3600000);
         const m = Math.floor((ms%3600000)/60000);
         const s = Math.floor((ms%60000)/1000);
         return `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
 
-    // PIP 및 캔버스 로직
+    // PIP 로직
     const canvas = document.getElementById('pip-canvas');
     const ctx = canvas.getContext('2d');
     function drawPIP() {
-        ctx.fillStyle = "#1a1a2e"; ctx.fillRect(0,0,300,450);
-        ctx.fillStyle = "#8e24aa"; ctx.font = "bold 20px Arial"; ctx.fillText("BOSS MONITOR", 15, 40);
-        activeTimers.slice(0, 10).forEach((t, i) => {
+        ctx.fillStyle = "#121212"; ctx.fillRect(0,0,300,450);
+        ctx.fillStyle = "#8e24aa"; ctx.font = "bold 18px Arial"; ctx.fillText("ODIN BOSS SYNC", 15, 35);
+        timers.slice(0, 10).forEach((t, i) => {
             const d = t.target - Date.now();
-            ctx.fillStyle = d < 300000 ? "#ff5252" : "#00d4ff";
-            ctx.font = "16px Arial";
-            ctx.fillText(`${t.name.padEnd(8)} ${formatTime(d)}`, 15, 80 + (i*35));
+            ctx.fillStyle = d < 300000 ? "#ff1744" : "#00e5ff";
+            ctx.font = "15px Arial";
+            ctx.fillText(`${t.name.padEnd(8)} ${format(d)}`, 15, 75 + (i*35));
         });
     }
 
@@ -237,7 +230,7 @@
         else { v.srcObject = canvas.captureStream(); await v.play(); await v.requestPictureInPicture(); }
     }
 
-    initScheduler();
+    init();
     setInterval(update, 1000);
 </script>
 

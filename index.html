@@ -3,207 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ODIN BOSS COMMAND CENTER</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&family=Orbitron:wght@600&display=swap" rel="stylesheet">
+    <title>ODIN BOSS MONITOR PRO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #f4f7f9; --sidebar-bg: #ffffff; --primary: #8e24aa;
-            --accent: #1e88e5; --text-main: #333; --text-muted: #777;
-            --card-bg: #ffffff; --danger: #e53935; --success: #43a047;
+            --primary: #8e24aa; --accent: #1e88e5; --bg: #f0f2f5;
+            --card: #ffffff; --text: #333; --danger: #ff5252;
+            --jotun: #5c6bc0; --nida: #66bb6a; --alf: #ffa726; --muspel: #ef5350;
+            --as: #ab47bc; --nifl: #26c6da; --vana: #9ccc65; --dun: #78909c;
         }
 
-        body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg-body); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
-        /* 사이드바 */
-        nav { width: 70px; background: var(--sidebar-bg); border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 20px; z-index: 100; }
-        nav .nav-item { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; color: var(--text-muted); transition: 0.3s; font-size: 20px; }
-        nav .nav-item:hover { background: #f0f0f0; color: var(--primary); }
-        nav .nav-item.active { background: var(--primary); color: white; }
+        /* 사이드바 내비게이션 */
+        nav { width: 80px; background: #fff; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); }
+        .nav-item { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #777; transition: 0.3s; font-size: 22px; }
+        .nav-item:hover { background: #f0f0f0; color: var(--primary); }
+        .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(142, 36, 170, 0.3); }
 
-        /* 메인 콘텐츠 */
+        /* 메인 콘텐츠 영역 */
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        header { height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em; position: relative; }
-        .power-btn { position: absolute; right: 20px; color: var(--success); cursor: pointer; }
+        header { height: 60px; background: #fff; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.3em; color: var(--primary); }
+        .content { flex: 1; padding: 25px; overflow-y: auto; box-sizing: border-box; }
 
-        .content-area { flex: 1; padding: 25px; overflow-y: auto; }
-        .pane { display: none; animation: fadeIn 0.3s ease; }
-        .pane.active { display: block; }
+        /* 탭별 화면 제어 */
+        .pane { display: none; }
+        .pane.active { display: block; animation: fadeIn 0.4s ease; }
 
-        /* 카드 및 레이아웃 */
-        .card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 20px; margin-bottom: 20px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        /* 대시보드 카드 디자인 */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
+        .card { background: var(--card); border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .focus-card { text-align: center; border: 2px solid var(--accent); }
+        .timer-main { font-family: 'Orbitron', sans-serif; font-size: 4em; color: var(--accent); margin: 15px 0; }
+        .next-boss-name { font-size: 1.8em; font-weight: bold; }
 
-        /* 대시보드 */
-        .next-boss-focus { text-align: center; border: 2px solid var(--accent); padding: 30px; }
-        .next-boss-name { font-size: 1.5em; color: var(--accent); font-weight: bold; }
-        .timer-big { font-size: 3.5em; font-family: 'Orbitron', sans-serif; margin: 10px 0; }
+        /* 보스 스케줄러 테이블 (요청하신 순서 정렬) */
+        .world-header { padding: 10px 15px; border-radius: 8px; color: #fff; font-weight: bold; margin: 20px 0 10px 0; display: inline-block; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; }
+        th { background: #f8f9fa; padding: 15px; text-align: left; border-bottom: 2px solid #eee; font-size: 0.9em; color: #666; }
+        td { padding: 15px; border-bottom: 1px solid #eee; }
+        input[type="number"] { width: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center; }
+        .apply-btn { background: var(--primary); color: #fff; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; float: right; }
 
-        /* 스케줄러 테이블 */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; color: var(--text-muted); font-size: 0.9em; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
-        .world-tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; margin-bottom: 5px; color: white; }
-        
-        input[type="number"] { width: 80px; padding: 6px; border: 1px solid #ddd; border-radius: 4px; text-align: center; }
-
-        /* 월드별 색상 */
-        .w-jotun { background: #5c6bc0; } .w-nida { background: #66bb6a; } .w-alf { background: #ffa726; }
-        .w-muspel { background: #ef5350; } .w-as { background: #ab47bc; } .w-nifl { background: #26c6da; }
-        .w-vana { background: #9ccc65; } .w-dun { background: #78909c; }
-
-        /* 로그 */
-        .log-list { font-size: 0.9em; max-height: 200px; overflow-y: auto; }
-        .log-item { padding: 5px 0; border-bottom: 1px dashed #eee; }
+        /* 로그 및 고정 알림 */
+        .log-item { padding: 10px; border-bottom: 1px dashed #eee; font-size: 0.9em; }
         .log-time { color: var(--danger); font-weight: bold; margin-right: 10px; }
+        .fixed-alarm-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="nav-item active" onclick="showPane('home')">🏠</div>
-    <div class="nav-item" onclick="showPane('schedule')">📅</div>
-    <div class="nav-item" onclick="showPane('calc')">🧮</div>
-    <div class="nav-item" onclick="showPane('logs')">📝</div>
-    <div class="nav-item" onclick="showPane('settings')">⚙️</div>
+    <div class="nav-item active" onclick="tab('dash')">🏠</div>
+    <div class="nav-item" onclick="tab('sched')">📅</div>
+    <div class="nav-item" onclick="tab('calc')">🧮</div>
+    <div class="nav-item" onclick="tab('logs')">📝</div>
+    <div class="nav-item" onclick="tab('sets')">⚙️</div>
     <div class="nav-item" onclick="togglePIP()">📺</div>
 </nav>
 
 <main>
-    <header>보스 알리미 <span class="power-btn">⏻</span></header>
-    
-    <div class="content-area">
-        <div id="home" class="pane active">
-            <div class="grid-2">
-                <div class="card next-boss-focus">
-                    <p style="margin:0; color:var(--text-muted)">다음 보스</p>
-                    <div id="next-boss-info">
-                        <div class="next-boss-name">[--:--] 대기 중</div>
-                        <div class="timer-big">00:00:00</div>
+    <header>ODIN BOSS COMMANDER</header>
+    <div class="content">
+        <div id="dash" class="pane active">
+            <div class="dashboard-grid">
+                <div>
+                    <div class="card focus-card">
+                        <div style="color:#888; font-weight:bold;">NEXT TARGET</div>
+                        <div class="next-boss-name" id="main-target-name">대기 중...</div>
+                        <div class="timer-main" id="main-timer">00:00:00</div>
+                    </div>
+                    <div class="card">
+                        <h3>Upcoming Bosses</h3>
+                        <div id="upcoming-list"></div>
                     </div>
                 </div>
                 <div>
-                    <div class="card">
-                        <p style="margin:0; font-weight:bold;">알림 상태: <span style="color:var(--danger)">알림 실행 중</span></p>
-                        <div style="margin-top:15px;">
-                            소리 설정: <input type="range" min="0" max="1" step="0.1" value="0.5">
-                        </div>
-                    </div>
-                    <div class="card">
-                        <p style="margin:0; font-weight:bold; margin-bottom:10px;">로그</p>
-                        <div class="log-list" id="dashboard-logs"></div>
+                    <div class="card" style="height: 100%;">
+                        <h3>Event Logs</h3>
+                        <div id="log-display"></div>
                     </div>
                 </div>
             </div>
-            <div class="card">
-                <h3>다가오는 보스</h3>
-                <div id="upcoming-list"></div>
-            </div>
         </div>
 
-        <div id="schedule" class="pane">
+        <div id="sched" class="pane">
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2>보스 스케줄러</h2>
-                    <button onclick="saveAllTimers()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">보스 설정 적용</button>
+                    <h2>Boss Scheduler</h2>
+                    <button class="apply-btn" onclick="applyTimers()">설정 저장 및 적용</button>
                 </div>
-                <table>
-                    <thead>
-                        <tr><th>보스 정보</th><th>남은 시간(분)</th><th>예상 젠 시간</th></tr>
-                    </thead>
-                    <tbody id="scheduler-body"></tbody>
-                </table>
+                <div id="scheduler-content"></div>
             </div>
         </div>
 
-        <div id="logs" class="pane">
+        <div id="sets" class="pane">
             <div class="card">
-                <h2>이벤트 로그</h2>
-                <div id="full-log-list"></div>
+                <h2>고정 알림 (발할라/침략자)</h2>
+                <div class="fixed-alarm-row"><span>12:00 대륙 침략자</span><input type="checkbox" checked></div>
+                <div class="fixed-alarm-row"><span>13:00 발할라 대전</span><input type="checkbox" checked></div>
+                <div class="fixed-alarm-row"><span>18:00 발할라 대전</span><input type="checkbox" checked></div>
+                <div class="fixed-alarm-row"><span>20:00 대륙 침략자</span><input type="checkbox" checked></div>
+                <div class="fixed-alarm-row"><span>21:00 발할라 대전</span><input type="checkbox" checked></div>
             </div>
         </div>
     </div>
 </main>
 
-<canvas id="pip-canvas" width="300" height="400" style="display:none;"></canvas>
+<canvas id="pip-canvas" width="300" height="450" style="display:none;"></canvas>
 <video id="pip-video" autoplay muted style="display:none;"></video>
 
 <script>
-    // 1. 요청하신 순서대로 보스 데이터 구성 (요툰~바나~던전)
-    const bossList = [
-        { world: "요툰헤임", color: "w-jotun", name: "파르바", regen: 120 },
-        { world: "요툰헤임", color: "w-jotun", name: "바우티", regen: 120 },
-        { world: "니다벨리르", color: "w-nida", name: "페티", regen: 720 },
-        { world: "니다벨리르", color: "w-nida", name: "수드리", regen: 720 },
-        { world: "알브헤임", color: "w-alf", name: "셀로비아", regen: 720 },
-        { world: "알브헤임", color: "w-alf", name: "흐니르", regen: 720 },
-        { world: "무스펠헤임", color: "w-muspel", name: "수르트", regen: 1440 },
-        { world: "무스펠헤임", color: "w-muspel", name: "신마라", regen: 720 },
-        { world: "아스가르드", color: "w-as", name: "오딘", regen: 1440 },
-        { world: "아스가르드", color: "w-as", name: "티르", regen: 1440 },
-        { world: "니플헤임", color: "w-nifl", name: "니드호그", regen: 1440 },
-        { world: "바나헤임", color: "w-vana", name: "굴베이그", regen: 480 },
-        { world: "던전", color: "w-dun", name: "지감7층", regen: 480 },
-        { world: "던전", color: "w-dun", name: "지감4층", regen: 480 }
+    // 도균님이 제공해주신 완벽한 보스 리스트 (정렬 순서 준수)
+    const bossDB = [
+        { world: "요툰헤임", color: "var(--jotun)", bosses: ["파르바", "셀로비아", "흐니르", "페티", "바우티", "니드호그", "야룬", "티르"] },
+        { world: "니다벨리르", color: "var(--nida)", bosses: ["라이노르", "비요른", "헤르모드", "스칼라니르", "브륀힐드", "라타토스크", "수드리", "토르"] },
+        { world: "알브헤임", color: "var(--alf)", bosses: ["스바르트", "두라스로르", "모네가름", "드라우그", "굴베이그", "오딘"] },
+        { world: "무스펠헤임", color: "var(--muspel)", bosses: ["메기르", "신마라", "헤르가름", "탕그리스니르", "엘드룬", "우로보로스", "수르트"] },
+        { world: "아스가르드", color: "var(--as)", bosses: ["발리", "노트", "샤무크", "스칼드메르", "화신그로아", "미미르"] },
+        { world: "니플헤임", color: "var(--nifl)", bosses: ["히로킨", "호드", "헤이드", "대교주", "프레이", "이미르"] },
+        { world: "바나헤임", color: "var(--vana)", bosses: ["엘디르", "안나르엘디르", "스쿨드", "스카디", "에기르"] },
+        { world: "던전", color: "var(--dun)", bosses: ["최하층 굴베이그", "최하층 강글로티", "최하층 스네르", "4층 모네가름", "7층 드라우그", "10층 다인흘로크"] }
     ];
 
-    let activeTimers = JSON.parse(localStorage.getItem('odin_pro_timers')) || [];
+    let activeTimers = JSON.parse(localStorage.getItem('odin_final_v1')) || [];
     let logs = [];
 
-    // 탭 전환
-    function showPane(id) {
+    function tab(id) {
         document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         event.currentTarget.classList.add('active');
     }
 
-    // 스케줄러 렌더링
     function initScheduler() {
-        const body = document.getElementById('scheduler-body');
-        bossList.forEach((boss, idx) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><span class="world-tag ${boss.color}">${boss.world}</span><br><strong>${boss.name}</strong></td>
-                <td><input type="number" id="input-${idx}" placeholder="분"></td>
-                <td id="target-${idx}">--:--:--</td>
-            `;
-            body.appendChild(tr);
+        const container = document.getElementById('scheduler-content');
+        bossDB.forEach(group => {
+            const header = document.createElement('div');
+            header.className = 'world-header';
+            header.style.backgroundColor = group.color;
+            header.innerText = group.world;
+            container.appendChild(header);
+
+            const table = document.createElement('table');
+            table.innerHTML = `<thead><tr><th>보스명</th><th>남은 시간(분)</th><th>예상 젠</th></tr></thead>`;
+            const tbody = document.createElement('tbody');
+            group.bosses.forEach(name => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${name}</strong></td>
+                    <td><input type="number" class="time-input" data-name="${name}" placeholder="분"></td>
+                    <td class="target-time" id="target-${name}">--:--:--</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+            container.appendChild(table);
         });
     }
 
-    // 타이머 저장
-    function saveAllTimers() {
-        bossList.forEach((boss, idx) => {
-            const val = document.getElementById(`input-${idx}`).value;
+    function applyTimers() {
+        document.querySelectorAll('.time-input').forEach(input => {
+            const val = input.value;
             if(val) {
+                const name = input.dataset.name;
                 const target = Date.now() + (val * 60000);
-                const existing = activeTimers.findIndex(t => t.name === boss.name);
-                if(existing > -1) activeTimers[existing].target = target;
-                else activeTimers.push({ name: boss.name, target, world: boss.world });
-                addLog(`${boss.name} 타이머 설정됨`);
+                const idx = activeTimers.findIndex(t => t.name === name);
+                if(idx > -1) activeTimers[idx].target = target;
+                else activeTimers.push({ name, target });
+                addLog(`${name} 설정 완료`);
             }
         });
-        localStorage.setItem('odin_pro_timers', JSON.stringify(activeTimers));
-        alert("설정이 적용되었습니다.");
+        localStorage.setItem('odin_final_v1', JSON.stringify(activeTimers));
+        alert("모든 설정이 저장되었습니다.");
     }
 
-    // 로그 추가
     function addLog(msg) {
-        const now = new Date();
-        const timeStr = `[${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}]`;
-        logs.unshift({ time: timeStr, msg });
-        updateLogUI();
+        const now = new Date().toLocaleTimeString();
+        logs.unshift(`<div class="log-item"><span class="log-time">[${now}]</span> ${msg}</div>`);
+        document.getElementById('log-display').innerHTML = logs.slice(0, 10).join('');
     }
 
-    function updateLogUI() {
-        const dashLog = document.getElementById('dashboard-logs');
-        dashLog.innerHTML = logs.slice(0, 5).map(l => `<div class="log-item"><span class="log-time">${l.time}</span> ${l.msg}</div>`).join('');
-    }
-
-    // 실시간 업데이트 (1초마다)
-    function updateLoop() {
+    function update() {
         const now = Date.now();
         activeTimers.sort((a,b) => a.target - b.target);
         activeTimers = activeTimers.filter(t => t.target - now > -600000);
@@ -211,43 +194,40 @@
         if(activeTimers.length > 0) {
             const next = activeTimers[0];
             const diff = next.target - now;
-            document.querySelector('.next-boss-name').innerText = `[${next.world}] ${next.name}`;
-            document.querySelector('.timer-big').innerText = formatDiff(diff);
-            
-            // 알림 로직 (예: 1분 전)
-            if(Math.floor(diff/1000) === 60) addLog(`${next.name} 1분 전입니다!`);
+            document.getElementById('main-target-name').innerText = next.name;
+            document.getElementById('main-timer').innerText = formatTime(diff);
+            document.getElementById('main-timer').style.color = diff < 300000 ? 'var(--danger)' : 'var(--accent)';
         }
 
-        // 다가오는 리스트
-        document.getElementById('upcoming-list').innerHTML = activeTimers.slice(1, 6).map(t => `
-            <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
-                <span><strong>${t.name}</strong> (${t.world})</span>
-                <span style="color:var(--primary)">${formatDiff(t.target - now)}</span>
+        document.getElementById('upcoming-list').innerHTML = activeTimers.slice(1, 8).map(t => `
+            <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #eee;">
+                <span>${t.name}</span>
+                <span style="font-weight:bold; color:var(--primary)">${formatTime(t.target - now)}</span>
             </div>
         `).join('');
 
         drawPIP();
     }
 
-    function formatDiff(ms) {
+    function formatTime(ms) {
         if(ms < 0) return "출현 중";
-        const h = Math.floor(ms / 3600000);
-        const m = Math.floor((ms % 3600000) / 60000);
-        const s = Math.floor((ms % 60000) / 1000);
-        return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        const h = Math.floor(ms/3600000);
+        const m = Math.floor((ms%3600000)/60000);
+        const s = Math.floor((ms%60000)/1000);
+        return `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
 
-    // PIP 및 기타 기능 (생략된 디자인 로직은 유지)
+    // PIP 및 캔버스 로직
     const canvas = document.getElementById('pip-canvas');
     const ctx = canvas.getContext('2d');
     function drawPIP() {
-        ctx.fillStyle = "#1a1d24"; ctx.fillRect(0,0,300,400);
-        ctx.fillStyle = "#8e24aa"; ctx.font = "bold 18px Arial"; ctx.fillText("BOSS ALARM", 15, 35);
-        activeTimers.slice(0, 7).forEach((t, i) => {
+        ctx.fillStyle = "#1a1a2e"; ctx.fillRect(0,0,300,450);
+        ctx.fillStyle = "#8e24aa"; ctx.font = "bold 20px Arial"; ctx.fillText("BOSS MONITOR", 15, 40);
+        activeTimers.slice(0, 10).forEach((t, i) => {
             const d = t.target - Date.now();
-            ctx.fillStyle = d < 300000 ? "red" : "white";
+            ctx.fillStyle = d < 300000 ? "#ff5252" : "#00d4ff";
             ctx.font = "16px Arial";
-            ctx.fillText(`${t.name.padEnd(6)} ${formatDiff(d)}`, 15, 75 + (i * 35));
+            ctx.fillText(`${t.name.padEnd(8)} ${formatTime(d)}`, 15, 80 + (i*35));
         });
     }
 
@@ -258,7 +238,7 @@
     }
 
     initScheduler();
-    setInterval(updateLoop, 1000);
+    setInterval(update, 1000);
 </script>
 
 </body>

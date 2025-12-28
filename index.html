@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ODIN BOSS COMMANDER - LOCAL V8</title>
+    <title>ODIN BOSS COMMANDER - V10 MASTER</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #8e24aa; --accent: #1e88e5; --bg: #f8f9fa;
+            --primary: #8e24aa; --accent: #1e88e5; --bg: #f0f2f5;
             --card: #ffffff; --text: #2c3e50; --danger: #d32f2f;
-            --jotun: #3f51b5; --nida: #43a047; --alf: #ef6c00; --muspel: #c62828;
-            --as: #7b1fa2; --nifl: #0097a7; --vana: #689f38; --dun: #455a64;
+            --jotun: #3949ab; --nida: #2e7d32; --alf: #e65100; --muspel: #c62828;
+            --as: #6a1b9a; --nifl: #00838f; --vana: #558b2f; --dun: #37474f;
+            --off: #bdc3c7;
         }
 
         body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        nav { width: 70px; background: #fff; border-right: 1px solid #dee2e6; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; }
+        nav { width: 70px; background: #fff; border-right: 1px solid #dee2e6; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; z-index: 10; }
         .nav-item { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #95a5a6; transition: 0.2s; font-size: 20px; }
         .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(142, 36, 170, 0.3); }
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -22,22 +23,38 @@
         .content { flex: 1; padding: 20px; overflow-y: auto; }
         .pane { display: none; } .pane.active { display: block; }
 
-        /* 레이아웃 & 카드 */
-        .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
-        .grid-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+        /* 비주얼 그리드 레이아웃 */
+        .world-section { margin-bottom: 30px; }
+        .world-title { font-weight: bold; margin-bottom: 12px; display: inline-block; padding: 5px 15px; border-radius: 20px; color: white; font-size: 0.9em; }
+        .boss-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        
+        /* 보스 카드 */
+        .boss-card {
+            background: #fff; border-radius: 12px; padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 2px solid transparent;
+            transition: 0.3s; position: relative;
+        }
+        .boss-card.is-off { opacity: 0.5; filter: grayscale(1); border-color: transparent !important; }
+        .boss-card.active { border-color: var(--accent); background: #f0f7ff; }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .boss-name { font-weight: bold; font-size: 1em; }
 
-        /* 버튼 */
-        .btn-kakao { width: 100%; background: #fee500; color: #3c1e1e; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 15px; }
-        .btn-kakao:hover { background: #fada0a; }
-        .btn-killed { background: var(--danger); color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; }
+        /* 온/오프 스위치 스타일 */
+        .toggle-switch { position: relative; display: inline-block; width: 34px; height: 18px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(16px); }
 
-        /* 스케줄러 표 */
-        .world-badge { padding: 4px 10px; border-radius: 4px; color: #fff; font-weight: bold; font-size: 0.8em; margin: 15px 0 5px 0; display: inline-block; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        td { padding: 10px; border-bottom: 1px solid #f1f3f5; }
-        .b-name { width: 140px; font-weight: 700; }
-        input[type="text"] { width: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 6px; text-align: center; font-family: 'Orbitron'; font-weight: bold; color: var(--primary); }
-        .exp-time { font-family: monospace; color: #7f8c8d; font-size: 0.9em; font-weight: bold; }
+        /* 타이머 & 버튼 */
+        .countdown-big { font-family: 'Orbitron'; font-size: 1.4em; color: var(--accent); font-weight: bold; text-align: center; margin: 5px 0; }
+        .btn-killed { width: 100%; background: var(--danger); color: #fff; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-kakao { background: #fee500; color: #3c1e1e; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 20px; }
+        
+        /* 대시보드 */
+        .dashboard-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
     </style>
 </head>
 <body>
@@ -50,42 +67,45 @@
 </nav>
 
 <main>
-    <header>ODIN COMMANDER LOCAL V8</header>
+    <header>ODIN COMMANDER MASTER V10</header>
     <div class="content">
         <div id="dash" class="pane active">
-            <div class="grid-layout">
+            <div class="dashboard-layout">
                 <div>
-                    <button class="btn-kakao" onclick="copyKakao()">📢 카톡 공지 텍스트 복사</button>
-                    <div class="card" style="border-top: 4px solid var(--accent); text-align: center;">
-                        <div id="m-name" style="font-size:1.8em; font-weight:bold;">NEXT TARGET</div>
-                        <div id="m-timer" style="font-family:'Orbitron'; font-size:3.5em; color:var(--accent); margin:10px 0;">00:00:00</div>
+                    <button class="btn-kakao" onclick="copyKakao()">📢 카톡 공지 텍스트 복사 (활성 보스만)</button>
+                    <div class="card" style="background:#fff; padding:30px; border-radius:15px; text-align:center; border-top:4px solid var(--accent); box-shadow:0 4px 15px rgba(0,0,0,0.05);">
+                        <div id="m-name" style="font-size:1.8em; font-weight:bold; color:#555;">NEXT TARGET</div>
+                        <div id="m-timer" style="font-family:'Orbitron'; font-size:4em; color:var(--accent); margin:10px 0;">00:00:00</div>
                     </div>
-                    <div class="card"><h3>Upcoming Schedule</h3><div id="up-list"></div></div>
+                    <div class="card" style="background:#fff; padding:20px; border-radius:15px; margin-top:20px;">
+                        <h3>Upcoming Schedule</h3><div id="up-list"></div>
+                    </div>
                 </div>
-                <div class="card"><h3>Activity Logs</h3><div id="log-box" style="height:350px; overflow-y:auto; font-size:0.85em;"></div></div>
+                <div class="card" style="background:#fff; padding:20px; border-radius:15px;">
+                    <h3>Activity Logs</h3><div id="log-box" style="height:400px; overflow-y:auto; font-size:0.85em;"></div>
+                </div>
             </div>
         </div>
 
         <div id="sched" class="pane">
-            <div class="card">
-                <h2>Boss Scheduler</h2>
-                <div id="sched-body"></div>
-            </div>
+            <div id="sched-body"></div>
         </div>
 
         <div id="calc" class="pane">
-            <div class="card">
-                <h3>🔄 젠 업데이트 계산기</h3>
-                <select id="calc-select" style="width:100%; padding:10px; margin-bottom:10px; border-radius:6px;"></select>
-                <input type="text" id="calc-in" placeholder="시 분 초 (예: 8 44)" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ddd;">
-                <button class="btn-kakao" style="background:var(--accent); color:white; margin-top:10px;" onclick="updateByCalc()">시간 업데이트</button>
-            </div>
-            <div class="card">
-                <h3>🔥 광폭화 계산기</h3>
-                <label>광 시각:</label><input type="time" id="g-time" style="width:100%; padding:10px; margin-bottom:10px; border-radius:6px;">
-                <label>예상 킬(분):</label><input type="number" id="g-extra" value="5" style="width:100%; padding:10px; border-radius:6px; margin-bottom:10px;">
-                <div id="g-res" style="background:#fdf2ff; padding:15px; border-radius:8px; text-align:center; font-weight:bold;">대기 중...</div>
-                <button class="btn-kakao" style="background:var(--danger); color:white; margin-top:10px;" onclick="calcGwang()">킬 시간 예측 및 반영</button>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                <div class="card" style="background:#fff; padding:20px; border-radius:15px;">
+                    <h3>🔄 젠 업데이트 계산기</h3>
+                    <select id="c-sel" style="width:100%; padding:10px; margin-bottom:10px;"></select>
+                    <input type="text" id="c-in" placeholder="시 분 초 (예: 8 44)" style="width:100%; padding:10px; box-sizing:border-box;">
+                    <button class="btn-kakao" style="background:var(--accent); color:white; margin-top:10px;" onclick="upCalc()">업데이트</button>
+                </div>
+                <div class="card" style="background:#fff; padding:20px; border-radius:15px;">
+                    <h3>🔥 광폭화 계산기</h3>
+                    <input type="time" id="g-time" style="width:100%; padding:10px; margin-bottom:10px;">
+                    <input type="number" id="g-ext" value="5" style="width:100%; padding:10px; margin-bottom:10px;">
+                    <div id="g-res" style="background:#fdf2ff; padding:10px; text-align:center; font-weight:bold; border-radius:8px;">대기 중...</div>
+                    <button class="btn-kakao" style="background:var(--danger); color:white; margin-top:10px;" onclick="calcG()">예측 반영</button>
+                </div>
             </div>
         </div>
     </div>
@@ -106,95 +126,133 @@
         { w: "던전", c: "var(--dun)", b: [{n:"최하층 굴베이그", r:480}, {n:"최하층 강글로티", r:480}, {n:"최하층 스네르", r:480}, {n:"4층 모네가름", r:240}, {n:"7층 드라우그", r:480}, {n:"10층 다인흘로크", r:480}]}
     ];
 
-    let timers = JSON.parse(localStorage.getItem('odin_v8_timers')) || [];
+    let timers = JSON.parse(localStorage.getItem('odin_v10_timers')) || [];
+    let bossStatus = JSON.parse(localStorage.getItem('odin_v10_status')) || {};
 
     function init() {
         const body = document.getElementById('sched-body');
-        const sel = document.getElementById('calc-select');
-        bossDB.forEach(group => {
-            body.innerHTML += `<div class="world-badge" style="background:${group.c}">${group.w}</div><table>`;
-            group.b.forEach(boss => {
-                const sv = localStorage.getItem(`v8_val_${boss.n}`) || '';
-                body.innerHTML += `<tr><td class="b-name">${boss.n}</td><td><button class="btn-killed" onclick="autoSet('${boss.n}', ${boss.r})">잡음</button></td><td><input type="text" class="b-in" data-name="${boss.n}" value="${sv}"></td><td class="exp-time" id="exp-${boss.n}">--:--</td></tr>`;
-                sel.innerHTML += `<option value="${boss.n}">${boss.n}</option>`;
+        const sel = document.getElementById('c-sel');
+        body.innerHTML = '';
+        bossDB.forEach(g => {
+            let gridHtml = `<div class="world-section"><div class="world-title" style="background:${g.c}">${g.w}</div><div class="boss-grid">`;
+            g.b.forEach(b => {
+                if(bossStatus[b.n] === undefined) bossStatus[b.n] = true;
+                gridHtml += `
+                    <div class="boss-card ${!bossStatus[b.n]?'is-off':''}" id="card-${b.n}">
+                        <div class="card-header">
+                            <span class="boss-name">${b.n}</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" ${bossStatus[b.n]?'checked':''} onchange="toggleBoss('${b.n}', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div id="ui-${b.n}"></div>
+                    </div>`;
+                sel.innerHTML += `<option value="${b.n}">${b.n}</option>`;
             });
-            body.innerHTML += `</table>`;
+            gridHtml += `</div></div>`;
+            body.innerHTML += gridHtml;
         });
-        document.querySelectorAll('.b-in').forEach((el, i, ins) => {
-            el.addEventListener('keydown', (e) => { if(e.key==='Enter'){ const s = smartParse(el.value); if(s>0)saveTimer(el.dataset.name,s,el.value); if(ins[i+1])ins[i+1].focus(); } });
-        });
+        updateCardUI();
     }
 
-    function smartParse(str) {
-        if(!str) return 0;
-        let total = 0;
-        const d = str.match(/(\d+)\s*일/); const h = str.match(/(\d+)\s*시간/); const m = str.match(/(\d+)\s*분/); const s = str.match(/(\d+)\s*초/);
-        if(d||h||m||s) { if(d)total+=parseInt(d[1])*86400; if(h)total+=parseInt(h[1])*3600; if(m)total+=parseInt(m[1])*60; if(s)total+=parseInt(s[1]); }
-        else { const p = str.split(/[:\s]+/).filter(x=>x!=="").map(Number); if(p.length===3)total=(p[0]*3600)+(p[1]*60)+p[2]; else if(p.length===2)total=(p[0]*60)+p[1]; else if(p.length===1)total=p[0]*60; }
-        return total;
-    }
-
-    function saveTimer(n, s, raw) {
-        const target = Date.now() + (s * 1000);
-        const idx = timers.findIndex(t => t.n === n);
-        if(idx > -1) timers[idx].t = target; else timers.push({ n: n, t: target });
-        localStorage.setItem('odin_v8_timers', JSON.stringify(timers));
-        localStorage.setItem(`v8_val_${n}`, raw);
-        addLog(`${n} 설정됨`);
+    function toggleBoss(name, isOn) {
+        bossStatus[name] = isOn;
+        localStorage.setItem('odin_v10_status', JSON.stringify(bossStatus));
+        document.getElementById(`card-${name}`).classList.toggle('is-off', !isOn);
+        addLog(`${name} 보스 관리 ${isOn?'ON':'OFF'}`);
         updateDisplay();
     }
 
-    function copyKakao() {
-        if(timers.length===0) return;
-        timers.sort((a,b)=>a.t-b.t);
-        const now = new Date();
-        let txt = `${now.getMonth()+1}.${now.getDate()}\n`;
-        timers.forEach(t => { const d = new Date(t.t); txt += `${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false})} ${t.n}\n`; });
-        navigator.clipboard.writeText(txt.trim()).then(()=>alert("카톡 공지 복사 완료!"));
+    function updateCardUI() {
+        bossDB.forEach(g => g.b.forEach(b => {
+            const ui = document.getElementById(`ui-${b.n}`);
+            const timer = timers.find(t => t.n === b.n);
+            const card = document.getElementById(`card-${b.n}`);
+            
+            if (timer && timer.t > Date.now()) {
+                card.classList.add('active');
+                ui.innerHTML = `<div class="countdown-big" id="cd-${b.n}">--:--:--</div><button class="btn-killed" style="background:#aaa;" onclick="resetTimer('${b.n}')">취소</button>`;
+            } else {
+                card.classList.remove('active');
+                const sv = localStorage.getItem(`v10_in_${b.n}`) || '';
+                ui.innerHTML = `<button class="btn-killed" onclick="autoSet('${b.n}', ${b.r})">잡음</button><input type="text" class="b-in" style="margin-top:5px;" data-name="${b.n}" value="${sv}" placeholder="남은시간 입력" onkeydown="if(event.key==='Enter') manualSet(this)">`;
+            }
+        }));
     }
 
-    function updateByCalc() { const n = document.getElementById('calc-select').value; const v = document.getElementById('calc-in').value; const s = smartParse(v); if(s>0)saveTimer(n,s,v); }
-
-    function calcGwang() {
-        const time = document.getElementById('g-time').value;
-        const extra = parseInt(document.getElementById('g-extra').value)||0;
-        const name = document.getElementById('calc-select').value;
-        if(!time) return;
-        const [h, m] = time.split(':');
-        const kill = new Date(); kill.setHours(h, parseInt(m)+extra, 0);
-        let r = 120; bossDB.forEach(g => g.b.forEach(b => { if(b.n===name) r=b.r; }));
-        saveTimer(name, (kill.getTime()+r*60000-Date.now())/1000, "광폭화 계산");
-        document.getElementById('g-res').innerText = `킬: ${kill.toLocaleTimeString()} -> 반영 완료`;
+    function saveTimer(n, s, raw) {
+        const t = Date.now() + (s * 1000);
+        const idx = timers.findIndex(tm => tm.n === n);
+        if (idx > -1) timers[idx].t = t; else timers.push({ n: n, t: t });
+        localStorage.setItem('odin_v10_timers', JSON.stringify(timers));
+        if(raw !== "자동") localStorage.setItem(`v10_in_${n}`, raw);
+        updateCardUI();
+        updateDisplay();
     }
 
     function updateDisplay() {
         const now = Date.now();
-        timers.sort((a,b)=>a.t-b.t);
-        timers = timers.filter(t => t.t - now > -600000);
-        if(timers.length > 0) {
-            document.getElementById('m-name').innerText = timers[0].n;
-            document.getElementById('m-timer').innerText = format(timers[0].t - now);
+        // 온(ON) 되어 있는 보스만 필터링
+        let activeOnly = timers.filter(t => bossStatus[t.n] !== false && t.t - now > -600000);
+        activeOnly.sort((a,b) => a.t - b.t);
+
+        if(activeOnly.length > 0) {
+            document.getElementById('m-name').innerText = activeOnly[0].n;
+            document.getElementById('m-timer').innerText = format(activeOnly[0].t - now);
+        } else {
+            document.getElementById('m-name').innerText = "대기 중";
+            document.getElementById('m-timer').innerText = "00:00:00";
         }
-        document.getElementById('up-list').innerHTML = timers.slice(1, 10).map(t => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee;"><span>${t.n}</span><b>${format(t.t-now)}</b></div>`).join('');
-        drawPIP();
+
+        document.getElementById('up-list').innerHTML = activeOnly.slice(1, 10).map(t => `<div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;"><span>${t.n}</span><b>${format(t.t-now)}</b></div>`).join('');
+        
+        // 카드 개별 타이머 업데이트
+        timers.forEach(t => {
+            const cd = document.getElementById(`cd-${t.n}`);
+            if(cd) cd.innerText = format(t.t - now);
+        });
+        drawPIP(activeOnly);
     }
 
-    function format(ms) {
-        if(ms < 0) return "APPEARED";
-        const h = Math.floor(ms/3600000); const m = Math.floor((ms%3600000)/60000); const s = Math.floor((ms%60000)/1000);
-        return `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    function copyKakao() {
+        const now = Date.now();
+        let activeOnly = timers.filter(t => bossStatus[t.n] !== false && t.t > now);
+        if(activeOnly.length === 0) return;
+        activeOnly.sort((a,b) => a.t - b.t);
+        const date = new Date();
+        let txt = `${date.getMonth()+1}.${date.getDate()}\n`;
+        activeOnly.forEach(tm => {
+            txt += `${new Date(tm.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false})} ${tm.n}\n`;
+        });
+        navigator.clipboard.writeText(txt.trim()).then(() => alert("활성화된 보스 명단 복사 완료!"));
     }
 
-    function tab(id) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-    function autoSet(n, r) { saveTimer(n, r*60, "잡음(자동)"); }
-    function addLog(m) { const b = document.getElementById('log-box'); b.innerHTML = `<div style="padding:4px 0;">[${new Date().toLocaleTimeString()}] ${m}</div>` + b.innerHTML; }
-    
-    function togglePIP() { const v = document.getElementById('pip-video'); if(document.pictureInPictureElement) document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); v.play(); v.requestPictureInPicture(); } }
-    function drawPIP() {
-        const ctx = document.getElementById('pip-canvas').getContext('2d');
-        ctx.fillStyle = "#121212"; ctx.fillRect(0,0,300,280); ctx.fillStyle = "#ffd700"; ctx.font = "bold 18px Arial"; ctx.fillText("BOSS FOCUS (5)", 15, 35);
-        timers.slice(0, 5).forEach((t, i) => { const d = t.t - Date.now(); ctx.fillStyle = d < 300000 ? "#ff1744" : "#00e5ff"; ctx.font = "16px Arial"; ctx.fillText(`${t.n.padEnd(6)} ${format(d)}`, 15, 75 + (i*40)); });
+    // [유틸리티 함수]
+    function smartParse(str) {
+        if(!str) return 0; let total = 0;
+        const d=str.match(/(\d+)\s*일/); const h=str.match(/(\d+)\s*시간/); const m=str.match(/(\d+)\s*분/); const s=str.match(/(\d+)\s*초/);
+        if(d||h||m||s) { if(d)total+=parseInt(d[1])*86400; if(h)total+=parseInt(h[1])*3600; if(m)total+=parseInt(m[1])*60; if(s)total+=parseInt(s[1]); }
+        else { const p=str.split(/[:\s]+/).filter(x=>x!=="").map(Number); if(p.length===3)total=(p[0]*3600)+(p[1]*60)+p[2]; else if(p.length===2)total=(p[0]*60)+p[1]; else if(p.length===1)total=p[0]*60; }
+        return total;
     }
+    function format(ms) { if(ms<0)return "APPEARED"; const h=Math.floor(ms/3600000); const m=Math.floor((ms%3600000)/60000); const s=Math.floor((ms%60000)/1000); return `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
+    function manualSet(el) { const s = smartParse(el.value); if(s>0) saveTimer(el.dataset.name, s, el.value); }
+    function autoSet(n, r) { saveTimer(n, r*60, "자동"); }
+    function resetTimer(n) { timers = timers.filter(t => t.n !== n); localStorage.setItem('odin_v10_timers', JSON.stringify(timers)); updateCardUI(); }
+    function addLog(m) { const b=document.getElementById('log-box'); b.innerHTML=`<div style="padding:8px 0;border-bottom:1px dashed #eee;">[${new Date().toLocaleTimeString()}] ${m}</div>`+b.innerHTML; }
+    function tab(id) { document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); event.currentTarget.classList.add('active'); }
+    function togglePIP() { const v=document.getElementById('pip-video'); if(document.pictureInPictureElement)document.exitPictureInPicture(); else { v.srcObject=document.getElementById('pip-canvas').captureStream(); v.play(); v.requestPictureInPicture(); } }
+    function drawPIP(activeOnly) {
+        const ctx=document.getElementById('pip-canvas').getContext('2d');
+        ctx.fillStyle="#121212"; ctx.fillRect(0,0,300,280); ctx.fillStyle="#ffd700"; ctx.font="bold 18px Orbitron"; ctx.fillText("ACTIVE BOSS (5)",15,35);
+        activeOnly.slice(0,5).forEach((t,i)=>{
+            const d=t.t-Date.now(); ctx.fillStyle=d<300000?"#ff1744":"#00e5ff"; ctx.font="16px Noto Sans KR";
+            ctx.fillText(`${t.n.substring(0,6).padEnd(6)} ${format(d)}`,15,75+(i*40));
+        });
+    }
+    function upCalc() { const n=document.getElementById('c-sel').value; const v=document.getElementById('c-in').value; const s=smartParse(v); if(s>0)saveTimer(n,s,v); }
+    function calcG() { const t=document.getElementById('g-time').value; const e=parseInt(document.getElementById('g-ext').value)||0; const n=document.getElementById('c-sel').value; if(!t)return; const [h,m]=t.split(':'); const k=new Date(); k.setHours(h,parseInt(m)+e,0); let r=120; bossDB.forEach(g=>g.b.forEach(b=>{if(b.n===n)r=b.r;})); saveTimer(n,(k.getTime()+r*60000-Date.now())/1000,"자동"); document.getElementById('g-res').innerText=`예상 킬: ${k.toLocaleTimeString()}`; }
 
     init(); setInterval(updateDisplay, 1000);
 </script>

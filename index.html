@@ -3,59 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ODIN COMMANDER - MASTER V18</title>
+    <title>보스 알리미 PRO V19</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #8e24aa; --accent: #1e88e5; --bg: #f8f9fa;
             --danger: #d32f2f; --warning: #ffa000; --sidebar-w: 75px;
-            --off: #636e72;
+            --success: #44bd32; --text-muted: #888;
         }
         body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; transition: 0.3s; }
-        body.program-off { filter: grayscale(0.8) brightness(0.9); }
+        body.system-off { filter: grayscale(1) brightness(0.8); pointer-events: none; }
+        body.system-off header, body.system-off .global-power { pointer-events: auto !important; filter: none !important; }
 
-        /* 사이드바 (image_ef427f 스타일) */
-        nav { width: var(--sidebar-w); background: #fff; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 12px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); z-index: 100; }
-        .nav-item { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #777; transition: 0.3s; font-size: 24px; }
+        /* 1. 사이드바 (image_ef4567 레이아웃) */
+        nav { width: var(--sidebar-w); background: #fff; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); z-index: 1000; }
+        .nav-item { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #777; transition: 0.2s; font-size: 20px; }
         .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(142, 36, 170, 0.3); }
 
-        /* 메인 레이아웃 */
+        /* 2. 메인 헤더 */
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        header { height: 60px; background: #fff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em; color: var(--primary); position: relative; }
-        
-        /* 글로벌 파워 버튼 (요청 사항) */
-        .global-power { position: absolute; right: 25px; font-size: 1.6em; cursor: pointer; transition: 0.3s; color: var(--danger); }
-        .global-power.is-on { color: #44bd32; text-shadow: 0 0 10px rgba(68, 189, 50, 0.5); }
+        header { height: 60px; background: #fff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em; color: #333; position: relative; }
+        .global-power { position: absolute; right: 25px; font-size: 1.8em; cursor: pointer; color: var(--danger); transition: 0.3s; }
+        .global-power.is-on { color: var(--success); text-shadow: 0 0 10px rgba(68, 189, 50, 0.3); }
 
+        /* 3. 콘텐츠 영역 */
         .content { flex: 1; padding: 25px; overflow-y: auto; }
-        .pane { display: none; } .pane.active { display: block; }
+        .pane { display: none; max-width: 1200px; margin: 0 auto; }
+        .pane.active { display: block; animation: fadeIn 0.3s ease; }
         .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
 
-        /* 스케줄러 & 서버 탭 */
-        .tab-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tab-btn { padding: 10px 20px; background: #ddd; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        /* 4. 스케줄러 (image_fe375d & image_f11b3a 통합) */
+        .tab-group { display: flex; gap: 5px; margin-bottom: 15px; }
+        .tab-btn { padding: 10px 25px; background: #e0e0e0; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .tab-btn.active { background: var(--accent); color: white; }
-        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; }
-        th { background: #f8f9fa; padding: 12px; font-size: 0.85em; text-align: left; color: #666; }
-        td { padding: 10px 12px; border-bottom: 1px solid #f1f3f5; }
-        input[type="text"] { width: 100px; padding: 6px; border: 2px solid #eee; border-radius: 6px; text-align: center; font-family: 'Orbitron'; font-weight: bold; }
+        
+        .world-banner { padding: 10px 15px; color: white; font-weight: bold; font-size: 0.9em; border-radius: 5px; margin-top: 20px; background: var(--primary); }
+        table { width: 100%; border-collapse: collapse; background: #fff; margin-bottom: 5px; }
+        th { background: #f8f9fa; padding: 12px; font-size: 0.85em; text-align: left; color: #666; border-bottom: 1px solid #eee; }
+        td { padding: 12px; border-bottom: 1px solid #f1f3f5; }
+        .b-name { width: 180px; font-weight: bold; font-size: 1.05em; }
+        input[type="text"] { width: 140px; padding: 10px; border: 2px solid #eee; border-radius: 8px; text-align: center; font-family: 'Orbitron'; font-weight: bold; color: var(--primary); }
+        .zen-time-display { font-family: 'Orbitron'; font-weight: bold; color: var(--text-muted); font-size: 1.1em; }
+        .btn-killed { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-        /* 광 계산기 (실시간 카운터 픽스) */
+        /* 5. 광 계산기 (image_fe3776 스타일 픽스) */
         .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .timer-unit { flex: 1; background: #f8f9fa; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #eee; }
-        .val-large { font-family: 'Orbitron'; font-size: 3em; display: block; }
-        .calc-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .c-btn { padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; font-size: 1.1em; }
+        .timer-panel { display: flex; gap: 15px; margin: 20px 0; }
+        .timer-unit { flex: 1; background: #f9fafb; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #eee; }
+        .val-huge { font-family: 'Orbitron'; font-size: 3em; display: block; line-height: 1.2; }
+        .val-next { color: var(--danger); }
+        .calc-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .c-btn { padding: 15px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; font-size: 1.1em; }
 
-        /* 텍스트 설정 (image_fdc31b) */
-        .text-editor { width: 100%; height: 450px; padding: 20px; border-radius: 10px; border: 1px solid #ddd; font-family: monospace; font-size: 1.1em; line-height: 1.6; resize: none; box-sizing: border-box; }
+        /* 6. 보스 설정 (image_fdc31b) */
+        .text-editor { width: 100%; height: 500px; padding: 25px; border-radius: 12px; border: 1px solid #ddd; font-family: monospace; font-size: 1.1em; line-height: 1.7; resize: none; box-sizing: border-box; }
+
+        /* 7. 대시보드 (image_ef427f) */
+        .dash-layout { display: grid; grid-template-columns: 1fr 380px; gap: 25px; }
+        .big-timer-card { text-align: center; border-top: 6px solid var(--accent); }
+        #dash-next-timer { font-family: 'Orbitron'; font-size: 6em; color: var(--accent); margin: 15px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } }
+        #pip-video { position: fixed; bottom: 0; right: 0; width: 1px; height: 1px; opacity: 0; }
     </style>
 </head>
 <body>
 
 <nav>
     <div class="nav-item active" onclick="tab('dash')">🏠</div>
-    <div class="nav-item" onclick="tab('txt-set')">🕒</div>
+    <div class="nav-item" onclick="tab('boss-set')">🕒</div>
     <div class="nav-item" onclick="tab('sched')">📅</div>
     <div class="nav-item" onclick="tab('calc')">🧮</div>
     <div class="nav-item" onclick="tab('fixed')">⚙️</div>
@@ -64,59 +80,62 @@
 
 <main>
     <header>
-        보스 관제 시스템 V18
-        <div id="power-btn" class="global-power is-on" onclick="toggleSystem()">⏻</div>
+        보스 알리미 V19
+        <div id="pwr-btn" class="global-power is-on" onclick="toggleGlobalPower()">⏻</div>
     </header>
     <div class="content">
         <div id="dash" class="pane active">
-            <div style="display:grid; grid-template-columns: 1fr 350px; gap: 20px;">
-                <div class="card" style="text-align:center; border-top:6px solid var(--accent);">
-                    <div style="color:#888; font-weight:bold;">NEXT TARGET</div>
-                    <div id="next-name" style="font-size:2.2em; font-weight:bold; margin:10px 0;">대기 중</div>
-                    <div id="next-timer" style="font-family:Orbitron; font-size:5.5em; color:var(--accent);">00:00:00</div>
+            <div class="dash-layout">
+                <div class="card big-timer-card">
+                    <div style="font-weight:bold; color:var(--text-muted);">NEXT BOSS SPAWN</div>
+                    <div id="dash-next-name" style="font-size:2.5em; font-weight:bold; margin-top:10px;">대기 중</div>
+                    <div id="dash-next-timer">00:00:00</div>
+                    <div style="display:flex; justify-content:center; gap:20px;">
+                        <button onclick="copyKakao()" style="background:#fee500; border:none; padding:12px 25px; border-radius:10px; font-weight:bold; cursor:pointer;">📢 카톡 공지 복사</button>
+                    </div>
                 </div>
                 <div class="card">
-                    <h3>최근 이벤트 로그</h3>
-                    <div id="log-display" style="font-size:0.9em; line-height:1.8;"></div>
+                    <h3>최근 알림 로그</h3>
+                    <div id="log-list" style="font-size:0.9em; line-height:1.8;"></div>
                 </div>
             </div>
         </div>
 
-        <div id="txt-set" class="pane">
+        <div id="boss-set" class="pane">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h2 style="margin:0;">텍스트 보스 설정</h2>
-                <button style="background:var(--primary); color:white; border:none; padding:10px 25px; border-radius:6px; cursor:pointer; font-weight:bold;" onclick="saveTextSettings()">설정 적용 및 저장</button>
+                <h2 style="margin:0;">보스 설정 (텍스트 동기화)</h2>
+                <button style="background:var(--primary); color:white; border:none; padding:10px 25px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="saveTextToTimers()">텍스트 설정 적용</button>
             </div>
-            <textarea id="text-editor" class="text-editor" placeholder="12.29&#10;00:15 지감7층..."></textarea>
+            <textarea id="boss-text-editor" class="text-editor" placeholder="12.29&#10;00:29 지감7층..."></textarea>
         </div>
 
         <div id="sched" class="pane">
             <div class="tab-group">
-                <button id="btn-main" class="tab-btn active" onclick="switchServer('main')">오딘(본서버)</button>
-                <button id="btn-inv" class="tab-btn" onclick="switchServer('inv')">침공서버</button>
+                <button id="srv-main" class="tab-btn active" onclick="setServer('main')">오딘(본서버)</button>
+                <button id="srv-inv" class="tab-btn" onclick="setServer('invasion')">침공서버</button>
             </div>
-            <div id="sched-area"></div>
+            <div id="scheduler-content"></div>
         </div>
 
         <div id="calc" class="pane">
             <div class="calc-grid">
-                <div class="calc-card card">
-                    <h3>정밀 광폭화 계산기</h3>
-                    <div style="display:flex; gap:10px; margin:20px 0;">
+                <div class="card">
+                    <h3>🔥 정밀 광폭화 계산기</h3>
+                    <div class="timer-panel">
                         <div class="timer-unit">
                             <small>실시간 경과</small>
-                            <span class="val-large" id="g-elapsed">00:00</span>
+                            <span class="val-huge" id="g-elapsed">00:00.0</span>
                         </div>
                         <div class="timer-unit">
-                            <small>처치 예상</small>
-                            <span class="val-large" style="color:var(--danger);" id="g-pred">--:--</span>
+                            <small>처치 예상 시간</small>
+                            <span class="val-huge val-next" id="g-pred">--:--</span>
                         </div>
                     </div>
                     <select id="g-boss-sel" style="width:100%; padding:15px; border-radius:10px; border:1px solid #ddd; margin-bottom:15px;"></select>
-                    <div class="calc-actions">
-                        <button class="c-btn" style="background:#455a64;" onclick="startGwang()">시작</button>
-                        <button class="c-btn" style="background:var(--warning);" onclick="markGwang()">광</button>
-                        <button class="c-btn" style="background:var(--danger);" onclick="killGwang()">잡힘</button>
+                    <div class="calc-btns">
+                        <button class="c-btn" style="background:#455a64;" onclick="gStart()">시작</button>
+                        <button class="c-btn" style="background:var(--warning);" onclick="gGlow()">광</button>
+                        <button class="c-btn" style="background:var(--danger);" onclick="gKill()">잡힘</button>
                     </div>
                 </div>
             </div>
@@ -124,7 +143,7 @@
 
         <div id="fixed" class="pane">
             <div class="card">
-                <h3>고정 이벤트 (대륙침략자 / 발할라)</h3>
+                <h3>🗓️ 고정 이벤트 스케줄</h3>
                 <div id="fixed-event-list"></div>
             </div>
         </div>
@@ -135,166 +154,204 @@
 <video id="pip-video" autoplay muted playsinline></video>
 
 <script>
-    // 도균님이 요청하신 53종 보스 리스트 & 정렬 순서 준수
-    const bossDB = [
+    // 1. 보스 원본 데이터 (image_fbf582 리스트 기반)
+    const bossMaster = [
         { w: "요툰헤임", b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야룬", r:240}, {n:"티르", r:1440}] },
         { w: "니다벨리르", b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}] },
-        { w: "알브하임", b: [{n:"스바르트", r:240}, {n:"두라스로르", r:480}, {n:"모네가름", r:120}, {n:"드라우그", r:240}, {n:"굴베이그", r:480}, {n:"오딘", r:1440}] },
-        { w: "무스펠하임", b: [{n:"메기르", r:120}, {n:"신마라", r:720}, {n:"헤르가름", r:120}, {n:"탕그리스니르", r:240}, {n:"엘드룬", r:720}, {n:"우로보로스", r:1440}, {n:"수르트", r:1440}] },
-        { w: "아스가르드", b: [{n:"발리", r:120}, {n:"노트", r:480}, {n:"샤무크", r:120}, {n:"스칼드메르", r:120}, {n:"화신그로아", r:1440}, {n:"미미르", r:240}] },
-        { w: "니플하임", b: [{n:"히로킨", r:1440}, {n:"호드", r:1440}, {n:"헤이드", r:1440}, {n:"대교주", r:1440}, {n:"프레이", r:1440}, {n:"이미르", r:1440}] },
-        { w: "바나하임", b: [{n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}] },
+        { w: "알브헤임", b: [{n:"스바르트", r:240}, {n:"두라스로르", r:480}, {n:"모네가름", r:120}, {n:"드라우그", r:240}, {n:"굴베이그", r:480}, {n:"오딘", r:1440}] },
         { w: "던전", b: [{n:"지감7층", r:480}, {n:"지감4층", r:480}, {n:"지감10층", r:480}] }
     ];
 
-    let systemOn = true;
-    let server = 'main';
-    let timers = JSON.parse(localStorage.getItem('v18_timers')) || { main: [], inv: [] };
-    let gInterval = null, gStart = null;
+    let state = {
+        power: true,
+        server: 'main',
+        timers: JSON.parse(localStorage.getItem('v19_timers')) || { main: [], invasion: [] },
+        gStart: null,
+        gInterval: null,
+        alerted: { m5: [], m1: [] }
+    };
 
     function init() {
         renderSched();
-        syncText();
-        const sel = document.getElementById('g-boss-sel');
-        bossDB.forEach(g => g.b.forEach(b => sel.innerHTML += `<option value="${b.n}">${b.n}</option>`));
-        setInterval(tick, 1000);
+        updateTextEditor();
+        // 계산기 셀렉트 박스
+        const gSel = document.getElementById('g-boss-sel');
+        bossMaster.forEach(g => g.b.forEach(b => gSel.innerHTML += `<option value="${b.n}">${b.n}</option>`));
+        
+        setInterval(mainLoop, 100); // 0.1초 정밀 카운트
     }
 
-    // ⏻ 시스템 온오프 제어 (요청 사항)
-    function toggleSystem() {
-        systemOn = !systemOn;
-        const btn = document.getElementById('power-btn');
-        btn.classList.toggle('is-on', systemOn);
-        document.body.classList.toggle('program-off', !systemOn);
-        addLog(`시스템 전체 ${systemOn ? '가동' : '중지'}됨`);
+    // 💡 글로벌 전원 관리
+    function toggleGlobalPower() {
+        state.power = !state.power;
+        const btn = document.getElementById('pwr-btn');
+        btn.classList.toggle('is-on', state.power);
+        document.body.classList.toggle('system-off', !state.power);
+        addLog(`시스템 전원이 ${state.power ? 'ON' : 'OFF'} 되었습니다.`);
     }
 
-    // 🧮 광폭화 계산기 픽스 (실시간 카운트)
-    function startGwang() {
-        if(!systemOn) return;
-        gStart = Date.now();
-        if(gInterval) clearInterval(gInterval);
-        gInterval = setInterval(() => {
-            const diff = Date.now() - gStart;
-            document.getElementById('g-elapsed').innerText = formatSimple(diff);
+    // 💡 텍스트 설정 연동 (image_fdc31b 완벽 대응)
+    function updateTextEditor() {
+        const now = new Date();
+        let txt = `${now.getMonth()+1}.${now.getDate()}\n`;
+        const activeTimers = [...state.timers[state.server]].sort((a,b) => a.t - b.t);
+        activeTimers.forEach(tm => {
+            const d = new Date(tm.t);
+            const timeStr = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
+            txt += `${timeStr} ${tm.n}\n`;
+        });
+        document.getElementById('boss-text-editor').value = txt;
+    }
+
+    function saveTextToTimers() {
+        const lines = document.getElementById('boss-text-editor').value.split('\n');
+        let dateLine = ""; const newTimers = [];
+        lines.forEach(line => {
+            if(line.includes('.')) dateLine = line.trim();
+            const match = line.match(/(\d{2}:\d{2})\s+(.+)/);
+            if(match && dateLine) {
+                const [m, d] = dateLine.split('.').map(Number);
+                const [hh, mm] = match[1].split(':').map(Number);
+                const target = new Date(new Date().getFullYear(), m-1, d, hh, mm).getTime();
+                newTimers.push({ n: match[2].trim(), t: target });
+            }
+        });
+        state.timers[state.server] = newTimers;
+        saveState(); renderSched(); tab('dash');
+    }
+
+    // 💡 광폭화 계산기 픽스 (image_fe3776 & image_fdd5fe)
+    function gStart() {
+        if(!state.power) return;
+        state.gStart = Date.now();
+        if(state.gInterval) clearInterval(state.gInterval);
+        state.gInterval = setInterval(() => {
+            const diff = Date.now() - state.gStart;
+            const sec = (diff/1000)%60; const min = Math.floor(diff/60000);
+            document.getElementById('g-elapsed').innerText = `${min.toString().padStart(2,'0')}:${sec.toFixed(1).padStart(4,'0')}`;
         }, 100);
+        addLog("광폭화 카운트 시작");
     }
 
-    function markGwang() {
-        if(!gStart || !systemOn) return;
-        const pred = new Date(Date.now() + 120000); // 2분 후 처치 예상
+    function gGlow() {
+        if(!state.gStart) return;
+        const now = new Date();
+        // 광폭화 시점으로부터 약 2분 30초 후 처치 예상 (오딘 표준)
+        const pred = new Date(now.getTime() + 150000);
         document.getElementById('g-pred').innerText = pred.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     }
 
-    function killGwang() {
-        if(!gStart || !systemOn) return;
-        clearInterval(gInterval);
+    function gKill() {
+        if(!state.gStart) return;
+        clearInterval(state.gInterval);
         const name = document.getElementById('g-boss-sel').value;
-        const boss = findBoss(name);
-        if(boss) setTimer(name, boss.r * 60);
-        document.getElementById('g-elapsed').innerText = "00:00";
+        const boss = findBossData(name);
+        if(boss) setBossTimer(name, boss.r * 60);
+        document.getElementById('g-elapsed').innerText = "00:00.0";
         document.getElementById('g-pred').innerText = "--:--";
-        addLog(`[광폭화] ${name} 처치 완료, 다음 젠 예약됨`);
+        state.gStart = null;
     }
 
-    // 🕒 텍스트 설정 동기화 (image_fdc31b)
-    function syncText() {
-        const now = new Date();
-        let txt = `${now.getMonth()+1}.${now.getDate()}\n`;
-        const active = timers[server].sort((a,b) => a.t - b.t);
-        active.forEach(t => {
-            const d = new Date(t.t);
-            txt += `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')} ${t.n}\n`;
-        });
-        document.getElementById('text-editor').value = txt;
-    }
-
-    function saveTextSettings() {
-        const lines = document.getElementById('text-editor').value.split('\n');
-        let dateStr = ""; const newTimers = [];
-        lines.forEach(l => {
-            if(l.includes('.')) dateStr = l.trim();
-            const m = l.match(/(\d{2}:\d{2})\s+(.+)/);
-            if(m && dateStr) {
-                const [mon, day] = dateStr.split('.').map(Number);
-                const [hh, mm] = m[1].split(':').map(Number);
-                const target = new Date(new Date().getFullYear(), mon-1, day, hh, mm).getTime();
-                newTimers.push({ n: m[2].trim(), t: target });
-            }
-        });
-        timers[server] = newTimers;
-        save(); renderSched(); tab('dash');
-    }
-
-    // 📅 스케줄러 렌더링 (본섭/침공)
+    // 💡 스케줄러 렌더링 (image_fe375d 스프레드시트 방식)
     function renderSched() {
-        const area = document.getElementById('sched-area');
+        const container = document.getElementById('scheduler-content');
         let html = '';
-        bossDB.forEach(g => {
-            html += `<div style="background:var(--primary); color:white; padding:8px 15px; font-weight:bold; font-size:0.85em; margin-top:15px; border-radius:5px 5px 0 0;">${g.w}</div>`;
-            html += `<table><thead><tr><th>보스명</th><th>남은시간(분)</th><th>예상젠</th><th>동작</th></tr></thead><tbody>`;
+        bossMaster.forEach(g => {
+            html += `<div class="world-banner">${g.w}</div>`;
+            html += `<table><thead><tr><th>보스명</th><th>남은 시간</th><th>예상 젠</th><th>동작</th></tr></thead><tbody>`;
             g.b.forEach(b => {
+                const savedInput = localStorage.getItem(`input_${b.n}`) || '';
                 html += `<tr>
-                    <td width="150"><strong>${b.n}</strong></td>
-                    <td><input type="text" onkeydown="if(event.key==='Enter') setTimer('${b.n}', this.value*60)" placeholder="분 입력"></td>
-                    <td id="zen-${b.n}" style="font-family:monospace; font-weight:bold; color:#777;">--:--</td>
-                    <td><button style="background:var(--danger); color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;" onclick="setTimer('${b.n}', ${b.r*60})">잡음</button></td>
+                    <td class="b-name">${b.n}</td>
+                    <td><input type="text" class="v-input" data-name="${b.n}" value="${savedInput}" placeholder="분 입력"></td>
+                    <td class="zen-time-display" id="zen-${b.n}">--:--</td>
+                    <td><button class="btn-killed" onclick="setBossTimer('${b.n}', ${b.r * 60})">잡음</button></td>
                 </tr>`;
             });
             html += `</tbody></table>`;
         });
-        area.innerHTML = html;
+        container.innerHTML = html;
+        
+        // 엔터 키 내비게이션
+        const ins = document.querySelectorAll('.v-input');
+        ins.forEach((el, i) => el.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter') {
+                const sec = smartTimeParse(el.value);
+                if(sec > 0) setBossTimer(el.dataset.name, sec, el.value);
+                if(ins[i+1]) ins[i+1].focus();
+            }
+        }));
     }
 
-    // 핵심 엔진
-    function tick() {
-        if(!systemOn) return;
+    // 💡 실시간 메인 루프 (알림 + 타이머)
+    function mainLoop() {
+        if(!state.power) return;
         const now = Date.now();
-        const active = timers[server].sort((a,b) => a.t - b.t);
-        if(active.length > 0) {
-            document.getElementById('next-name').innerText = active[0].n;
-            document.getElementById('next-timer').innerText = formatTime(active[0].t - now);
+        const activeList = [...state.timers[state.server]].sort((a,b) => a.t - b.t);
+        
+        // 1. 대시보드 업데이트
+        if(activeList.length > 0) {
+            const next = activeList[0];
+            document.getElementById('dash-next-name').innerText = next.n;
+            document.getElementById('dash-next-timer').innerText = formatCountdown(next.t - now);
         }
-        timers[server].forEach(t => {
-            const el = document.getElementById(`zen-${t.n}`);
-            if(el) el.innerText = new Date(t.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
+
+        // 2. 개별 젠 시간 텍스트 업데이트 (Invalid Date 방지)
+        state.timers[state.server].forEach(tm => {
+            const el = document.getElementById(`zen-${tm.n}`);
+            if(el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
+            
+            // 3. 음성 알림
+            const diff = Math.floor((tm.t - now)/1000);
+            if(diff === 300 && !state.alerted.m5.includes(tm.n)) { playTTS(`${tm.n} 5분 전입니다.`); state.alerted.m5.push(tm.n); }
+            if(diff === 60 && !state.alerted.m1.includes(tm.n)) { playTTS(`${tm.n} 1분 전입니다.`); state.alerted.m1.push(tm.n); }
         });
-        drawPIP(active);
+        
+        drawPIP(activeList);
     }
 
-    function setTimer(n, sec) {
-        if(!systemOn) return;
+    // [유틸리티 함수]
+    function smartTimeParse(s) {
+        if(!s) return 0;
+        const match = s.match(/(\d+)시간\s*(\d+)분/) || s.match(/(\d+)분/);
+        if(match) {
+            if(match.length === 3) return (parseInt(match[1])*3600) + (parseInt(match[2])*60);
+            return parseInt(match[1])*60;
+        }
+        const p = s.split(/[:\s]+/).map(Number);
+        if(p.length===3) return p[0]*3600+p[1]*60+p[2];
+        if(p.length===2) return p[0]*60+p[1];
+        return p[0]*60;
+    }
+
+    function setBossTimer(name, sec, raw = "자동") {
         const target = Date.now() + (sec * 1000);
-        const idx = timers[server].findIndex(t => t.n === n);
-        if(idx > -1) timers[server][idx].t = target; else timers[server].push({n, t: target});
-        save(); syncText();
+        const idx = state.timers[state.server].findIndex(x => x.n === name);
+        if(idx > -1) state.timers[state.server][idx].t = target;
+        else state.timers[state.server].push({ n: name, t: target });
+        
+        if(raw !== "자동") localStorage.setItem(`input_${name}`, raw);
+        saveState(); updateTextEditor(); addLog(`${name} 예약됨`);
     }
 
-    function formatTime(ms) {
-        if(ms < 0) return "젠 완료";
-        const h = Math.floor(ms/3600000); const m = Math.floor((ms%3600000)/60000); const s = Math.floor((ms%60000)/1000);
-        return `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
-    function formatSimple(ms) {
-        const m = Math.floor(ms/60000); const s = Math.floor((ms%60000)/1000);
-        return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
-    function findBoss(name) { let found = null; bossDB.forEach(g => g.b.forEach(b => { if(b.n === name) found = b; })); return found; }
-    function save() { localStorage.setItem('v18_timers', JSON.stringify(timers)); }
-    function addLog(m) { const l = document.getElementById('log-display'); l.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${m}</div>` + l.innerHTML; }
-    function tab(id) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); event.currentTarget.classList.add('active'); if(id==='txt-set') syncText(); }
-    function switchServer(s) { server = s; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-'+s).classList.add('active'); renderSched(); syncText(); }
+    function saveState() { localStorage.setItem('v19_timers', JSON.stringify(state.timers)); }
+    function addLog(m) { const box = document.getElementById('log-list'); box.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${m}</div>` + box.innerHTML; }
+    function tab(id) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); event.currentTarget.classList.add('active'); if(id==='boss-set') updateTextEditor(); }
+    function setServer(s) { state.server = s; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('srv-'+s).classList.add('active'); renderSched(); updateTextEditor(); }
+    function findBossData(n) { let res = null; bossMaster.forEach(g => g.b.forEach(b => { if(b.n===n) res=b; })); return res; }
+    function formatCountdown(ms) { if(ms < 0) return "젠 완료"; const h = Math.floor(ms/3600000); const m = Math.floor((ms%3600000)/60000); const s = Math.floor((ms%60000)/1000); return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
+    function playTTS(m) { const u = new SpeechSynthesisUtterance(m); u.lang = 'ko-KR'; window.speechSynthesis.speak(u); }
     
-    // 📺 PIP 1구 콤팩트 모드
-    function drawPIP(active) {
+    // 📺 PIP 설정 (1구 초소형)
+    function drawPIP(list) {
         const ctx = document.getElementById('pip-canvas').getContext('2d');
         ctx.fillStyle = "#1e272e"; ctx.fillRect(0,0,220,100);
-        if(active.length > 0) {
-            const next = active[0]; const d = next.t - Date.now();
-            ctx.fillStyle = "#ffd700"; ctx.font = "bold 14px Orbitron"; ctx.fillText("TARGET", 10, 25);
-            ctx.fillStyle = d < 300000 ? "#ff5e57" : "#0be881"; ctx.font = "bold 20px Orbitron";
-            ctx.fillText(next.n, 10, 55); ctx.fillText(formatTime(d), 10, 85);
-        } else { ctx.fillStyle = "#aaa"; ctx.fillText("No Active Boss", 10, 50); }
+        if(list.length > 0) {
+            const next = list[0]; const d = next.t - Date.now();
+            ctx.fillStyle = "#ffd700"; ctx.font = "bold 14px Orbitron"; ctx.fillText("NEXT BOSS", 10, 25);
+            ctx.fillStyle = d < 300000 ? "#ff5e57" : "#0be881"; ctx.font = "bold 22px Orbitron";
+            ctx.fillText(next.n, 10, 55); ctx.fillText(formatCountdown(d), 10, 85);
+        }
     }
     async function togglePIP() { const v = document.getElementById('pip-video'); if (document.pictureInPictureElement) await document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); await v.play(); await v.requestPictureInPicture(); } }
 

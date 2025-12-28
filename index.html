@@ -3,255 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ODIN BOSS COMMANDER - FINAL V15</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <title>ODIN COMMANDER - ULTIMATE V16</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #8e24aa; --accent: #1e88e5; --bg: #f8f9fa;
-            --card: #ffffff; --text: #2c3e50; --danger: #d32f2f;
-            --jotun: #3f51b5; --nida: #43a047; --alf: #ef6c00; --muspel: #c62828;
-            --as: #7b1fa2; --nifl: #0097a7; --vana: #689f38; --dun: #455a64;
+            --primary: #8e24aa; --accent: #1e88e5; --bg: #f5f7fa;
+            --card: #ffffff; --text: #333; --danger: #d32f2f;
+            --sidebar-w: 75px;
         }
 
         body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* 사이드바 UI (image_ef427f 참조) */
-        nav { width: 70px; background: #fff; border-right: 1px solid #dee2e6; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; }
-        .nav-item { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #95a5a6; font-size: 20px; transition: 0.2s; }
+        /* 1. 사이드바 (image_ef427f 스타일 완벽 재현) */
+        nav { width: var(--sidebar-w); background: #fff; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
+        .nav-item { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #777; transition: 0.3s; font-size: 24px; }
+        .nav-item:hover { background: #f0f0f0; }
         .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(142, 36, 170, 0.3); }
-        
+
+        /* 2. 메인 레이아웃 */
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        header { height: 50px; background: #fff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); position: relative; }
-        .sound-toggle { position: absolute; right: 20px; cursor: pointer; font-size: 1.2em; }
+        header { height: 60px; background: #fff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em; color: var(--primary); position: relative; }
+        .power-btn { position: absolute; right: 25px; color: var(--primary); font-size: 1.5em; cursor: pointer; }
+        .content { flex: 1; padding: 30px; overflow-y: auto; }
+        .pane { display: none; } .pane.active { display: block; animation: fadeIn 0.4s ease; }
 
-        .content { flex: 1; padding: 20px; overflow-y: auto; }
-        .pane { display: none; } .pane.active { display: block; }
+        /* 3. 보스 설정 (image_fdc31b 벤치마킹) */
+        .text-editor { width: 100%; height: 500px; padding: 20px; border-radius: 10px; border: 1px solid #ddd; font-family: monospace; font-size: 1.1em; line-height: 1.6; resize: none; box-sizing: border-box; }
+        .btn-save-text { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 15px; float: right; }
 
-        /* 대시보드 - 전체 시간표 (image_ef427f 스타일) */
-        .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-        .boss-card { background: #fff; padding: 15px; border-radius: 12px; border-left: 5px solid #eee; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .boss-card.imminent { border-left-color: var(--danger); background: #fff5f5; animation: blink 1.5s infinite; }
-        .boss-card .t-name { font-weight: bold; font-size: 0.95em; }
-        .boss-card .t-time { font-family: 'Orbitron'; color: var(--accent); font-weight: bold; }
+        /* 4. 스케줄러 (본섭/침공 탭) */
+        .tab-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; background: #ddd; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .tab-btn.active { background: var(--accent); color: white; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        th { background: #f8f9fa; padding: 15px; text-align: left; font-size: 0.85em; color: #666; }
+        td { padding: 12px 15px; border-bottom: 1px solid #f1f3f5; }
+        .btn-toggle { width: 45px; height: 24px; background: #ccc; border-radius: 12px; position: relative; cursor: pointer; transition: 0.3s; }
+        .btn-toggle.on { background: var(--primary); }
+        .btn-toggle::after { content: ''; width: 18px; height: 18px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: 0.3s; }
+        .btn-toggle.on::after { left: 24px; }
 
-        /* 스케줄러 - 세로형 테이블 (image_ef429f 참조) */
-        .world-badge { padding: 5px 12px; color: white; font-weight: bold; border-radius: 5px; margin: 15px 0 5px 0; display: inline-block; font-size: 0.85em; }
-        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
-        td { padding: 10px 15px; border-bottom: 1px solid #f1f3f5; }
-        .b-name { width: 160px; font-weight: bold; }
-        input[type="text"], input[type="number"] { width: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 6px; text-align: center; font-family: 'Orbitron'; font-weight: bold; color: var(--primary); }
-        input:focus { border-color: var(--primary); outline: none; }
+        /* 5. 광폭화 계산기 (image_ef42b9 완벽 복원) */
+        .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .calc-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); text-align: center; }
+        .calc-box { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+        .timer-unit { flex: 1; background: #f8f9fa; padding: 20px; border-radius: 15px; border: 1px solid #eee; }
+        .val-large { font-family: 'Orbitron'; font-size: 2.8em; color: #333; }
+        .val-red { color: var(--danger); }
+        .calc-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .c-btn { padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; font-size: 1.1em; }
 
-        /* 계산기 - (image_ef42b9 참조) */
-        .calc-wrapper { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
-        .calc-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 350px; text-align: center; }
-        .calc-display { background: #f8f9fa; border-radius: 10px; padding: 20px; margin: 15px 0; border: 1px solid #eee; }
-        .val-big { font-family: 'Orbitron'; font-size: 2.2em; color: var(--accent); }
-        .calc-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; }
-        .c-btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; }
-
-        /* PIP 및 애니메이션 */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } }
         #pip-video { position: fixed; bottom: 0; right: 0; width: 1px; height: 1px; opacity: 0; }
-        @keyframes blink { 50% { opacity: 0.7; } }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="nav-item active" onclick="tab('dash')">🏠</div>
+    <div class="nav-item active" onclick="tab('home')">🏠</div>
+    <div class="nav-item" onclick="tab('boss-settings')">🕒</div>
     <div class="nav-item" onclick="tab('sched')">📅</div>
     <div class="nav-item" onclick="tab('calc')">🧮</div>
+    <div class="nav-item" onclick="tab('settings-fixed')">⚙️</div>
     <div class="nav-item" onclick="togglePIP()">📺</div>
 </nav>
 
 <main>
-    <header>
-        ODIN COMMANDER MASTER V15
-        <div class="sound-toggle" onclick="toggleSound()">🔊</div>
-    </header>
+    <header>보스 알리미 <span class="power-btn" onclick="location.reload()">⏻</span></header>
     <div class="content">
-        <div id="dash" class="pane active">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h2 style="margin:0;">🛡️ 전체 보스 모니터링</h2>
-                <button onclick="copyKakao()" style="background:#fee500; border:none; padding:10px 20px; border-radius:8px; font-weight:bold; cursor:pointer;">카톡 공지 복사</button>
+        <div id="home" class="pane active">
+            <div style="display:grid; grid-template-columns: 1fr 350px; gap: 25px;">
+                <div style="background:white; padding:40px; border-radius:20px; text-align:center; border-top:6px solid var(--accent);">
+                    <div style="color:#888; font-weight:bold;">다음 보스</div>
+                    <div id="next-name" style="font-size:2em; font-weight:bold; margin-top:10px;">--</div>
+                    <div id="next-timer" style="font-family:Orbitron; font-size:5.5em; color:var(--accent);">00:00:00</div>
+                </div>
+                <div style="background:white; padding:25px; border-radius:20px;">
+                    <h3>다가오는 보스</h3>
+                    <div id="upcoming-list"></div>
+                </div>
             </div>
-            <div class="dash-grid" id="dash-list"></div>
+        </div>
+
+        <div id="boss-settings" class="pane">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                <div>
+                    <h2 style="margin:0;">보스 설정</h2>
+                    <small>텍스트를 직접 수정하면 보스 시간이 즉시 업데이트됩니다.</small>
+                </div>
+                <button class="btn-save-text" onclick="parseTextSettings()">보스 설정 저장</button>
+            </div>
+            <textarea id="boss-text-editor" class="text-editor" placeholder="12.28&#10;20:29 지감7층&#10;20:43 라타토스크"></textarea>
         </div>
 
         <div id="sched" class="pane">
-            <div id="sched-body"></div>
+            <div class="tab-group">
+                <button id="tab-main" class="tab-btn active" onclick="switchServer('main')">오딘(본섭)</button>
+                <button id="tab-invasion" class="tab-btn" onclick="switchServer('invasion')">침공서버</button>
+            </div>
+            <div id="sched-table-content"></div>
         </div>
 
         <div id="calc" class="pane">
-            <div class="calc-wrapper">
+            <div class="calc-grid">
                 <div class="calc-card">
-                    <h3>🔄 젠 시간 업데이트</h3>
-                    <div class="calc-display">
-                        <div style="font-size:0.8em; color:#888;">입력된 시간</div>
-                        <div class="val-big" id="zen-calc-preview">00:00</div>
+                    <h3>젠 계산기</h3>
+                    <div class="timer-unit" style="margin-bottom:20px;">
+                        <div class="val-large" id="z-preview">00:00</div>
                     </div>
-                    <select id="zen-boss-sel" style="width:100%; padding:10px; margin-bottom:10px; border-radius:5px; border:1px solid #ddd;"></select>
-                    <input type="text" id="zen-manual-in" placeholder="시 분 초 (예: 8 44)" oninput="updateZenPreview()" style="width:100%; box-sizing:border-box;">
-                    <button class="c-btn" style="background:var(--accent); width:100%; margin-top:10px;" onclick="applyZenCalc()">보스 시간 강제 업데이트</button>
+                    <select id="z-sel" style="width:100%; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #ddd;"></select>
+                    <input type="text" id="z-in" placeholder="시 분 초 (예: 8 44)" style="width:100%; padding:15px; border-radius:10px; border:1px solid #ddd; box-sizing:border-box;">
+                    <button class="c-btn" style="background:var(--accent); width:100%; margin-top:15px;" onclick="applyZ()">보스 시간 업데이트</button>
                 </div>
 
                 <div class="calc-card">
-                    <h3>🔥 광폭화(광) 계산기</h3>
-                    <div class="calc-display" style="display:flex; justify-content: space-around;">
-                        <div><small>경과</small><div class="val-big" style="font-size:1.5em;" id="g-elapsed">00:00</div></div>
-                        <div><small>젠 예상</small><div class="val-big" style="font-size:1.5em; color:var(--danger);" id="g-next">--:--</div></div>
+                    <h3>광폭화(광) 계산기</h3>
+                    <div class="calc-box">
+                        <div class="timer-unit">
+                            <small>경과 시간</small>
+                            <div class="val-large" id="g-elapsed">00:00</div>
+                        </div>
+                        <div class="timer-unit">
+                            <small>잡힘 예상 시간</small>
+                            <div class="val-large val-red" id="g-predicted">--:--</div>
+                        </div>
                     </div>
-                    <select id="g-boss-sel" style="width:100%; padding:10px; margin-bottom:10px; border-radius:5px; border:1px solid #ddd;"></select>
-                    <div class="calc-btns">
-                        <button class="c-btn" style="background:#455a64;" onclick="gAction('start')">시작</button>
-                        <button class="c-btn" style="background:#ffa000;" onclick="gAction('glow')">광</button>
-                        <button class="c-btn" style="background:#d32f2f;" onclick="gAction('kill')">잡힘</button>
+                    <select id="g-sel" style="width:100%; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #ddd;"></select>
+                    <div class="calc-actions">
+                        <button class="c-btn" style="background:#455a64;" onclick="gwangStart()">시작</button>
+                        <button class="c-btn" style="background:#ffa000;" onclick="gwangGlow()">광</button>
+                        <button class="c-btn" style="background:#d32f2f;" onclick="gwangKill()">잡힘</button>
                     </div>
-                    <div id="g-log" style="margin-top:10px; font-size:0.85em; color:#666;">측정 대기 중...</div>
                 </div>
+            </div>
+        </div>
+
+        <div id="settings-fixed" class="pane">
+            <div style="background:white; padding:30px; border-radius:20px;">
+                <h3>고정 알림 설정 (대륙침략자 / 발할라)</h3>
+                <div id="fixed-list"></div>
             </div>
         </div>
     </div>
 </main>
 
-<canvas id="pip-canvas" width="180" height="80" style="display:none;"></canvas>
+<canvas id="pip-canvas" width="220" height="100" style="display:none;"></canvas>
 <video id="pip-video" autoplay muted playsinline></video>
 
 <script>
-    const bossDB = [
-        { w: "요툰헤임", c: "var(--jotun)", b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야룬", r:240}, {n:"티르", r:1440}]},
-        { w: "니다벨리르", c: "var(--nida)", b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}]},
-        { w: "알브헤임", c: "var(--alf)", b: [{n:"스바르트", r:240}, {n:"두라스로르", r:480}, {n:"모네가름", r:120}, {n:"드라우그", r:240}, {n:"굴베이그", r:480}, {n:"오딘", r:1440}]},
-        { w: "무스펠하임", c: "var(--muspel)", b: [{n:"메기르", r:120}, {n:"신마라", r:720}, {n:"헤르가름", r:120}, {n:"탕그리스니르", r:240}, {n:"엘드룬", r:720}, {n:"우로보로스", r:1440}, {n:"수르트", r:1440}]},
-        { w: "아스가르드", c: "var(--as)", b: [{n:"발리", r:120}, {n:"노트", r:480}, {n:"샤무크", r:120}, {n:"스칼드메르", r:120}, {n:"화신그로아", r:1440}, {n:"미미르", r:240}]},
-        { w: "니플하임", c: "var(--nifl)", b: [{n:"히로킨", r:1440}, {n:"호드", r:1440}, {n:"헤이드", r:1440}, {n:"대교주", r:1440}, {n:"프레이", r:1440}, {n:"이미르", r:1440}]},
-        { w: "바나하임", c: "var(--vana)", b: [{n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}]},
-        { w: "던전", c: "var(--dun)", b: [{n:"최하층 굴베이그", r:480}, {n:"최하층 강글로티", r:480}, {n:"최하층 스네르", r:480}, {n:"4층 모네가름", r:240}, {n:"7층 드라우그", r:480}, {n:"10층 다인흘로크", r:480}]}
+    // 1. 보스 원본 데이터 (본섭 & 침공 통합)
+    const bossMaster = [
+        { n: "파르바", r: 120, w: "요툰" }, { n: "셀로비아", r: 720, w: "요툰" }, { n: "흐니르", r: 720, w: "요툰" }, { n: "페티", r: 720, w: "요툰" }, { n: "바우티", r: 120, w: "요툰" }, { n: "니드호그", r: 1440, w: "요툰" }, { n: "야룬", r: 240, w: "요툰" }, { n: "티르", r: 1440, w: "요툰" },
+        { n: "라이노르", r: 720, w: "니다" }, { n: "비요른", r: 720, w: "니다" }, { n: "헤르모드", r: 240, w: "니다" }, { n: "스칼라니르", r: 120, w: "니다" }, { n: "브륀힐드", r: 720, w: "니다" }, { n: "라타토스크", r: 240, w: "니다" }, { n: "수드리", r: 720, w: "니다" }, { n: "토르", r: 1440, w: "니다" },
+        { n: "대륙 침략자", r: 0, w: "고정" }, { n: "발할라 대전", r: 0, w: "고정" }
     ];
 
-    let timers = JSON.parse(localStorage.getItem('odin_v15_timers')) || [];
+    let currentServer = 'main'; // main or invasion
+    let timers = JSON.parse(localStorage.getItem('odin_ultimate_timers')) || { main: [], invasion: [] };
+    let bossActive = JSON.parse(localStorage.getItem('odin_ultimate_active')) || {};
     let alerted = { m5: [], m1: [] };
-    let gData = { start: null, glow: null };
-    let isSoundOn = true;
+    
+    // 광폭화 계산기 변수
+    let gwangInterval = null;
+    let gwangStartTime = null;
 
     function init() {
-        const sched = document.getElementById('sched-body');
-        const gSel = document.getElementById('g-boss-sel');
-        const zSel = document.getElementById('zen-boss-sel');
-        let html = '';
-        bossDB.forEach(group => {
-            html += `<div class="world-badge" style="background:${group.c}">${group.w}</div><table><tbody>`;
-            group.b.forEach(boss => {
-                const sv = localStorage.getItem(`v15_val_${boss.n}`) || '';
-                html += `<tr><td class="b-name">${boss.n}</td><td width="80"><button style="padding:6px 10px; background:var(--danger); color:white; border:none; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="autoZen('${boss.n}', ${boss.r})">잡음</button></td><td><input type="text" class="v-in" data-name="${boss.n}" value="${sv}" placeholder="남은 시간"></td><td id="z-${boss.n}" style="font-family:monospace; color:#888; font-weight:bold;">--:--</td></tr>`;
-                gSel.innerHTML += `<option value="${boss.n}">${boss.n}</option>`;
-                zSel.innerHTML += `<option value="${boss.n}">${boss.n}</option>`;
-            });
-            html += `</tbody></table>`;
-        });
-        sched.innerHTML = html;
-
-        document.querySelectorAll('.v-in').forEach((el, i, ins) => {
-            el.addEventListener('keydown', (e) => { if(e.key === 'Enter') { const s = smartParse(el.value); if(s>0) saveTimer(el.dataset.name, s, el.value); if(ins[i+1]) ins[i+1].focus(); } });
+        renderScheduler();
+        renderDashboard();
+        updateTextSettings(); // 보스 설정 텍스트 채우기
+        setInterval(updateDisplay, 1000);
+        
+        // 계산기 셀렉트박스 채우기
+        const zSel = document.getElementById('z-sel');
+        const gSel = document.getElementById('g-sel');
+        bossMaster.forEach(b => {
+            const opt = `<option value="${b.n}">${b.n}</option>`;
+            zSel.innerHTML += opt; gSel.innerHTML += opt;
         });
     }
 
-    // 게임 UI 대응 파싱
-    function smartParse(str) {
-        if(!str) return 0;
-        let total = 0;
-        const d = str.match(/(\d+)\s*일/); const h = str.match(/(\d+)\s*시간/); const m = str.match(/(\d+)\s*분/); const s = str.match(/(\d+)\s*초/);
-        if(d||h||m||s) { if(d)total+=parseInt(d[1])*86400; if(h)total+=parseInt(h[1])*3600; if(m)total+=parseInt(m[1])*60; if(s)total+=parseInt(s[1]); }
-        else { const p = str.split(/[:\s]+/).filter(x => x !== "").map(Number); if(p.length===3)total=(p[0]*3600)+(p[1]*60)+p[2]; else if(p.length===2)total=(p[0]*60)+p[1]; else if(p.length===1)total=p[0]*60; }
-        return total;
+    // 🕒 보스 설정 (텍스트 연동) 로직
+    function updateTextSettings() {
+        const now = new Date();
+        let txt = `${now.getMonth()+1}.${now.getDate()}\n`;
+        const activeTimers = timers[currentServer].filter(t => bossActive[t.n] !== false).sort((a,b) => a.t - b.t);
+        activeTimers.forEach(t => {
+            const date = new Date(t.t);
+            const timeStr = date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
+            txt += `${timeStr} ${t.n}\n`;
+        });
+        document.getElementById('boss-text-editor').value = txt;
     }
 
-    function saveTimer(name, sec, raw) {
-        const target = Date.now() + (sec * 1000);
-        const idx = timers.findIndex(t => t.n === name);
-        if(idx > -1) timers[idx].t = target; else timers.push({ n: name, t: target });
-        localStorage.setItem('odin_v15_timers', JSON.stringify(timers));
-        if(raw !== "자동") localStorage.setItem(`v15_val_${name}`, raw);
-        updateDisplay();
-    }
-
-    function autoZen(n, r) { saveTimer(n, r*60, "자동"); }
-
-    // 💡 젠 계산기 업데이트 기능
-    function updateZenPreview() {
-        const val = document.getElementById('zen-manual-in').value;
-        const sec = smartParse(val);
-        document.getElementById('zen-calc-preview').innerText = format(sec * 1000);
-    }
-    function applyZenCalc() {
-        const name = document.getElementById('zen-boss-sel').value;
-        const val = document.getElementById('zen-manual-in').value;
-        const sec = smartParse(val);
-        if(sec > 0) { saveTimer(name, sec, val); alert(`${name} 시간이 업데이트되었습니다.`); }
-    }
-
-    // 💡 광폭화 계산기 로직 (시작->광->잡힘)
-    function gAction(type) {
-        const log = document.getElementById('g-log');
-        const b = document.getElementById('g-boss-sel').value;
-        const now = Date.now();
-        if(type==='start') { gData.start = now; log.innerText = "사냥 시작 측정 중..."; }
-        else if(type==='glow') { if(!gData.start) return; gData.glow = now; log.innerText = "광폭화 발생!"; }
-        else if(type==='kill') {
-            if(!gData.glow) return;
-            let r = 120; bossDB.forEach(g=>g.b.forEach(bo=>{if(bo.n===b)r=bo.r;}));
-            saveTimer(b, r*60, "광계산");
-            log.innerText = "처치 완료! 다음 젠 반영됨.";
-            document.getElementById('g-next').innerText = new Date(now + r*60000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        }
-    }
-
-    function updateDisplay() {
-        const now = Date.now();
-        const dList = document.getElementById('dash-list');
-        timers.sort((a,b) => a.t - b.t);
-        timers = timers.filter(t => t.t - now > -600000);
-
-        dList.innerHTML = '';
-        timers.forEach(t => {
-            const diff = t.t - now;
-            const isUrgent = diff > 0 && diff < 300000;
-            // 홈 화면 전체 시간 표시
-            dList.innerHTML += `<div class="boss-card ${isUrgent ? 'imminent' : ''}"><span class="t-name">${t.n}</span><span class="t-time">${format(diff)}</span></div>`;
-            
-            // 알림 시스템
-            const sec = Math.floor(diff / 1000);
-            if(isSoundOn) {
-                if(sec === 300 && !alerted.m5.includes(t.n)) { playTTS(`${t.n} 5분 전입니다.`); alerted.m5.push(t.n); }
-                if(sec === 60 && !alerted.m1.includes(t.n)) { playTTS(`${t.n} 1분 전입니다.`); alerted.m1.push(t.n); }
+    function parseTextSettings() {
+        const text = document.getElementById('boss-text-editor').value;
+        const lines = text.split('\n');
+        let currentMonthDay = "";
+        
+        const newTimers = [];
+        lines.forEach(line => {
+            if (line.includes('.')) currentMonthDay = line.trim();
+            const match = line.match(/(\d{2}:\d{2})\s+(.+)/);
+            if (match && currentMonthDay) {
+                const [m, d] = currentMonthDay.split('.').map(Number);
+                const [hh, mm] = match[1].split(':').map(Number);
+                const target = new Date(new Date().getFullYear(), m - 1, d, hh, mm, 0).getTime();
+                newTimers.push({ n: match[2].trim(), t: target });
             }
-            const zEl = document.getElementById(`z-${t.n}`);
-            if(zEl) zEl.innerText = new Date(t.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
         });
-        drawPIP();
+        
+        timers[currentServer] = newTimers;
+        save();
+        alert("보스 설정이 타이머에 반영되었습니다.");
+        tab('home');
     }
 
-    function playTTS(msg) { const u = new SpeechSynthesisUtterance(msg); u.lang = 'ko-KR'; window.speechSynthesis.speak(u); }
-    function format(ms) { if(ms<0) return "젠 완료"; const h = Math.floor(ms/3600000); const m = Math.floor((ms%3600000)/60000); const s = Math.floor((ms%60000)/1000); return `${h>0?h+':':''}${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
+    // 📅 스케줄러 & 온오프
+    function renderScheduler() {
+        const container = document.getElementById('sched-table-content');
+        let html = `<table><thead><tr><th>보스명</th><th>온/오프</th><th>남은 시간</th><th>예상 젠</th><th>동작</th></tr></thead><tbody>`;
+        bossMaster.filter(b => b.w !== '고정').forEach(b => {
+            const isActive = bossActive[b.n] !== false;
+            html += `
+                <tr>
+                    <td><strong>${b.n}</strong></td>
+                    <td><div class="btn-toggle ${isActive?'on':''}" onclick="toggleActive('${b.n}')"></div></td>
+                    <td><input type="text" class="v-in" data-name="${b.n}" placeholder="분 입력"></td>
+                    <td id="zen-${b.n}" style="font-family:monospace; color:#888;">--:--</td>
+                    <td><button style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;" onclick="autoZen('${b.n}', ${b.r})">잡음</button></td>
+                </tr>`;
+        });
+        container.innerHTML = html + `</tbody></table>`;
+        
+        // 엔터 이동 로직
+        const ins = document.querySelectorAll('.v-in');
+        ins.forEach((el, i) => el.addEventListener('keydown', (e) => {
+            if(e.key==='Enter') { setTimer(el.dataset.name, el.value); if(ins[i+1]) ins[i+1].focus(); }
+        }));
+    }
+
+    // 🧮 광폭화 계산기 정밀 로직 (경과 시간 카운트)
+    function gwangStart() {
+        gwangStartTime = Date.now();
+        if(gwangInterval) clearInterval(gwangInterval);
+        gwangInterval = setInterval(() => {
+            const diff = Date.now() - gwangStartTime;
+            document.getElementById('g-elapsed').innerText = formatCounter(diff);
+        }, 100);
+    }
     
-    // 📺 PIP 설정: 최단시간 보스 1개만 컴팩트하게
+    function gwangGlow() {
+        if(!gwangStartTime) return;
+        const now = new Date();
+        document.getElementById('g-predicted').innerText = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    }
+
+    function gwangKill() {
+        if(!gwangStartTime) return;
+        clearInterval(gwangInterval);
+        const name = document.getElementById('g-sel').value;
+        const boss = bossMaster.find(b => b.n === name);
+        if(boss) autoZen(name, boss.r);
+        document.getElementById('g-elapsed').innerText = "00:00";
+        document.getElementById('g-predicted').innerText = "--:--";
+        alert(`${name} 젠 시간이 갱신되었습니다.`);
+    }
+
+    // 📺 PIP 설정: 1구 콤팩트
     function drawPIP() {
         const ctx = document.getElementById('pip-canvas').getContext('2d');
-        ctx.fillStyle = "#121212"; ctx.fillRect(0,0,180,80);
-        if(timers.length > 0) {
-            const n = timers[0]; const d = n.t - Date.now();
-            ctx.fillStyle = "#ffd700"; ctx.font = "bold 14px Orbitron"; ctx.fillText("NEXT BOSS", 10, 20);
-            ctx.fillStyle = d < 300000 ? "#ff1744" : "#00e5ff"; ctx.font = "bold 18px Orbitron";
-            ctx.fillText(n.n.substring(0,8), 10, 45); ctx.fillText(format(d), 10, 70);
-        } else { ctx.fillStyle = "#666"; ctx.fillText("No Boss", 10, 45); }
+        ctx.fillStyle = "#121212"; ctx.fillRect(0,0,220,100);
+        const activeOnly = timers[currentServer].filter(t => bossActive[t.n] !== false).sort((a,b) => a.t - b.t);
+        if(activeOnly.length > 0) {
+            const t = activeOnly[0]; const d = t.t - Date.now();
+            ctx.fillStyle = "#ffd700"; ctx.font = "bold 14px Orbitron"; ctx.fillText("NEXT BOSS", 10, 25);
+            ctx.fillStyle = d < 300000 ? "#ff5252" : "#00e5ff"; ctx.font = "bold 22px Orbitron";
+            ctx.fillText(t.n.substring(0,8), 10, 55); ctx.fillText(formatTimer(d), 10, 85);
+        } else { ctx.fillStyle = "#555"; ctx.fillText("No Target", 10, 50); }
     }
 
+    // [유틸리티 함수]
+    function formatCounter(ms) {
+        const s = Math.floor(ms/1000) % 60; const m = Math.floor(ms/60000);
+        return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+    function formatTimer(ms) {
+        if(ms < 0) return "ZEN!!";
+        const h = Math.floor(ms/3600000); const m = Math.floor((ms%3600000)/60000); const s = Math.floor((ms%60000)/1000);
+        return `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+    function tab(id) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); event.currentTarget.classList.add('active'); if(id==='boss-settings') updateTextSettings(); }
+    function switchServer(s) { currentServer = s; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('tab-'+s).classList.add('active'); renderScheduler(); }
+    function toggleActive(n) { bossActive[n] = (bossActive[n] === false); save(); renderScheduler(); }
+    function autoZen(n, r) { const t = Date.now() + (r * 60000); pushTimer(n, t); }
+    function setTimer(n, v) { const s = parseSmart(v); if(s>0) pushTimer(n, Date.now()+(s*1000)); }
+    function pushTimer(n, t) { const idx = timers[currentServer].findIndex(tm => tm.n === n); if(idx>-1) timers[currentServer][idx].t = t; else timers[currentServer].push({n, t}); save(); }
+    function save() { localStorage.setItem('odin_ultimate_timers', JSON.stringify(timers)); localStorage.setItem('odin_ultimate_active', JSON.stringify(bossActive)); }
+    function parseSmart(str) { 
+        if(!str) return 0; const p = str.split(/[:\s]+/).filter(x=>x!=="").map(Number);
+        if(p.length===3) return (p[0]*3600)+(p[1]*60)+p[2]; if(p.length===2) return (p[0]*60)+p[1]; return p[0]*60;
+    }
+    function updateDisplay() {
+        const now = Date.now();
+        const list = timers[currentServer].filter(t => bossActive[t.n] !== false).sort((a,b) => a.t - b.t);
+        if(list.length > 0) { document.getElementById('next-name').innerText = list[0].n; document.getElementById('next-timer').innerText = formatTimer(list[0].t - now); }
+        document.getElementById('upcoming-list').innerHTML = list.slice(1,8).map(t => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;"><span>${t.n}</span><b>${formatTimer(t.t-now)}</b></div>`).join('');
+        // 스케줄러 젠 시간 텍스트 업데이트
+        timers[currentServer].forEach(t => { const el = document.getElementById(`zen-${t.n}`); if(el) el.innerText = new Date(t.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}); });
+        drawPIP();
+    }
     async function togglePIP() { const v = document.getElementById('pip-video'); if (document.pictureInPictureElement) await document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); await v.play(); await v.requestPictureInPicture(); } }
-    function toggleSound() { isSoundOn = !isSoundOn; document.querySelector('.sound-toggle').innerText = isSoundOn ? '🔊' : '🔇'; }
-    function copyKakao() { if(timers.length===0) return; const d = new Date(); let txt = `${d.getMonth()+1}.${d.getDate()}\n`; timers.forEach(t => { txt += `${new Date(t.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} ${t.n}\n`; }); navigator.clipboard.writeText(txt.trim()).then(()=>alert("복사 완료!")); }
-    function tab(id) { document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); event.currentTarget.classList.add('active'); }
 
-    init(); setInterval(updateDisplay, 1000);
+    init();
 </script>
 </body>
 </html>

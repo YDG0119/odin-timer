@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ODIN BOSS COMMANDER - PRECISION</title>
+    <title>ODIN BOSS COMMANDER - LOCAL V8</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -20,28 +20,24 @@
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         header { height: 50px; background: #fff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
         .content { flex: 1; padding: 20px; overflow-y: auto; }
-        .pane { display: none; }
-        .pane.active { display: block; }
+        .pane { display: none; } .pane.active { display: block; }
 
-        /* 대시보드 */
-        .dashboard-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+        /* 레이아웃 & 카드 */
         .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
-        .timer-main { font-family: 'Orbitron', sans-serif; font-size: 3.5em; color: var(--accent); margin: 10px 0; text-align: center; }
+        .grid-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
 
-        /* 스케줄러 */
-        .world-badge { padding: 4px 10px; border-radius: 4px; color: #fff; font-weight: bold; font-size: 0.8em; margin: 15px 0 5px 0; display: inline-block; }
-        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
-        td { padding: 12px; border-bottom: 1px solid #f1f3f5; }
-        .b-name { width: 140px; font-weight: 700; }
+        /* 버튼 */
+        .btn-kakao { width: 100%; background: #fee500; color: #3c1e1e; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 15px; }
+        .btn-kakao:hover { background: #fada0a; }
         .btn-killed { background: var(--danger); color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; }
-        
-        /* 입력창 디자인 개선 */
-        input[type="text"] { width: 110px; padding: 8px; border: 2px solid #e9ecef; border-radius: 6px; text-align: center; font-family: 'Orbitron'; font-weight: bold; color: var(--primary); }
-        input:focus { border-color: var(--primary); outline: none; background: #fdf2ff; }
-        .exp-time { font-family: monospace; color: #7f8c8d; font-size: 0.9em; font-weight: bold; }
 
-        .log-box { height: 350px; overflow-y: auto; font-size: 0.85em; background: #fafafa; padding: 10px; border-radius: 8px; }
-        .log-line { border-bottom: 1px solid #eee; padding: 4px 0; }
+        /* 스케줄러 표 */
+        .world-badge { padding: 4px 10px; border-radius: 4px; color: #fff; font-weight: bold; font-size: 0.8em; margin: 15px 0 5px 0; display: inline-block; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        td { padding: 10px; border-bottom: 1px solid #f1f3f5; }
+        .b-name { width: 140px; font-weight: 700; }
+        input[type="text"] { width: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 6px; text-align: center; font-family: 'Orbitron'; font-weight: bold; color: var(--primary); }
+        .exp-time { font-family: monospace; color: #7f8c8d; font-size: 0.9em; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -49,217 +45,158 @@
 <nav>
     <div class="nav-item active" onclick="tab('dash')">🏠</div>
     <div class="nav-item" onclick="tab('sched')">📅</div>
+    <div class="nav-item" onclick="tab('calc')">🧮</div>
     <div class="nav-item" onclick="togglePIP()">📺</div>
 </nav>
 
 <main>
-    <header>ODIN COMMANDER: PRECISION</header>
+    <header>ODIN COMMANDER LOCAL V8</header>
     <div class="content">
         <div id="dash" class="pane active">
-            <div class="dashboard-layout">
+            <div class="grid-layout">
                 <div>
-                    <div class="card" style="border-top: 4px solid var(--accent);">
-                        <div style="text-align:center; font-weight:bold; color:#666;">NEXT BOSS</div>
-                        <div id="m-name" style="font-size:1.8em; font-weight:bold; text-align:center; margin-top:10px;">--</div>
-                        <div id="m-timer" class="timer-main">00:00:00</div>
+                    <button class="btn-kakao" onclick="copyKakao()">📢 카톡 공지 텍스트 복사</button>
+                    <div class="card" style="border-top: 4px solid var(--accent); text-align: center;">
+                        <div id="m-name" style="font-size:1.8em; font-weight:bold;">NEXT TARGET</div>
+                        <div id="m-timer" style="font-family:'Orbitron'; font-size:3.5em; color:var(--accent); margin:10px 0;">00:00:00</div>
                     </div>
-                    <div class="card">
-                        <h3 style="margin-top:0;">Upcoming Schedule</h3>
-                        <div id="up-list"></div>
-                    </div>
+                    <div class="card"><h3>Upcoming Schedule</h3><div id="up-list"></div></div>
                 </div>
-                <div class="card">
-                    <h3 style="margin-top:0;">Activity Logs</h3>
-                    <div id="log-box" class="log-box"></div>
-                </div>
+                <div class="card"><h3>Activity Logs</h3><div id="log-box" style="height:350px; overflow-y:auto; font-size:0.85em;"></div></div>
             </div>
         </div>
 
         <div id="sched" class="pane">
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h2 style="margin:0;">World Boss Scheduler</h2>
-                    <span style="font-size:0.8em; color:var(--primary);">* 입력 예시: '1 20'(1시간20분), '15:30'(15분30초), '60'(60분)</span>
-                </div>
+                <h2>Boss Scheduler</h2>
                 <div id="sched-body"></div>
+            </div>
+        </div>
+
+        <div id="calc" class="pane">
+            <div class="card">
+                <h3>🔄 젠 업데이트 계산기</h3>
+                <select id="calc-select" style="width:100%; padding:10px; margin-bottom:10px; border-radius:6px;"></select>
+                <input type="text" id="calc-in" placeholder="시 분 초 (예: 8 44)" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ddd;">
+                <button class="btn-kakao" style="background:var(--accent); color:white; margin-top:10px;" onclick="updateByCalc()">시간 업데이트</button>
+            </div>
+            <div class="card">
+                <h3>🔥 광폭화 계산기</h3>
+                <label>광 시각:</label><input type="time" id="g-time" style="width:100%; padding:10px; margin-bottom:10px; border-radius:6px;">
+                <label>예상 킬(분):</label><input type="number" id="g-extra" value="5" style="width:100%; padding:10px; border-radius:6px; margin-bottom:10px;">
+                <div id="g-res" style="background:#fdf2ff; padding:15px; border-radius:8px; text-align:center; font-weight:bold;">대기 중...</div>
+                <button class="btn-kakao" style="background:var(--danger); color:white; margin-top:10px;" onclick="calcGwang()">킬 시간 예측 및 반영</button>
             </div>
         </div>
     </div>
 </main>
 
-<canvas id="pip-canvas" width="300" height="300" style="display:none;"></canvas>
+<canvas id="pip-canvas" width="300" height="280" style="display:none;"></canvas>
 <video id="pip-video" autoplay muted style="display:none;"></video>
 
 <script>
-    // 53종 보스 데이터 및 리젠 주기(분)
     const bossDB = [
-        { w: "요툰헤임", c: "var(--jotun)", b: [
-            {n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, 
-            {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야룬", r:240}, {n:"티르", r:1440}
-        ]},
-        { w: "니다벨리르", c: "var(--nida)", b: [
-            {n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, 
-            {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}
-        ]},
-        { w: "알브헤임", c: "var(--alf)", b: [
-            {n:"스바르트", r:240}, {n:"두라스로르", r:480}, {n:"모네가름", r:120}, {n:"드라우그", r:240}, 
-            {n:"굴베이그", r:480}, {n:"오딘", r:1440}
-        ]},
-        { w: "무스펠하임", c: "var(--muspel)", b: [
-            {n:"메기르", r:120}, {n:"신마라", r:720}, {n:"헤르가름", r:120}, {n:"탕그리스니르", r:240}, 
-            {n:"엘드룬", r:720}, {n:"우로보로스", r:1440}, {n:"수르트", r:1440}
-        ]},
-        { w: "아스가르드", c: "var(--as)", b: [
-            {n:"발리", r:120}, {n:"노트", r:480}, {n:"샤무크", r:120}, {n:"스칼드메르", r:120}, 
-            {n:"화신그로아", r:1440}, {n:"미미르", r:240}
-        ]},
-        { w: "니플하임", c: "var(--nifl)", b: [
-            {n:"히로킨", r:1440}, {n:"호드", r:1440}, {n:"헤이드", r:1440}, {n:"대교주", r:1440}, 
-            {n:"프레이", r:1440}, {n:"이미르", r:1440}
-        ]},
-        { w: "바나하임", c: "var(--vana)", b: [
-            {n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}
-        ]},
-        { w: "던전", c: "var(--dun)", b: [
-            {n:"최하층 굴베이그", r:480}, {n:"최하층 강글로티", r:480}, {n:"최하층 스네르", r:480}, 
-            {n:"4층 모네가름", r:240}, {n:"7층 드라우그", r:480}, {n:"10층 다인흘로크", r:480}
-        ]}
+        { w: "요툰헤임", c: "var(--jotun)", b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야룬", r:240}, {n:"티르", r:1440}]},
+        { w: "니다벨리르", c: "var(--nida)", b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}]},
+        { w: "알브헤임", c: "var(--alf)", b: [{n:"스바르트", r:240}, {n:"두라스로르", r:480}, {n:"모네가름", r:120}, {n:"드라우그", r:240}, {n:"굴베이그", r:480}, {n:"오딘", r:1440}]},
+        { w: "무스펠하임", c: "var(--muspel)", b: [{n:"메기르", r:120}, {n:"신마라", r:720}, {n:"헤르가름", r:120}, {n:"탕그리스니르", r:240}, {n:"엘드룬", r:720}, {n:"우로보로스", r:1440}, {n:"수르트", r:1440}]},
+        { w: "아스가르드", c: "var(--as)", b: [{n:"발리", r:120}, {n:"노트", r:480}, {n:"샤무크", r:120}, {n:"스칼드메르", r:120}, {n:"화신그로아", r:1440}, {n:"미미르", r:240}]},
+        { w: "니플하임", c: "var(--nifl)", b: [{n:"히로킨", r:1440}, {n:"호드", r:1440}, {n:"헤이드", r:1440}, {n:"대교주", r:1440}, {n:"프레이", r:1440}, {n:"이미르", r:1440}]},
+        { w: "바나하임", c: "var(--vana)", b: [{n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}]},
+        { w: "던전", c: "var(--dun)", b: [{n:"최하층 굴베이그", r:480}, {n:"최하층 강글로티", r:480}, {n:"최하층 스네르", r:480}, {n:"4층 모네가름", r:240}, {n:"7층 드라우그", r:480}, {n:"10층 다인흘로크", r:480}]}
     ];
 
-    let timers = JSON.parse(localStorage.getItem('odin_precision_v3')) || [];
+    let timers = JSON.parse(localStorage.getItem('odin_v8_timers')) || [];
 
     function init() {
         const body = document.getElementById('sched-body');
-        let html = '';
+        const sel = document.getElementById('calc-select');
         bossDB.forEach(group => {
-            html += `<div class="world-badge" style="background:${group.c}">${group.w}</div>`;
-            html += `<table>`;
+            body.innerHTML += `<div class="world-badge" style="background:${group.c}">${group.w}</div><table>`;
             group.b.forEach(boss => {
-                const savedVal = localStorage.getItem(`input_val_${boss.n}`) || '';
-                html += `
-                    <tr>
-                        <td class="b-name">${boss.n}</td>
-                        <td style="width:75px;"><button class="btn-killed" onclick="autoSet('${boss.n}', ${boss.r})">잡음</button></td>
-                        <td><input type="text" class="b-in" data-name="${boss.n}" value="${savedVal}" placeholder="시 분 초"></td>
-                        <td class="exp-time" id="exp-${boss.n}">--:--</td>
-                    </tr>`;
+                const sv = localStorage.getItem(`v8_val_${boss.n}`) || '';
+                body.innerHTML += `<tr><td class="b-name">${boss.n}</td><td><button class="btn-killed" onclick="autoSet('${boss.n}', ${boss.r})">잡음</button></td><td><input type="text" class="b-in" data-name="${boss.n}" value="${sv}"></td><td class="exp-time" id="exp-${boss.n}">--:--</td></tr>`;
+                sel.innerHTML += `<option value="${boss.n}">${boss.n}</option>`;
             });
-            html += `</table>`;
+            body.innerHTML += `</table>`;
         });
-        body.innerHTML = html;
-
-        const ins = document.querySelectorAll('.b-in');
-        ins.forEach((el, i) => {
-            el.addEventListener('keydown', (e) => {
-                if(e.key === 'Enter') {
-                    const sec = parseTime(el.value);
-                    if(sec > 0) {
-                        manualSet(el.dataset.name, sec);
-                        localStorage.setItem(`input_val_${el.dataset.name}`, el.value); // 값 유지용 저장
-                    }
-                    if(ins[i+1]) ins[i+1].focus();
-                }
-            });
+        document.querySelectorAll('.b-in').forEach((el, i, ins) => {
+            el.addEventListener('keydown', (e) => { if(e.key==='Enter'){ const s = smartParse(el.value); if(s>0)saveTimer(el.dataset.name,s,el.value); if(ins[i+1])ins[i+1].focus(); } });
         });
     }
 
-    // 시간 파싱 로직 (H:M:S, M:S, M 모두 대응)
-    function parseTime(str) {
+    function smartParse(str) {
         if(!str) return 0;
-        const p = str.split(/[:\s]+/).filter(x => x !== "").map(Number);
-        if (p.some(isNaN)) return 0;
-        if (p.length === 3) return (p[0] * 3600) + (p[1] * 60) + p[2]; // 시:분:초 -> 초
-        if (p.length === 2) return (p[0] * 60) + p[1]; // 분:초 -> 초
-        return p[0] * 60; // 분 -> 초
+        let total = 0;
+        const d = str.match(/(\d+)\s*일/); const h = str.match(/(\d+)\s*시간/); const m = str.match(/(\d+)\s*분/); const s = str.match(/(\d+)\s*초/);
+        if(d||h||m||s) { if(d)total+=parseInt(d[1])*86400; if(h)total+=parseInt(h[1])*3600; if(m)total+=parseInt(m[1])*60; if(s)total+=parseInt(s[1]); }
+        else { const p = str.split(/[:\s]+/).filter(x=>x!=="").map(Number); if(p.length===3)total=(p[0]*3600)+(p[1]*60)+p[2]; else if(p.length===2)total=(p[0]*60)+p[1]; else if(p.length===1)total=p[0]*60; }
+        return total;
     }
 
-    function autoSet(name, regenMins) {
-        const target = Date.now() + (regenMins * 60000);
-        save(name, target, `[자동] ${name} (${regenMins}분 주기)`);
+    function saveTimer(n, s, raw) {
+        const target = Date.now() + (s * 1000);
+        const idx = timers.findIndex(t => t.n === n);
+        if(idx > -1) timers[idx].t = target; else timers.push({ n: n, t: target });
+        localStorage.setItem('odin_v8_timers', JSON.stringify(timers));
+        localStorage.setItem(`v8_val_${n}`, raw);
+        addLog(`${n} 설정됨`);
+        updateDisplay();
     }
 
-    function manualSet(name, totalSec) {
-        const target = Date.now() + (totalSec * 1000);
-        save(name, target, `[수동] ${name} (${Math.floor(totalSec/60)}분 ${totalSec%60}초 뒤)`);
+    function copyKakao() {
+        if(timers.length===0) return;
+        timers.sort((a,b)=>a.t-b.t);
+        const now = new Date();
+        let txt = `${now.getMonth()+1}.${now.getDate()}\n`;
+        timers.forEach(t => { const d = new Date(t.t); txt += `${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false})} ${t.n}\n`; });
+        navigator.clipboard.writeText(txt.trim()).then(()=>alert("카톡 공지 복사 완료!"));
     }
 
-    function save(name, target, logMsg) {
-        const idx = timers.findIndex(t => t.n === name);
-        if(idx > -1) timers[idx].t = target;
-        else timers.push({ n: name, t: target });
-        
-        localStorage.setItem('odin_precision_v3', JSON.stringify(timers));
-        document.getElementById(`exp-${name}`).innerText = new Date(target).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        addLog(logMsg);
+    function updateByCalc() { const n = document.getElementById('calc-select').value; const v = document.getElementById('calc-in').value; const s = smartParse(v); if(s>0)saveTimer(n,s,v); }
+
+    function calcGwang() {
+        const time = document.getElementById('g-time').value;
+        const extra = parseInt(document.getElementById('g-extra').value)||0;
+        const name = document.getElementById('calc-select').value;
+        if(!time) return;
+        const [h, m] = time.split(':');
+        const kill = new Date(); kill.setHours(h, parseInt(m)+extra, 0);
+        let r = 120; bossDB.forEach(g => g.b.forEach(b => { if(b.n===name) r=b.r; }));
+        saveTimer(name, (kill.getTime()+r*60000-Date.now())/1000, "광폭화 계산");
+        document.getElementById('g-res').innerText = `킬: ${kill.toLocaleTimeString()} -> 반영 완료`;
     }
 
-    function addLog(msg) {
-        const box = document.getElementById('log-box');
-        const now = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-        box.innerHTML = `<div class="log-line"><span style="color:var(--danger)">[${now}]</span> ${msg}</div>` + box.innerHTML;
-    }
-
-    function tab(id) {
-        document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        event.currentTarget.classList.add('active');
-    }
-
-    function update() {
+    function updateDisplay() {
         const now = Date.now();
-        timers.sort((a,b) => a.t - b.t);
-        timers = timers.filter(timer => timer.t - now > -600000);
-
+        timers.sort((a,b)=>a.t-b.t);
+        timers = timers.filter(t => t.t - now > -600000);
         if(timers.length > 0) {
-            const next = timers[0];
-            const diff = next.t - now;
-            document.getElementById('m-name').innerText = next.n;
-            document.getElementById('m-timer').innerText = format(diff);
-            document.getElementById('m-timer').style.color = diff < 300000 ? 'var(--danger)' : 'var(--accent)';
+            document.getElementById('m-name').innerText = timers[0].n;
+            document.getElementById('m-timer').innerText = format(timers[0].t - now);
         }
-
-        document.getElementById('up-list').innerHTML = timers.slice(1, 10).map(t => `
-            <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #f1f3f5;">
-                <span>${t.n}</span>
-                <span style="font-weight:bold; color:var(--primary);">${format(t.t - now)}</span>
-            </div>
-        `).join('');
-
+        document.getElementById('up-list').innerHTML = timers.slice(1, 10).map(t => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee;"><span>${t.n}</span><b>${format(t.t-now)}</b></div>`).join('');
         drawPIP();
     }
 
     function format(ms) {
         if(ms < 0) return "APPEARED";
-        const h = Math.floor(ms/3600000);
-        const m = Math.floor((ms%3600000)/60000);
-        const s = Math.floor((ms%60000)/1000);
+        const h = Math.floor(ms/3600000); const m = Math.floor((ms%3600000)/60000); const s = Math.floor((ms%60000)/1000);
         return `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
 
-    const canvas = document.getElementById('pip-canvas');
-    const ctx = canvas.getContext('2d');
+    function tab(id) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+    function autoSet(n, r) { saveTimer(n, r*60, "잡음(자동)"); }
+    function addLog(m) { const b = document.getElementById('log-box'); b.innerHTML = `<div style="padding:4px 0;">[${new Date().toLocaleTimeString()}] ${m}</div>` + b.innerHTML; }
+    
+    function togglePIP() { const v = document.getElementById('pip-video'); if(document.pictureInPictureElement) document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); v.play(); v.requestPictureInPicture(); } }
     function drawPIP() {
-        ctx.fillStyle = "#1e1e2e"; ctx.fillRect(0,0,300,300);
-        ctx.fillStyle = "#8e24aa"; ctx.font = "bold 18px Orbitron"; ctx.fillText("ODIN PIP (5)", 15, 35);
-        // 요청대로 상위 5개만 표시
-        timers.slice(0, 5).forEach((t, i) => {
-            const d = t.t - Date.now();
-            ctx.fillStyle = d < 300000 ? "#ff1744" : "#00e5ff";
-            ctx.font = "16px Noto Sans KR";
-            ctx.fillText(`${t.n.substring(0,6).padEnd(6)} ${format(d)}`, 15, 75 + (i*40));
-        });
+        const ctx = document.getElementById('pip-canvas').getContext('2d');
+        ctx.fillStyle = "#121212"; ctx.fillRect(0,0,300,280); ctx.fillStyle = "#ffd700"; ctx.font = "bold 18px Arial"; ctx.fillText("BOSS FOCUS (5)", 15, 35);
+        timers.slice(0, 5).forEach((t, i) => { const d = t.t - Date.now(); ctx.fillStyle = d < 300000 ? "#ff1744" : "#00e5ff"; ctx.font = "16px Arial"; ctx.fillText(`${t.n.padEnd(6)} ${format(d)}`, 15, 75 + (i*40)); });
     }
 
-    async function togglePIP() {
-        const v = document.getElementById('pip-video');
-        if (document.pictureInPictureElement) await document.exitPictureInPicture();
-        else { v.srcObject = canvas.captureStream(); await v.play(); await v.requestPictureInPicture(); }
-    }
-
-    init();
-    setInterval(update, 1000);
+    init(); setInterval(updateDisplay, 1000);
 </script>
-
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ODIN BOSS COMMANDER - V13 PRO</title>
+    <title>ODIN BOSS COMMANDER - FINAL V15</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,39 +15,44 @@
 
         body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* 사이드바 */
+        /* 사이드바 UI (image_ef427f 참조) */
         nav { width: 70px; background: #fff; border-right: 1px solid #dee2e6; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; }
         .nav-item { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #95a5a6; font-size: 20px; transition: 0.2s; }
-        .nav-item.active { background: var(--primary); color: #fff; }
+        .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(142, 36, 170, 0.3); }
         
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        header { height: 50px; background: #fff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
+        header { height: 50px; background: #fff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); position: relative; }
+        .sound-toggle { position: absolute; right: 20px; cursor: pointer; font-size: 1.2em; }
+
         .content { flex: 1; padding: 20px; overflow-y: auto; }
         .pane { display: none; } .pane.active { display: block; }
 
-        /* 세로 테이블 스타일 */
-        .world-header { padding: 8px 15px; color: white; font-weight: bold; font-size: 0.9em; border-radius: 5px 5px 0 0; margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-bottom: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        th { background: #f1f3f5; padding: 10px; font-size: 0.8em; color: #666; border-bottom: 1px solid #ddd; }
-        td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
-        
-        .b-name { width: 180px; font-weight: bold; }
-        .btn-killed { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.85em; }
-        
-        /* 입력창 - 세로 정렬 및 엔터 최적화 */
-        input[type="text"] { width: 140px; padding: 8px; border: 2px solid #e9ecef; border-radius: 6px; text-align: center; font-family: 'Orbitron'; font-weight: bold; color: var(--primary); }
-        input:focus { border-color: var(--accent); outline: none; background: #fdf2ff; }
-        .zen-time { font-family: monospace; color: #7f8c8d; font-weight: bold; font-size: 1em; }
+        /* 대시보드 - 전체 시간표 (image_ef427f 스타일) */
+        .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+        .boss-card { background: #fff; padding: 15px; border-radius: 12px; border-left: 5px solid #eee; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .boss-card.imminent { border-left-color: var(--danger); background: #fff5f5; animation: blink 1.5s infinite; }
+        .boss-card .t-name { font-weight: bold; font-size: 0.95em; }
+        .boss-card .t-time { font-family: 'Orbitron'; color: var(--accent); font-weight: bold; }
 
-        /* 광 계산기 */
-        .calc-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .gwang-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); text-align: center; }
-        .gwang-btns { display: flex; gap: 10px; margin: 20px 0; }
-        .g-btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; font-size: 1.1em; }
-        .res-display { background: #f8f9fa; border: 2px dashed #ccc; padding: 20px; border-radius: 10px; font-weight: bold; }
+        /* 스케줄러 - 세로형 테이블 (image_ef429f 참조) */
+        .world-badge { padding: 5px 12px; color: white; font-weight: bold; border-radius: 5px; margin: 15px 0 5px 0; display: inline-block; font-size: 0.85em; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
+        td { padding: 10px 15px; border-bottom: 1px solid #f1f3f5; }
+        .b-name { width: 160px; font-weight: bold; }
+        input[type="text"], input[type="number"] { width: 120px; padding: 8px; border: 2px solid #e9ecef; border-radius: 6px; text-align: center; font-family: 'Orbitron'; font-weight: bold; color: var(--primary); }
+        input:focus { border-color: var(--primary); outline: none; }
 
-        /* PIP 비디오 요소 숨김 */
-        #pip-video { position: fixed; bottom: 0; right: 0; width: 10px; height: 10px; opacity: 0; pointer-events: none; }
+        /* 계산기 - (image_ef42b9 참조) */
+        .calc-wrapper { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .calc-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 350px; text-align: center; }
+        .calc-display { background: #f8f9fa; border-radius: 10px; padding: 20px; margin: 15px 0; border: 1px solid #eee; }
+        .val-big { font-family: 'Orbitron'; font-size: 2.2em; color: var(--accent); }
+        .calc-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; }
+        .c-btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; }
+
+        /* PIP 및 애니메이션 */
+        #pip-video { position: fixed; bottom: 0; right: 0; width: 1px; height: 1px; opacity: 0; }
+        @keyframes blink { 50% { opacity: 0.7; } }
     </style>
 </head>
 <body>
@@ -60,38 +65,56 @@
 </nav>
 
 <main>
-    <header>ODIN BOSS COMMANDER V13 (PIP STABLE)</header>
+    <header>
+        ODIN COMMANDER MASTER V15
+        <div class="sound-toggle" onclick="toggleSound()">🔊</div>
+    </header>
     <div class="content">
         <div id="dash" class="pane active">
-            <button onclick="copyKakao()" style="width:100%; background:#fee500; padding:15px; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-bottom:20px;">📢 카톡 공지 문구 복사</button>
-            <div style="background:white; padding:40px; border-radius:15px; text-align:center; border-top:5px solid var(--accent);">
-                <h3 id="m-name" style="margin:0; color:#888;">대상 없음</h3>
-                <h1 id="m-timer" style="font-family:Orbitron; font-size:4.5em; color:var(--accent); margin:10px 0;">00:00:00</h1>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2 style="margin:0;">🛡️ 전체 보스 모니터링</h2>
+                <button onclick="copyKakao()" style="background:#fee500; border:none; padding:10px 20px; border-radius:8px; font-weight:bold; cursor:pointer;">카톡 공지 복사</button>
             </div>
+            <div class="dash-grid" id="dash-list"></div>
         </div>
 
         <div id="sched" class="pane">
-            <div id="sched-table-area"></div>
+            <div id="sched-body"></div>
         </div>
 
         <div id="calc" class="pane">
-            <div class="calc-container">
-                <div class="gwang-card">
-                    <h3>🔥 광폭화(광) 계산기</h3>
-                    <select id="g-boss-sel" style="width:100%; padding:10px; margin-bottom:15px; border-radius:5px;"></select>
-                    <div class="gwang-btns">
-                        <button class="g-btn" style="background:#455a64;" onclick="gwang('start')">시작</button>
-                        <button class="g-btn" style="background:#ffa000;" onclick="gwang('glow')">광</button>
-                        <button class="g-btn" style="background:#d32f2f;" onclick="gwang('kill')">잡힘</button>
+            <div class="calc-wrapper">
+                <div class="calc-card">
+                    <h3>🔄 젠 시간 업데이트</h3>
+                    <div class="calc-display">
+                        <div style="font-size:0.8em; color:#888;">입력된 시간</div>
+                        <div class="val-big" id="zen-calc-preview">00:00</div>
                     </div>
-                    <div class="res-display" id="g-res">사냥 시작 시 [시작]을 누르세요.</div>
+                    <select id="zen-boss-sel" style="width:100%; padding:10px; margin-bottom:10px; border-radius:5px; border:1px solid #ddd;"></select>
+                    <input type="text" id="zen-manual-in" placeholder="시 분 초 (예: 8 44)" oninput="updateZenPreview()" style="width:100%; box-sizing:border-box;">
+                    <button class="c-btn" style="background:var(--accent); width:100%; margin-top:10px;" onclick="applyZenCalc()">보스 시간 강제 업데이트</button>
+                </div>
+
+                <div class="calc-card">
+                    <h3>🔥 광폭화(광) 계산기</h3>
+                    <div class="calc-display" style="display:flex; justify-content: space-around;">
+                        <div><small>경과</small><div class="val-big" style="font-size:1.5em;" id="g-elapsed">00:00</div></div>
+                        <div><small>젠 예상</small><div class="val-big" style="font-size:1.5em; color:var(--danger);" id="g-next">--:--</div></div>
+                    </div>
+                    <select id="g-boss-sel" style="width:100%; padding:10px; margin-bottom:10px; border-radius:5px; border:1px solid #ddd;"></select>
+                    <div class="calc-btns">
+                        <button class="c-btn" style="background:#455a64;" onclick="gAction('start')">시작</button>
+                        <button class="c-btn" style="background:#ffa000;" onclick="gAction('glow')">광</button>
+                        <button class="c-btn" style="background:#d32f2f;" onclick="gAction('kill')">잡힘</button>
+                    </div>
+                    <div id="g-log" style="margin-top:10px; font-size:0.85em; color:#666;">측정 대기 중...</div>
                 </div>
             </div>
         </div>
     </div>
 </main>
 
-<canvas id="pip-canvas" width="300" height="300" style="display:none;"></canvas>
+<canvas id="pip-canvas" width="180" height="80" style="display:none;"></canvas>
 <video id="pip-video" autoplay muted playsinline></video>
 
 <script>
@@ -106,48 +129,40 @@
         { w: "던전", c: "var(--dun)", b: [{n:"최하층 굴베이그", r:480}, {n:"최하층 강글로티", r:480}, {n:"최하층 스네르", r:480}, {n:"4층 모네가름", r:240}, {n:"7층 드라우그", r:480}, {n:"10층 다인흘로크", r:480}]}
     ];
 
-    let timers = JSON.parse(localStorage.getItem('odin_v13_timers')) || [];
+    let timers = JSON.parse(localStorage.getItem('odin_v15_timers')) || [];
+    let alerted = { m5: [], m1: [] };
     let gData = { start: null, glow: null };
+    let isSoundOn = true;
 
     function init() {
-        const area = document.getElementById('sched-table-area');
-        const sel = document.getElementById('g-boss-sel');
+        const sched = document.getElementById('sched-body');
+        const gSel = document.getElementById('g-boss-sel');
+        const zSel = document.getElementById('zen-boss-sel');
         let html = '';
         bossDB.forEach(group => {
-            html += `<div class="world-header" style="background:${group.c}">${group.w}</div>`;
-            html += `<table><thead><tr><th>보스명</th><th width="100">동작</th><th>남은 시간 입력 (Enter)</th><th>예상 젠</th></tr></thead><tbody>`;
+            html += `<div class="world-badge" style="background:${group.c}">${group.w}</div><table><tbody>`;
             group.b.forEach(boss => {
-                const sv = localStorage.getItem(`v13_val_${boss.n}`) || '';
-                html += `<tr><td class="b-name">${boss.n}</td><td><button class="btn-killed" onclick="autoZen('${boss.n}', ${boss.r})">잡음</button></td><td><input type="text" class="v-input" data-name="${boss.n}" value="${sv}"></td><td class="zen-time" id="zen-${boss.n}">--:--</td></tr>`;
-                sel.innerHTML += `<option value="${boss.n}">${boss.n}</option>`;
+                const sv = localStorage.getItem(`v15_val_${boss.n}`) || '';
+                html += `<tr><td class="b-name">${boss.n}</td><td width="80"><button style="padding:6px 10px; background:var(--danger); color:white; border:none; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="autoZen('${boss.n}', ${boss.r})">잡음</button></td><td><input type="text" class="v-in" data-name="${boss.n}" value="${sv}" placeholder="남은 시간"></td><td id="z-${boss.n}" style="font-family:monospace; color:#888; font-weight:bold;">--:--</td></tr>`;
+                gSel.innerHTML += `<option value="${boss.n}">${boss.n}</option>`;
+                zSel.innerHTML += `<option value="${boss.n}">${boss.n}</option>`;
             });
             html += `</tbody></table>`;
         });
-        area.innerHTML = html;
+        sched.innerHTML = html;
 
-        const inputs = document.querySelectorAll('.v-input');
-        inputs.forEach((el, i) => {
-            el.addEventListener('keydown', (e) => {
-                if(e.key === 'Enter') {
-                    const sec = smartParse(el.value);
-                    if(sec > 0) saveTimer(el.dataset.name, sec, el.value);
-                    if(inputs[i+1]) inputs[i+1].focus();
-                }
-            });
+        document.querySelectorAll('.v-in').forEach((el, i, ins) => {
+            el.addEventListener('keydown', (e) => { if(e.key === 'Enter') { const s = smartParse(el.value); if(s>0) saveTimer(el.dataset.name, s, el.value); if(ins[i+1]) ins[i+1].focus(); } });
         });
     }
 
-    // 시간 파싱 및 저장 로직
+    // 게임 UI 대응 파싱
     function smartParse(str) {
         if(!str) return 0;
         let total = 0;
-        const dMatch = str.match(/(\d+)\s*일/); const hMatch = str.match(/(\d+)\s*시간/); const mMatch = str.match(/(\d+)\s*분/); const sMatch = str.match(/(\d+)\s*초/);
-        if(dMatch || hMatch || mMatch || sMatch) {
-            if(dMatch) total += parseInt(dMatch[1])*86400; if(hMatch) total += parseInt(hMatch[1])*3600; if(mMatch) total += parseInt(mMatch[1])*60; if(sMatch) total += parseInt(sMatch[1]);
-        } else {
-            const p = str.split(/[:\s]+/).filter(x => x !== "").map(Number);
-            if(p.length===3) total = (p[0]*3600)+(p[1]*60)+p[2]; else if(p.length===2) total = (p[0]*60)+p[1]; else if(p.length===1) total = p[0]*60;
-        }
+        const d = str.match(/(\d+)\s*일/); const h = str.match(/(\d+)\s*시간/); const m = str.match(/(\d+)\s*분/); const s = str.match(/(\d+)\s*초/);
+        if(d||h||m||s) { if(d)total+=parseInt(d[1])*86400; if(h)total+=parseInt(h[1])*3600; if(m)total+=parseInt(m[1])*60; if(s)total+=parseInt(s[1]); }
+        else { const p = str.split(/[:\s]+/).filter(x => x !== "").map(Number); if(p.length===3)total=(p[0]*3600)+(p[1]*60)+p[2]; else if(p.length===2)total=(p[0]*60)+p[1]; else if(p.length===1)total=p[0]*60; }
         return total;
     }
 
@@ -155,104 +170,88 @@
         const target = Date.now() + (sec * 1000);
         const idx = timers.findIndex(t => t.n === name);
         if(idx > -1) timers[idx].t = target; else timers.push({ n: name, t: target });
-        localStorage.setItem('odin_v13_timers', JSON.stringify(timers));
-        localStorage.setItem(`v13_val_${name}`, raw);
+        localStorage.setItem('odin_v15_timers', JSON.stringify(timers));
+        if(raw !== "자동") localStorage.setItem(`v15_val_${name}`, raw);
         updateDisplay();
     }
 
-    function autoZen(name, regen) { saveTimer(name, regen * 60, "자동(잡음)"); }
+    function autoZen(n, r) { saveTimer(n, r*60, "자동"); }
 
-    // 광폭화 계산기 로직
-    function gwang(type) {
-        const res = document.getElementById('g-res');
-        const bName = document.getElementById('g-boss-sel').value;
+    // 💡 젠 계산기 업데이트 기능
+    function updateZenPreview() {
+        const val = document.getElementById('zen-manual-in').value;
+        const sec = smartParse(val);
+        document.getElementById('zen-calc-preview').innerText = format(sec * 1000);
+    }
+    function applyZenCalc() {
+        const name = document.getElementById('zen-boss-sel').value;
+        const val = document.getElementById('zen-manual-in').value;
+        const sec = smartParse(val);
+        if(sec > 0) { saveTimer(name, sec, val); alert(`${name} 시간이 업데이트되었습니다.`); }
+    }
+
+    // 💡 광폭화 계산기 로직 (시작->광->잡힘)
+    function gAction(type) {
+        const log = document.getElementById('g-log');
+        const b = document.getElementById('g-boss-sel').value;
         const now = Date.now();
-        if(type === 'start') { gData.start = now; res.innerHTML = `시작: ${new Date(now).toLocaleTimeString()}`; }
-        else if(type === 'glow') { if(!gData.start) return; gData.glow = now; res.innerHTML = `광폭화 도달!`; }
-        else if(type === 'kill') {
+        if(type==='start') { gData.start = now; log.innerText = "사냥 시작 측정 중..."; }
+        else if(type==='glow') { if(!gData.start) return; gData.glow = now; log.innerText = "광폭화 발생!"; }
+        else if(type==='kill') {
             if(!gData.glow) return;
-            let r = 120; bossDB.forEach(g => g.b.forEach(b => { if(b.n === bName) r = b.r; }));
-            saveTimer(bName, r * 60, "광계산 반영");
-            res.innerHTML = `반영 완료: ${new Date(now + r*60000).toLocaleTimeString()}`;
-            gData = { start: null, glow: null };
+            let r = 120; bossDB.forEach(g=>g.b.forEach(bo=>{if(bo.n===b)r=bo.r;}));
+            saveTimer(b, r*60, "광계산");
+            log.innerText = "처치 완료! 다음 젠 반영됨.";
+            document.getElementById('g-next').innerText = new Date(now + r*60000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
         }
     }
 
-    // 화면 업데이트 및 PIP 드로잉
     function updateDisplay() {
         const now = Date.now();
+        const dList = document.getElementById('dash-list');
         timers.sort((a,b) => a.t - b.t);
         timers = timers.filter(t => t.t - now > -600000);
-        if(timers.length > 0) {
-            document.getElementById('m-name').innerText = timers[0].n;
-            document.getElementById('m-timer').innerText = format(timers[0].t - now);
-        }
+
+        dList.innerHTML = '';
         timers.forEach(t => {
-            const el = document.getElementById(`zen-${t.n}`);
-            if(el) el.innerText = new Date(t.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
+            const diff = t.t - now;
+            const isUrgent = diff > 0 && diff < 300000;
+            // 홈 화면 전체 시간 표시
+            dList.innerHTML += `<div class="boss-card ${isUrgent ? 'imminent' : ''}"><span class="t-name">${t.n}</span><span class="t-time">${format(diff)}</span></div>`;
+            
+            // 알림 시스템
+            const sec = Math.floor(diff / 1000);
+            if(isSoundOn) {
+                if(sec === 300 && !alerted.m5.includes(t.n)) { playTTS(`${t.n} 5분 전입니다.`); alerted.m5.push(t.n); }
+                if(sec === 60 && !alerted.m1.includes(t.n)) { playTTS(`${t.n} 1분 전입니다.`); alerted.m1.push(t.n); }
+            }
+            const zEl = document.getElementById(`z-${t.n}`);
+            if(zEl) zEl.innerText = new Date(t.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
         });
         drawPIP();
     }
 
-    function format(ms) {
-        if(ms < 0) return "APPEARED";
-        const h = Math.floor(ms/3600000); const m = Math.floor((ms%3600000)/60000); const s = Math.floor((ms%60000)/1000);
-        return `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
-
-    // PIP 핵심 구동 엔진 (보완됨)
-    async function togglePIP() {
-        const video = document.getElementById('pip-video');
-        const canvas = document.getElementById('pip-canvas');
-
-        try {
-            if (document.pictureInPictureElement) {
-                await document.exitPictureInPicture();
-            } else {
-                if (video.readyState === 0) {
-                    // 비디오에 스트림 연결 및 최초 실행
-                    const stream = canvas.captureStream(30); // 30fps 고정
-                    video.srcObject = stream;
-                    await video.play();
-                }
-                await video.requestPictureInPicture();
-            }
-        } catch (error) {
-            console.error("PIP Error:", error);
-            alert("PIP 모드 실행에 실패했습니다.\n1. Chrome, Edge, Whale 브라우저를 권장합니다.\n2. 브라우저 설정에서 PIP가 허용되어 있는지 확인해 주세요.");
-        }
-    }
-
+    function playTTS(msg) { const u = new SpeechSynthesisUtterance(msg); u.lang = 'ko-KR'; window.speechSynthesis.speak(u); }
+    function format(ms) { if(ms<0) return "젠 완료"; const h = Math.floor(ms/3600000); const m = Math.floor((ms%3600000)/60000); const s = Math.floor((ms%60000)/1000); return `${h>0?h+':':''}${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
+    
+    // 📺 PIP 설정: 최단시간 보스 1개만 컴팩트하게
     function drawPIP() {
-        const canvas = document.getElementById('pip-canvas');
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = "#121212"; ctx.fillRect(0,0,300,300);
-        ctx.fillStyle = "#ffd700"; ctx.font = "bold 20px Orbitron"; ctx.fillText("BOSS MONITOR", 15, 40);
-        
-        timers.slice(0, 5).forEach((t, i) => {
-            const d = t.t - Date.now();
-            ctx.fillStyle = d < 300000 ? "#ff1744" : "#00e5ff";
-            ctx.font = "bold 18px Noto Sans KR";
-            ctx.fillText(`${t.n.substring(0,6).padEnd(6)} ${format(d)}`, 15, 85 + (i*45));
-        });
+        const ctx = document.getElementById('pip-canvas').getContext('2d');
+        ctx.fillStyle = "#121212"; ctx.fillRect(0,0,180,80);
+        if(timers.length > 0) {
+            const n = timers[0]; const d = n.t - Date.now();
+            ctx.fillStyle = "#ffd700"; ctx.font = "bold 14px Orbitron"; ctx.fillText("NEXT BOSS", 10, 20);
+            ctx.fillStyle = d < 300000 ? "#ff1744" : "#00e5ff"; ctx.font = "bold 18px Orbitron";
+            ctx.fillText(n.n.substring(0,8), 10, 45); ctx.fillText(format(d), 10, 70);
+        } else { ctx.fillStyle = "#666"; ctx.fillText("No Boss", 10, 45); }
     }
 
-    function copyKakao() {
-        if(timers.length === 0) return;
-        timers.sort((a,b) => a.t - b.t);
-        const d = new Date();
-        let txt = `${d.getMonth()+1}.${d.getDate()}\n`;
-        timers.forEach(t => {
-            const z = new Date(t.t);
-            txt += `${z.getHours().toString().padStart(2,'0')}:${z.getMinutes().toString().padStart(2,'0')} ${t.n}\n`;
-        });
-        navigator.clipboard.writeText(txt.trim()).then(() => alert("복사 완료!"));
-    }
+    async function togglePIP() { const v = document.getElementById('pip-video'); if (document.pictureInPictureElement) await document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); await v.play(); await v.requestPictureInPicture(); } }
+    function toggleSound() { isSoundOn = !isSoundOn; document.querySelector('.sound-toggle').innerText = isSoundOn ? '🔊' : '🔇'; }
+    function copyKakao() { if(timers.length===0) return; const d = new Date(); let txt = `${d.getMonth()+1}.${d.getDate()}\n`; timers.forEach(t => { txt += `${new Date(t.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} ${t.n}\n`; }); navigator.clipboard.writeText(txt.trim()).then(()=>alert("복사 완료!")); }
+    function tab(id) { document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); event.currentTarget.classList.add('active'); }
 
-    function tab(id) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-
-    init();
-    setInterval(updateDisplay, 1000);
+    init(); setInterval(updateDisplay, 1000);
 </script>
 </body>
 </html>

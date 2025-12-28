@@ -3,235 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ODIN BOSS COMMANDER - FULL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    <title>ODIN: BOSS COMMAND CENTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+KR:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0a0a12;
-            --bg-panel: rgba(30, 35, 50, 0.8);
-            --accent-cyan: #00f2ff;
-            --accent-gold: #ffd700;
-            --accent-danger: #ff2a6d;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a5b9;
+            --gold: #d4af37; --gold-glow: rgba(212, 175, 55, 0.4);
+            --bg: #0d0f12; --panel: rgba(26, 29, 36, 0.95);
+            --accent: #00d4ff; --danger: #ff4655;
+            --text: #e0e0e0;
         }
 
         body {
-            font-family: 'Orbitron', sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark), #1a1a2e);
-            color: var(--text-primary);
-            margin: 0; padding: 20px; min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--bg); color: var(--text);
+            margin: 0; padding: 0;
+            background-image: radial-gradient(circle at 50% 50%, #1a1d24 0%, #0d0f12 100%);
+            min-height: 100vh;
         }
 
-        .container {
-            max-width: 900px; margin: 0 auto;
-            background: var(--bg-panel); backdrop-filter: blur(15px);
-            padding: 25px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);
+        /* 헤더 디자인 */
+        header {
+            background: linear-gradient(to bottom, #1a1d24, #0d0f12);
+            padding: 30px 20px; text-align: center;
+            border-bottom: 2px solid var(--gold);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
         }
 
-        h2 {
-            text-align: center; font-family: 'Cinzel', serif;
-            color: var(--accent-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            margin-bottom: 25px;
+        header h1 {
+            font-family: 'Cinzel', serif; color: var(--gold);
+            margin: 0; font-size: 2.2em; letter-spacing: 4px;
+            text-shadow: 0 0 15px var(--gold-glow);
         }
 
-        /* 검색 및 컨트롤 */
-        .top-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-        #search-input {
-            flex: 2; background: rgba(0,0,0,0.4); border: 1px solid var(--accent-cyan);
-            color: white; padding: 10px; border-radius: 5px; font-family: 'Orbitron';
+        .main-container {
+            max-width: 1100px; margin: 30px auto; padding: 0 20px;
+            display: grid; grid-template-columns: 350px 1fr; gap: 30px;
         }
 
-        /* 보스 입력 그리드 - 스크롤 가능하게 */
-        .boss-input-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 12px; max-height: 400px; overflow-y: auto;
-            padding: 10px; background: rgba(0,0,0,0.2); border-radius: 10px;
-            margin-bottom: 25px;
+        /* 왼쪽: 입력 창 */
+        .input-section {
+            background: var(--panel); border: 1px solid #333;
+            border-radius: 12px; padding: 20px; height: fit-content;
+            position: sticky; top: 20px;
         }
 
-        .boss-row {
-            background: rgba(255, 255, 255, 0.05); padding: 10px;
-            border-radius: 6px; border-left: 3px solid #444;
-            display: flex; flex-direction: column; gap: 5px;
-        }
-        .boss-row:hover { border-left-color: var(--accent-cyan); background: rgba(255,255,255,0.1); }
-        .boss-name-title { font-size: 0.9em; font-weight: bold; }
-        .boss-row input {
-            background: #000; border: 1px solid #333; color: var(--accent-cyan);
-            padding: 5px; border-radius: 4px; text-align: center;
+        .search-box {
+            width: 100%; background: #000; border: 1px solid #444;
+            color: #fff; padding: 12px; border-radius: 6px;
+            margin-bottom: 20px; box-sizing: border-box;
         }
 
-        /* 타이머 리스트 */
-        .timer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .timer-item {
-            background: rgba(0, 242, 255, 0.05); border-left: 4px solid var(--accent-cyan);
-            padding: 12px; border-radius: 0 8px 8px 0;
+        .boss-grid {
+            display: grid; grid-template-columns: 1fr; gap: 10px;
+            max-height: 550px; overflow-y: auto; padding-right: 5px;
+        }
+
+        .boss-card {
+            background: #252932; padding: 12px; border-radius: 6px;
             display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid transparent; transition: 0.2s;
         }
-        .timer-item.urgent {
-            border-left-color: var(--accent-danger); animation: pulse 1.5s infinite;
-        }
-        .remaining { font-weight: bold; color: var(--accent-cyan); }
-        .timer-item.urgent .remaining { color: var(--accent-danger); }
+        .boss-card:hover { border-color: var(--gold); background: #2d323d; }
 
-        .controls { display: flex; gap: 10px; margin-top: 20px; }
+        .boss-card span { font-weight: 500; font-size: 0.95em; }
+        .boss-card input {
+            width: 70px; background: #000; border: 1px solid var(--accent);
+            color: var(--accent); padding: 5px; border-radius: 4px; text-align: center;
+        }
+
+        /* 오른쪽: 타이머 리스트 */
+        .timer-section h2 { 
+            font-family: 'Cinzel'; color: var(--gold); margin-top: 0;
+            border-left: 4px solid var(--gold); padding-left: 15px;
+        }
+
+        .active-timers {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;
+        }
+
+        .timer-unit {
+            background: linear-gradient(145deg, #1e222a, #15181e);
+            border-radius: 10px; padding: 20px; border: 1px solid #333;
+            position: relative; overflow: hidden;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .timer-unit.imminent { border-color: var(--danger); }
+        .timer-unit.imminent::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: var(--danger); box-shadow: 0 0 10px var(--danger);
+        }
+
+        .timer-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .timer-name { font-size: 1.2em; font-weight: 700; color: #fff; }
+        .timer-target { font-size: 0.8em; color: #888; }
+        .timer-countdown {
+            font-size: 2.2em; font-weight: 700; color: var(--accent);
+            text-align: center; margin: 10px 0; font-family: monospace;
+        }
+        .timer-unit.imminent .timer-countdown { color: var(--danger); animation: blink 1s infinite; }
+
+        /* 버튼 스타일 */
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
         button {
-            flex: 1; padding: 12px; border: none; border-radius: 5px;
-            cursor: pointer; font-family: 'Orbitron'; font-weight: bold;
+            flex: 1; padding: 12px; border: none; border-radius: 6px;
+            font-weight: 700; cursor: pointer; transition: 0.2s;
         }
-        .btn-pip { background: #2196f3; color: white; }
-        .btn-reset { background: #ff4b2b; color: white; }
+        .btn-pip { background: var(--accent); color: #000; }
+        .btn-reset { background: #333; color: #ccc; }
+        button:hover { filter: brightness(1.2); transform: translateY(-2px); }
 
-        @keyframes pulse { 50% { opacity: 0.6; } }
-        #pip-canvas, #pip-video { display: none; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } }
+
+        /* 스크롤바 커스텀 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+
+        @media (max-width: 850px) {
+            .main-container { grid-template-columns: 1fr; }
+            .input-section { position: static; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>⚔️ ODIN BOSS COMMANDER ⚔️</h2>
+<header>
+    <h1>ODIN: BOSS COMMANDER</h1>
+</header>
 
-    <div class="top-bar">
-        <input type="text" id="search-input" placeholder="보스 이름 검색..." oninput="filterBosses()">
-    </div>
-
-    <div class="boss-input-grid" id="input-fields">
+<div class="main-container">
+    <div class="input-section">
+        <input type="text" class="search-box" id="search" placeholder="보스 명칭 검색..." oninput="filterList()">
+        <div class="boss-grid" id="boss-list"></div>
+        <div class="btn-group">
+            <button class="btn-pip" onclick="togglePIP()">📺 PIP 모드</button>
+            <button class="btn-reset" onclick="resetAll()">초기화</button>
         </div>
-
-    <div class="controls">
-        <button class="btn-pip" onclick="togglePIP()">📺 PIP 모드 켜기</button>
-        <button class="btn-reset" onclick="resetAll()">🔄 초기화</button>
     </div>
 
-    <h3 style="color:var(--accent-gold); margin-top:30px;">ACTIVE TIMERS</h3>
-    <div class="timer-grid" id="timer-display"></div>
+    <div class="timer-section">
+        <h2>ACTIVE BATTLE FRONTS</h2>
+        <div class="active-timers" id="active-timers">
+            </div>
+    </div>
 </div>
 
-<video id="pip-video" autoplay muted></video>
-<canvas id="pip-canvas" width="300" height="500"></canvas>
+<video id="pip-video" autoplay muted style="display:none;"></video>
+<canvas id="pip-canvas" width="300" height="500" style="display:none;"></canvas>
 
 <script>
-    // 1. 보내주신 주소의 데이터를 기반으로 한 보스 리스트 (리젠 주기는 일반적인 정보 기준)
-    const bossData = [
-        { name: "모네가름", regen: 120 }, { name: "미미르", regen: 240 },
-        { name: "신마라", regen: 720 }, { name: "엘드룬", regen: 720 },
-        { name: "페티", regen: 720 }, { name: "수드리", regen: 720 },
-        { name: "라이노르", regen: 720 }, { name: "비요른", regen: 720 },
-        { name: "흐니르", regen: 720 }, { name: "셀로비아", regen: 720 },
-        { name: "브륀힐드", regen: 720 }, { name: "지감4층", regen: 480 },
-        { name: "파르바", regen: 120 }, { name: "바우티", regen: 120 },
-        { name: "스칼라니르", regen: 120 }, { name: "토르", regen: 1440 },
-        { name: "라타토스크", regen: 240 }, { name: "헤르모드", regen: 240 },
-        { name: "야룬", regen: 240 }, { name: "니드호그", regen: 1440 },
-        { name: "수르트", regen: 1440 }, { name: "두라스로르", regen: 480 },
-        { name: "노트", regen: 480 }, { name: "굴베이그", regen: 480 },
-        { name: "지감7층", regen: 480 }, { name: "드라우그", regen: 240 },
-        { name: "스바르트", regen: 240 }, { name: "탕그리스니르", regen: 240 },
-        { name: "지감10층", regen: 480 }, { name: "우로보로스", regen: 1440 },
-        { name: "헤르가름", regen: 120 }, { name: "샤무크", regen: 120 },
-        { name: "스컬드메르", regen: 120 }, { name: "메기르", regen: 120 },
-        { name: "발리", regen: 120 }, { name: "화신그로아", regen: 1440 },
-        { name: "히로킨", regen: 1440 }, { name: "오딘", regen: 1440 },
-        { name: "티르", regen: 1440 }
+    // 벤치마킹 사이트 기반 풀 리스트 (39종)
+    const bosses = [
+        { name: "모네가름", regen: 120 }, { name: "미미르", regen: 240 }, { name: "신마라", regen: 720 },
+        { name: "엘드룬", regen: 720 }, { name: "페티", regen: 720 }, { name: "수드리", regen: 720 },
+        { name: "라이노르", regen: 720 }, { name: "비요른", regen: 720 }, { name: "흐니르", regen: 720 },
+        { name: "셀로비아", regen: 720 }, { name: "브륀힐드", regen: 720 }, { name: "지감4층", regen: 480 },
+        { name: "파르바", regen: 120 }, { name: "바우티", regen: 120 }, { name: "스칼라니르", regen: 120 },
+        { name: "토르", regen: 1440 }, { name: "라타토스크", regen: 240 }, { name: "헤르모드", regen: 240 },
+        { name: "야룬", regen: 240 }, { name: "니드호그", regen: 1440 }, { name: "수르트", regen: 1440 },
+        { name: "두라스로르", regen: 480 }, { name: "노트", regen: 480 }, { name: "굴베이그", regen: 480 },
+        { name: "지감7층", regen: 480 }, { name: "드라우그", regen: 240 }, { name: "스바르트", regen: 240 },
+        { name: "탕그리스니르", regen: 240 }, { name: "지감10층", regen: 480 }, { name: "우로보로스", regen: 1440 },
+        { name: "헤르가름", regen: 120 }, { name: "샤무크", regen: 120 }, { name: "스컬드메르", regen: 120 },
+        { name: "메기르", regen: 120 }, { name: "발리", regen: 120 }, { name: "화신그로아", regen: 1440 },
+        { name: "히로킨", regen: 1440 }, { name: "오딘", regen: 1440 }, { name: "티르", regen: 1440 }
     ];
 
-    let activeTimers = JSON.parse(localStorage.getItem('odin_active_timers')) || [];
+    let timers = JSON.parse(localStorage.getItem('odin_v2_timers')) || [];
 
-    // 2. 보스 입력 필드 생성
-    function renderInputFields() {
-        const grid = document.getElementById('input-fields');
-        grid.innerHTML = '';
-        bossData.forEach((boss, index) => {
-            const div = document.createElement('div');
-            div.className = 'boss-row';
-            div.dataset.name = boss.name;
-            div.innerHTML = `
-                <span class="boss-name-title">${boss.name}</span>
-                <input type="number" placeholder="남은 분" onchange="setTimer(${index}, this.value)">
-            `;
-            grid.appendChild(div);
+    function init() {
+        const list = document.getElementById('boss-list');
+        bosses.sort((a,b) => a.name.localeCompare(b.name)).forEach((b, i) => {
+            const card = document.createElement('div');
+            card.className = 'boss-card';
+            card.innerHTML = `<span>${b.name}</span><input type="number" placeholder="남은 분" onchange="addTimer('${b.name}', this.value)">`;
+            list.appendChild(card);
+        });
+        updateDisplay();
+        setInterval(updateDisplay, 1000);
+    }
+
+    function addTimer(name, mins) {
+        if (!mins) return;
+        const target = Date.now() + (mins * 60000);
+        const idx = timers.findIndex(t => t.name === name);
+        if (idx > -1) timers[idx].target = target;
+        else timers.push({ name, target });
+        save();
+    }
+
+    function filterList() {
+        const q = document.getElementById('search').value;
+        document.querySelectorAll('.boss-card').forEach(c => {
+            c.style.display = c.firstChild.innerText.includes(q) ? 'flex' : 'none';
         });
     }
 
-    function filterBosses() {
-        const term = document.getElementById('search-input').value;
-        document.querySelectorAll('.boss-row').forEach(row => {
-            row.style.display = row.dataset.name.includes(term) ? 'flex' : 'none';
-        });
-    }
+    function updateDisplay() {
+        const container = document.getElementById('active-timers');
+        container.innerHTML = '';
+        const now = Date.now();
 
-    function setTimer(index, leftMins) {
-        if (leftMins === "" || leftMins < 0) return;
-        const now = new Date();
-        const targetTime = new Date(now.getTime() + leftMins * 60000);
-        
-        const idx = activeTimers.findIndex(t => t.name === bossData[index].name);
-        if (idx > -1) activeTimers[idx].target = targetTime.getTime();
-        else activeTimers.push({ name: bossData[index].name, target: targetTime.getTime() });
-        
-        saveAndRender();
-    }
+        timers.sort((a,b) => a.target - b.target);
+        timers = timers.filter(t => t.target - now > -600000); // 10분 지나면 삭제
 
-    function saveAndRender() {
-        localStorage.setItem('odin_active_timers', JSON.stringify(activeTimers));
-        renderTimers();
-    }
-
-    function renderTimers() {
-        const display = document.getElementById('timer-display');
-        display.innerHTML = '';
-        const now = new Date().getTime();
-
-        activeTimers.sort((a, b) => a.target - b.target);
-        activeTimers = activeTimers.filter(t => t.target - now > -600000); // 10분 지나면 삭제
-
-        activeTimers.forEach(timer => {
-            const diff = timer.target - now;
+        timers.forEach(t => {
+            const diff = t.target - now;
             const h = Math.floor(diff / 3600000);
             const m = Math.floor((diff % 3600000) / 60000);
             const s = Math.floor((diff % 60000) / 1000);
             
-            const item = document.createElement('div');
-            item.className = `timer-item ${diff < 300000 ? 'urgent' : ''}`;
-            item.innerHTML = `
-                <span>${timer.name}</span>
-                <span class="remaining">${diff > 0 ? `${h>0?h+':':''}${m}:${s<10?'0'+s:s}` : '출현!'}</span>
+            const unit = document.createElement('div');
+            unit.className = `timer-unit ${diff < 300000 && diff > 0 ? 'imminent' : ''}`;
+            unit.innerHTML = `
+                <div class="timer-header">
+                    <span class="timer-name">${t.name}</span>
+                    <span class="timer-target">${new Date(t.target).toLocaleTimeString()}</span>
+                </div>
+                <div class="timer-countdown">${diff > 0 ? `${h>0?h+':':''}${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}` : 'APPEARED'}</div>
             `;
-            display.appendChild(item);
+            container.appendChild(unit);
         });
-        drawCanvas();
+        drawPIP();
     }
 
-    // PIP 캔버스 그리기
+    // PIP 및 저장 로직은 생략/동일하게 유지
+    function save() { localStorage.setItem('odin_v2_timers', JSON.stringify(timers)); }
+    function resetAll() { if(confirm('모든 타이머를 초기화할까요?')) { timers = []; save(); } }
+
     const canvas = document.getElementById('pip-canvas');
     const ctx = canvas.getContext('2d');
-    function drawCanvas() {
-        ctx.fillStyle = "#0a0a12"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#ffd700"; ctx.font = "bold 20px Arial"; ctx.fillText("ODIN BOSS", 10, 30);
-        activeTimers.forEach((t, i) => {
-            const diff = t.target - new Date().getTime();
-            const m = Math.floor(diff / 60000);
-            const s = Math.floor((diff % 60000) / 1000);
-            ctx.fillStyle = diff < 300000 ? "#ff2a6d" : "#00f2ff";
-            ctx.fillText(`${t.name}: ${diff>0 ? m+':'+(s<10?'0'+s:s) : '젠!'}`, 10, 70 + (i * 35));
+    function drawPIP() {
+        ctx.fillStyle = "#0d0f12"; ctx.fillRect(0,0,300,500);
+        ctx.fillStyle = "#d4af37"; ctx.font = "bold 20px Cinzel"; ctx.fillText("BOSS MONITOR", 15, 40);
+        timers.slice(0, 10).forEach((t, i) => {
+            const diff = t.target - Date.now();
+            const m = Math.floor(diff/60000);
+            const s = Math.floor((diff%60000)/1000);
+            ctx.fillStyle = diff < 300000 ? "#ff4655" : "#00d4ff";
+            ctx.font = "18px monospace";
+            ctx.fillText(`${t.name.padEnd(8)} ${diff>0?m+':'+String(s).padStart(2,'0'):'GEN!'}`, 15, 80 + (i*35));
         });
     }
 
     async function togglePIP() {
-        const video = document.getElementById('pip-video');
+        const v = document.getElementById('pip-video');
         if (document.pictureInPictureElement) await document.exitPictureInPicture();
-        else {
-            video.srcObject = canvas.captureStream();
-            await video.play();
-            await video.requestPictureInPicture();
-        }
+        else { v.srcObject = canvas.captureStream(); await v.play(); await v.requestPictureInPicture(); }
     }
 
-    function resetAll() { if(confirm("초기화하시겠습니까?")) { activeTimers = []; saveAndRender(); } }
-
-    renderInputFields();
-    setInterval(renderTimers, 1000);
+    init();
 </script>
 </body>
 </html>

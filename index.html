@@ -3,28 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ODIN BOSS COMMANDER - AUTO SYNC</title>
+    <title>ODIN BOSS COMMANDER - PRECISION</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #8e24aa; --accent: #1e88e5; --bg: #f1f3f5;
+            --primary: #8e24aa; --accent: #1e88e5; --bg: #f8f9fa;
             --card: #ffffff; --text: #2c3e50; --danger: #d32f2f;
             --jotun: #3f51b5; --nida: #43a047; --alf: #ef6c00; --muspel: #c62828;
             --as: #7b1fa2; --nifl: #0097a7; --vana: #689f38; --dun: #455a64;
         }
 
         body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-
-        /* 사이드바 */
         nav { width: 70px; background: #fff; border-right: 1px solid #dee2e6; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; }
         .nav-item { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #95a5a6; transition: 0.2s; font-size: 20px; }
         .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(142, 36, 170, 0.3); }
-
-        /* 메인 */
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        header { height: 50px; background: #fff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); font-size: 1.1em; }
+        header { height: 50px; background: #fff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
         .content { flex: 1; padding: 20px; overflow-y: auto; }
-
         .pane { display: none; }
         .pane.active { display: block; }
 
@@ -33,20 +28,18 @@
         .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
         .timer-main { font-family: 'Orbitron', sans-serif; font-size: 3.5em; color: var(--accent); margin: 10px 0; text-align: center; }
 
-        /* 스케줄러 테이블 */
+        /* 스케줄러 */
         .world-badge { padding: 4px 10px; border-radius: 4px; color: #fff; font-weight: bold; font-size: 0.8em; margin: 15px 0 5px 0; display: inline-block; }
         table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
         td { padding: 12px; border-bottom: 1px solid #f1f3f5; }
-        .b-name { width: 150px; font-weight: 700; }
+        .b-name { width: 140px; font-weight: 700; }
+        .btn-killed { background: var(--danger); color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; }
         
-        /* 버튼 및 입력 */
-        .btn-killed { background: var(--danger); color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; }
-        .btn-killed:hover { filter: brightness(1.2); }
-        input[type="number"] { width: 70px; padding: 6px; border: 1px solid #ced4da; border-radius: 4px; text-align: center; font-family: 'Orbitron'; }
-        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 2px rgba(142,36,170,0.1); }
-        .exp-time { font-family: monospace; color: #7f8c8d; font-size: 0.9em; }
+        /* 입력창 디자인 개선 */
+        input[type="text"] { width: 110px; padding: 8px; border: 2px solid #e9ecef; border-radius: 6px; text-align: center; font-family: 'Orbitron'; font-weight: bold; color: var(--primary); }
+        input:focus { border-color: var(--primary); outline: none; background: #fdf2ff; }
+        .exp-time { font-family: monospace; color: #7f8c8d; font-size: 0.9em; font-weight: bold; }
 
-        /* 로그 */
         .log-box { height: 350px; overflow-y: auto; font-size: 0.85em; background: #fafafa; padding: 10px; border-radius: 8px; }
         .log-line { border-bottom: 1px solid #eee; padding: 4px 0; }
     </style>
@@ -60,7 +53,7 @@
 </nav>
 
 <main>
-    <header>ODIN COMMANDER: AUTO-SYNC</header>
+    <header>ODIN COMMANDER: PRECISION</header>
     <div class="content">
         <div id="dash" class="pane active">
             <div class="dashboard-layout">
@@ -86,7 +79,7 @@
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                     <h2 style="margin:0;">World Boss Scheduler</h2>
-                    <span style="font-size:0.8em; color:var(--text-muted);">* [잡음] 클릭 시 자동 예약 / [입력] 후 Enter 시 수동 예약</span>
+                    <span style="font-size:0.8em; color:var(--primary);">* 입력 예시: '1 20'(1시간20분), '15:30'(15분30초), '60'(60분)</span>
                 </div>
                 <div id="sched-body"></div>
             </div>
@@ -94,11 +87,11 @@
     </div>
 </main>
 
-<canvas id="pip-canvas" width="300" height="450" style="display:none;"></canvas>
+<canvas id="pip-canvas" width="300" height="300" style="display:none;"></canvas>
 <video id="pip-video" autoplay muted style="display:none;"></video>
 
 <script>
-    // 도균님이 요청하신 53종 보스 데이터 및 리젠 주기(분)
+    // 53종 보스 데이터 및 리젠 주기(분)
     const bossDB = [
         { w: "요툰헤임", c: "var(--jotun)", b: [
             {n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, 
@@ -133,7 +126,7 @@
         ]}
     ];
 
-    let timers = JSON.parse(localStorage.getItem('odin_auto_sync_v2')) || [];
+    let timers = JSON.parse(localStorage.getItem('odin_precision_v3')) || [];
 
     function init() {
         const body = document.getElementById('sched-body');
@@ -142,11 +135,12 @@
             html += `<div class="world-badge" style="background:${group.c}">${group.w}</div>`;
             html += `<table>`;
             group.b.forEach(boss => {
+                const savedVal = localStorage.getItem(`input_val_${boss.n}`) || '';
                 html += `
                     <tr>
                         <td class="b-name">${boss.n}</td>
-                        <td style="width:80px;"><button class="btn-killed" onclick="autoSet('${boss.n}', ${boss.r})">잡음</button></td>
-                        <td><input type="number" class="b-in" data-name="${boss.n}" placeholder="남은 분"></td>
+                        <td style="width:75px;"><button class="btn-killed" onclick="autoSet('${boss.n}', ${boss.r})">잡음</button></td>
+                        <td><input type="text" class="b-in" data-name="${boss.n}" value="${savedVal}" placeholder="시 분 초"></td>
                         <td class="exp-time" id="exp-${boss.n}">--:--</td>
                     </tr>`;
             });
@@ -154,30 +148,39 @@
         });
         body.innerHTML = html;
 
-        // 엔터 키 이벤트
         const ins = document.querySelectorAll('.b-in');
         ins.forEach((el, i) => {
             el.addEventListener('keydown', (e) => {
                 if(e.key === 'Enter') {
-                    manualSet(el.dataset.name, el.value);
-                    el.value = '';
+                    const sec = parseTime(el.value);
+                    if(sec > 0) {
+                        manualSet(el.dataset.name, sec);
+                        localStorage.setItem(`input_val_${el.dataset.name}`, el.value); // 값 유지용 저장
+                    }
                     if(ins[i+1]) ins[i+1].focus();
                 }
             });
         });
     }
 
-    // [잡음] 버튼 클릭 시: 현재시간 + 리젠주기
-    function autoSet(name, regen) {
-        const target = Date.now() + (regen * 60000);
-        save(name, target, `[자동] ${name} (${regen}분 뒤)`);
+    // 시간 파싱 로직 (H:M:S, M:S, M 모두 대응)
+    function parseTime(str) {
+        if(!str) return 0;
+        const p = str.split(/[:\s]+/).filter(x => x !== "").map(Number);
+        if (p.some(isNaN)) return 0;
+        if (p.length === 3) return (p[0] * 3600) + (p[1] * 60) + p[2]; // 시:분:초 -> 초
+        if (p.length === 2) return (p[0] * 60) + p[1]; // 분:초 -> 초
+        return p[0] * 60; // 분 -> 초
     }
 
-    // [수동] 입력 시: 현재시간 + 남은분
-    function manualSet(name, mins) {
-        if(!mins) return;
-        const target = Date.now() + (mins * 60000);
-        save(name, target, `[수동] ${name} (${mins}분 뒤)`);
+    function autoSet(name, regenMins) {
+        const target = Date.now() + (regenMins * 60000);
+        save(name, target, `[자동] ${name} (${regenMins}분 주기)`);
+    }
+
+    function manualSet(name, totalSec) {
+        const target = Date.now() + (totalSec * 1000);
+        save(name, target, `[수동] ${name} (${Math.floor(totalSec/60)}분 ${totalSec%60}초 뒤)`);
     }
 
     function save(name, target, logMsg) {
@@ -185,7 +188,7 @@
         if(idx > -1) timers[idx].t = target;
         else timers.push({ n: name, t: target });
         
-        localStorage.setItem('odin_auto_sync_v2', JSON.stringify(timers));
+        localStorage.setItem('odin_precision_v3', JSON.stringify(timers));
         document.getElementById(`exp-${name}`).innerText = new Date(target).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
         addLog(logMsg);
     }
@@ -206,7 +209,7 @@
     function update() {
         const now = Date.now();
         timers.sort((a,b) => a.t - b.t);
-        timers = timers.filter(timer => timer.t - now > -600000); // 10분 경과 시 삭제
+        timers = timers.filter(timer => timer.t - now > -600000);
 
         if(timers.length > 0) {
             const next = timers[0];
@@ -237,13 +240,14 @@
     const canvas = document.getElementById('pip-canvas');
     const ctx = canvas.getContext('2d');
     function drawPIP() {
-        ctx.fillStyle = "#1e1e2e"; ctx.fillRect(0,0,300,450);
-        ctx.fillStyle = "#8e24aa"; ctx.font = "bold 18px Orbitron"; ctx.fillText("ODIN SYNC", 15, 35);
-        timers.slice(0, 10).forEach((t, i) => {
+        ctx.fillStyle = "#1e1e2e"; ctx.fillRect(0,0,300,300);
+        ctx.fillStyle = "#8e24aa"; ctx.font = "bold 18px Orbitron"; ctx.fillText("ODIN PIP (5)", 15, 35);
+        // 요청대로 상위 5개만 표시
+        timers.slice(0, 5).forEach((t, i) => {
             const d = t.t - Date.now();
             ctx.fillStyle = d < 300000 ? "#ff1744" : "#00e5ff";
             ctx.font = "16px Noto Sans KR";
-            ctx.fillText(`${t.n.padEnd(8)} ${format(d)}`, 15, 75 + (i*35));
+            ctx.fillText(`${t.n.substring(0,6).padEnd(6)} ${format(d)}`, 15, 75 + (i*40));
         });
     }
 

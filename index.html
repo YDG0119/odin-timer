@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ODIN BOSS COMMANDER - VERTICAL V12</title>
+    <title>ODIN BOSS COMMANDER - V13 PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -45,6 +45,9 @@
         .gwang-btns { display: flex; gap: 10px; margin: 20px 0; }
         .g-btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; font-size: 1.1em; }
         .res-display { background: #f8f9fa; border: 2px dashed #ccc; padding: 20px; border-radius: 10px; font-weight: bold; }
+
+        /* PIP 비디오 요소 숨김 */
+        #pip-video { position: fixed; bottom: 0; right: 0; width: 10px; height: 10px; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -57,7 +60,7 @@
 </nav>
 
 <main>
-    <header>ODIN BOSS COMMANDER V12 (VERTICAL SYNC)</header>
+    <header>ODIN BOSS COMMANDER V13 (PIP STABLE)</header>
     <div class="content">
         <div id="dash" class="pane active">
             <button onclick="copyKakao()" style="width:100%; background:#fee500; padding:15px; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-bottom:20px;">📢 카톡 공지 문구 복사</button>
@@ -83,21 +86,15 @@
                     </div>
                     <div class="res-display" id="g-res">사냥 시작 시 [시작]을 누르세요.</div>
                 </div>
-                <div class="gwang-card">
-                    <h3>🕒 젠 시간 강제 업데이트</h3>
-                    <input type="text" id="manual-up-val" placeholder="시 분 초 (예: 8 44)" style="width:100%; margin-bottom:10px;">
-                    <button onclick="manualUpdate()" style="width:100%; background:var(--accent); color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">즉시 반영</button>
-                </div>
             </div>
         </div>
     </div>
 </main>
 
-<canvas id="pip-canvas" width="300" height="280" style="display:none;"></canvas>
-<video id="pip-video" autoplay muted style="display:none;"></video>
+<canvas id="pip-canvas" width="300" height="300" style="display:none;"></canvas>
+<video id="pip-video" autoplay muted playsinline></video>
 
 <script>
-    // 도균님이 요청하신 53종 보스 정렬 순서 준수
     const bossDB = [
         { w: "요툰헤임", c: "var(--jotun)", b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야룬", r:240}, {n:"티르", r:1440}]},
         { w: "니다벨리르", c: "var(--nida)", b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}]},
@@ -109,50 +106,42 @@
         { w: "던전", c: "var(--dun)", b: [{n:"최하층 굴베이그", r:480}, {n:"최하층 강글로티", r:480}, {n:"최하층 스네르", r:480}, {n:"4층 모네가름", r:240}, {n:"7층 드라우그", r:480}, {n:"10층 다인흘로크", r:480}]}
     ];
 
-    let timers = JSON.parse(localStorage.getItem('odin_v12_timers')) || [];
+    let timers = JSON.parse(localStorage.getItem('odin_v13_timers')) || [];
     let gData = { start: null, glow: null };
 
     function init() {
         const area = document.getElementById('sched-table-area');
         const sel = document.getElementById('g-boss-sel');
         let html = '';
-        
         bossDB.forEach(group => {
             html += `<div class="world-header" style="background:${group.c}">${group.w}</div>`;
             html += `<table><thead><tr><th>보스명</th><th width="100">동작</th><th>남은 시간 입력 (Enter)</th><th>예상 젠</th></tr></thead><tbody>`;
             group.b.forEach(boss => {
-                const sv = localStorage.getItem(`v12_val_${boss.n}`) || '';
-                html += `
-                    <tr>
-                        <td class="b-name">${boss.n}</td>
-                        <td><button class="btn-killed" onclick="autoZen('${boss.n}', ${boss.r})">잡음</button></td>
-                        <td><input type="text" class="v-input" data-name="${boss.n}" value="${sv}" placeholder="일 시 분 초"></td>
-                        <td class="zen-time" id="zen-${boss.n}">--:--</td>
-                    </tr>`;
+                const sv = localStorage.getItem(`v13_val_${boss.n}`) || '';
+                html += `<tr><td class="b-name">${boss.n}</td><td><button class="btn-killed" onclick="autoZen('${boss.n}', ${boss.r})">잡음</button></td><td><input type="text" class="v-input" data-name="${boss.n}" value="${sv}"></td><td class="zen-time" id="zen-${boss.n}">--:--</td></tr>`;
                 sel.innerHTML += `<option value="${boss.n}">${boss.n}</option>`;
             });
             html += `</tbody></table>`;
         });
         area.innerHTML = html;
 
-        // 핵심: 세로 엔터 이동 로직
         const inputs = document.querySelectorAll('.v-input');
         inputs.forEach((el, i) => {
             el.addEventListener('keydown', (e) => {
                 if(e.key === 'Enter') {
                     const sec = smartParse(el.value);
                     if(sec > 0) saveTimer(el.dataset.name, sec, el.value);
-                    if(inputs[i+1]) inputs[i+1].focus(); // 아래 칸으로 이동
+                    if(inputs[i+1]) inputs[i+1].focus();
                 }
             });
         });
     }
 
-    // 💡 자연어 파싱 (2일 2, 8 44 등 게임 UI 대응)
+    // 시간 파싱 및 저장 로직
     function smartParse(str) {
         if(!str) return 0;
         let total = 0;
-        const dMatch = str.match(/(\d+)\s*(일|d)/); const hMatch = str.match(/(\d+)\s*(시간|h)/); const mMatch = str.match(/(\d+)\s*(분|m)/); const sMatch = str.match(/(\d+)\s*(초|s)/);
+        const dMatch = str.match(/(\d+)\s*일/); const hMatch = str.match(/(\d+)\s*시간/); const mMatch = str.match(/(\d+)\s*분/); const sMatch = str.match(/(\d+)\s*초/);
         if(dMatch || hMatch || mMatch || sMatch) {
             if(dMatch) total += parseInt(dMatch[1])*86400; if(hMatch) total += parseInt(hMatch[1])*3600; if(mMatch) total += parseInt(mMatch[1])*60; if(sMatch) total += parseInt(sMatch[1]);
         } else {
@@ -166,42 +155,30 @@
         const target = Date.now() + (sec * 1000);
         const idx = timers.findIndex(t => t.n === name);
         if(idx > -1) timers[idx].t = target; else timers.push({ n: name, t: target });
-        localStorage.setItem('odin_v12_timers', JSON.stringify(timers));
-        localStorage.setItem(`v12_val_${name}`, raw);
+        localStorage.setItem('odin_v13_timers', JSON.stringify(timers));
+        localStorage.setItem(`v13_val_${name}`, raw);
         updateDisplay();
     }
 
     function autoZen(name, regen) { saveTimer(name, regen * 60, "자동(잡음)"); }
 
-    // 🔥 정밀 광폭화 계산기 (시작-광-잡힘)
+    // 광폭화 계산기 로직
     function gwang(type) {
         const res = document.getElementById('g-res');
         const bName = document.getElementById('g-boss-sel').value;
         const now = Date.now();
-        if(type === 'start') { gData.start = now; res.innerHTML = `시작: ${new Date(now).toLocaleTimeString()}<br>광이 뜨면 [광]을 누르세요.`; }
-        else if(type === 'glow') { if(!gData.start) return; gData.glow = now; res.innerHTML = `광폭화 도달!<br>잡으면 [잡힘]을 누르세요.`; }
+        if(type === 'start') { gData.start = now; res.innerHTML = `시작: ${new Date(now).toLocaleTimeString()}`; }
+        else if(type === 'glow') { if(!gData.start) return; gData.glow = now; res.innerHTML = `광폭화 도달!`; }
         else if(type === 'kill') {
             if(!gData.glow) return;
             let r = 120; bossDB.forEach(g => g.b.forEach(b => { if(b.n === bName) r = b.r; }));
             saveTimer(bName, r * 60, "광계산 반영");
-            res.innerHTML = `처치 완료! 다음 젠 반영됨.<br>${new Date(now + r*60000).toLocaleTimeString()}`;
+            res.innerHTML = `반영 완료: ${new Date(now + r*60000).toLocaleTimeString()}`;
             gData = { start: null, glow: null };
         }
     }
 
-    // 📢 카톡 공지 텍스트 복사 (월.일 포함)
-    function copyKakao() {
-        if(timers.length === 0) return;
-        timers.sort((a,b) => a.t - b.t);
-        const d = new Date();
-        let txt = `${d.getMonth()+1}.${d.getDate()}\n`;
-        timers.forEach(t => {
-            const z = new Date(t.t);
-            txt += `${z.getHours().toString().padStart(2,'0')}:${z.getMinutes().toString().padStart(2,'0')} ${t.n}\n`;
-        });
-        navigator.clipboard.writeText(txt.trim()).then(() => alert("카톡 공지용 텍스트 복사 완료!"));
-    }
-
+    // 화면 업데이트 및 PIP 드로잉
     function updateDisplay() {
         const now = Date.now();
         timers.sort((a,b) => a.t - b.t);
@@ -223,18 +200,59 @@
         return `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
 
-    function tab(id) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-    function togglePIP() { const v = document.getElementById('pip-video'); if (document.pictureInPictureElement) document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); v.play(); v.requestPictureInPicture(); } }
+    // PIP 핵심 구동 엔진 (보완됨)
+    async function togglePIP() {
+        const video = document.getElementById('pip-video');
+        const canvas = document.getElementById('pip-canvas');
+
+        try {
+            if (document.pictureInPictureElement) {
+                await document.exitPictureInPicture();
+            } else {
+                if (video.readyState === 0) {
+                    // 비디오에 스트림 연결 및 최초 실행
+                    const stream = canvas.captureStream(30); // 30fps 고정
+                    video.srcObject = stream;
+                    await video.play();
+                }
+                await video.requestPictureInPicture();
+            }
+        } catch (error) {
+            console.error("PIP Error:", error);
+            alert("PIP 모드 실행에 실패했습니다.\n1. Chrome, Edge, Whale 브라우저를 권장합니다.\n2. 브라우저 설정에서 PIP가 허용되어 있는지 확인해 주세요.");
+        }
+    }
+
     function drawPIP() {
-        const ctx = document.getElementById('pip-canvas').getContext('2d');
-        ctx.fillStyle = "#121212"; ctx.fillRect(0,0,300,280); ctx.fillStyle = "#ffd700"; ctx.font = "bold 18px Orbitron"; ctx.fillText("BOSS MONITOR (5)", 15, 35);
+        const canvas = document.getElementById('pip-canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = "#121212"; ctx.fillRect(0,0,300,300);
+        ctx.fillStyle = "#ffd700"; ctx.font = "bold 20px Orbitron"; ctx.fillText("BOSS MONITOR", 15, 40);
+        
         timers.slice(0, 5).forEach((t, i) => {
-            const d = t.t - Date.now(); ctx.fillStyle = d < 300000 ? "#ff1744" : "#00e5ff"; ctx.font = "16px Noto Sans KR";
-            ctx.fillText(`${t.n.padEnd(8)} ${format(d)}`, 15, 75 + (i*40));
+            const d = t.t - Date.now();
+            ctx.fillStyle = d < 300000 ? "#ff1744" : "#00e5ff";
+            ctx.font = "bold 18px Noto Sans KR";
+            ctx.fillText(`${t.n.substring(0,6).padEnd(6)} ${format(d)}`, 15, 85 + (i*45));
         });
     }
 
-    init(); setInterval(updateDisplay, 1000);
+    function copyKakao() {
+        if(timers.length === 0) return;
+        timers.sort((a,b) => a.t - b.t);
+        const d = new Date();
+        let txt = `${d.getMonth()+1}.${d.getDate()}\n`;
+        timers.forEach(t => {
+            const z = new Date(t.t);
+            txt += `${z.getHours().toString().padStart(2,'0')}:${z.getMinutes().toString().padStart(2,'0')} ${t.n}\n`;
+        });
+        navigator.clipboard.writeText(txt.trim()).then(() => alert("복사 완료!"));
+    }
+
+    function tab(id) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+
+    init();
+    setInterval(updateDisplay, 1000);
 </script>
 </body>
 </html>

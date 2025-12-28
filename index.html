@@ -3,54 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>오딘 보스 알리미 V24</title>
+    <title>보스 알리미 V25 - 아키텍트 오버홀</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #8e24aa; --accent: #1e88e5; --bg: #f8f9fa;
-            --danger: #d32f2f; --warning: #ffa000; --sidebar-w: 70px;
-            --success: #44bd32;
+            --danger: #d32f2f; --warning: #ffa000; --sidebar-w: 75px;
+            --success: #44bd32; --black: #2d3436;
         }
         body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         body.system-off { filter: grayscale(1) brightness(0.8); pointer-events: none; }
-        body.system-off header, body.system-off .global-pwr { pointer-events: auto !important; filter: none !important; }
+        body.system-off header, body.system-off .global-pwr, body.system-off nav { pointer-events: auto !important; filter: none !important; }
 
-        /* 사이드바 */
-        nav { width: var(--sidebar-w); background: #fff; border-right: 1px solid #dee2e6; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 12px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
-        .nav-item { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #777; font-size: 20px; transition: 0.2s; }
+        /* 사이드바 UI (image_ef4567 레이아웃) */
+        nav { width: var(--sidebar-w); background: #fff; border-right: 1px solid #dee2e6; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
+        .nav-item { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #777; font-size: 22px; transition: 0.2s; }
         .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(142, 36, 170, 0.3); }
 
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        header { height: 60px; background: #fff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-weight: bold; position: relative; }
-        .global-pwr { position: absolute; right: 20px; font-size: 1.8em; cursor: pointer; color: var(--danger); transition: 0.3s; }
+        header { height: 60px; background: #fff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-weight: bold; position: relative; font-size: 1.2em; color: var(--primary); }
+        .global-pwr { position: absolute; right: 25px; font-size: 1.8em; cursor: pointer; color: var(--danger); transition: 0.3s; }
         .global-pwr.is-on { color: var(--success); text-shadow: 0 0 10px rgba(68, 189, 50, 0.3); }
 
-        .content { flex: 1; padding: 20px; overflow-y: auto; }
+        .content { flex: 1; padding: 25px; overflow-y: auto; }
         .pane { display: none; max-width: 1200px; margin: 0 auto; }
         .pane.active { display: block; animation: fadeIn 0.3s ease; }
         .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
 
-        /* ⚔️ 전술 광 계산기 (개편) */
+        /* ⚔️ 정밀 전술 광 계산기 (HP 33.8%) */
         .battle-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 15px; margin: 15px 0; }
-        .battle-box { background: #f9fafb; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #eee; }
+        .battle-box { background: #f9fafb; padding: 25px; border-radius: 15px; text-align: center; border: 1px solid #eee; position: relative; }
         .val-txt { font-family: 'Orbitron'; font-size: 3.2em; display: block; line-height: 1.1; }
         .over-mode { color: var(--danger) !important; }
-        .label-sm { font-size: 0.85em; color: #888; font-weight: bold; margin-bottom: 8px; display: block; }
+        .label-sm { font-size: 0.85em; color: #888; font-weight: bold; margin-bottom: 10px; display: block; }
         .calc-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         .c-btn { padding: 15px; border: none; border-radius: 10px; font-weight: bold; color: white; cursor: pointer; font-size: 1.1em; transition: 0.1s; }
-        .c-btn:active { transform: scale(0.96); }
 
-        /* 스케줄러 & 서버 탭 */
+        /* 📅 스케줄러 (image_ff1c98, image_fe375d 스타일) */
         .srv-tabs { display: flex; gap: 5px; margin-bottom: 15px; }
-        .srv-btn { padding: 8px 20px; background: #e0e0e0; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .srv-btn { padding: 10px 25px; background: #e0e0e0; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9em; }
         .srv-btn.active { background: var(--accent); color: white; }
-        .banner { padding: 8px 15px; color: white; font-weight: bold; font-size: 0.8em; border-radius: 4px; margin-top: 15px; background: var(--primary); }
-        table { width: 100%; border-collapse: collapse; background: #fff; margin-bottom: 10px; }
-        td { padding: 8px 12px; border-bottom: 1px solid #f1f3f5; }
-        .v-in { width: 130px; padding: 8px; border: 2px solid #eee; border-radius: 8px; text-align: center; font-family: 'Orbitron'; font-weight: bold; }
+        .banner { padding: 10px 15px; color: white; font-weight: bold; font-size: 0.9em; border-radius: 5px; margin-top: 15px; background: #a55eea; }
+        table { width: 100%; border-collapse: collapse; background: #fff; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        td { padding: 12px 15px; border-bottom: 1px solid #f1f3f5; vertical-align: middle; }
+        .b-name-td { width: 180px; font-weight: bold; font-size: 1.1em; }
+        .v-in { width: 150px; padding: 10px; border: 2px solid #eee; border-radius: 8px; text-align: center; font-family: 'Orbitron'; font-weight: bold; font-size: 1.1em; }
+        .zen-time-td { width: 120px; font-family: 'Orbitron'; font-weight: bold; color: #555; text-align: center; font-size: 1.1em; }
+        .btn-killed { background: var(--danger); color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-        #pip-video { position: fixed; bottom: 0; right: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+        /* 🕒 텍스트 에디터 (image_fdc31b) */
+        .text-editor { width: 100%; height: 500px; padding: 25px; border-radius: 12px; border: 1px solid #ddd; font-family: monospace; font-size: 1.1em; line-height: 1.7; resize: none; box-sizing: border-box; background: #fafafa; }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } }
+        #pip-video { position: fixed; bottom: 0; right: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -64,31 +69,34 @@
 </nav>
 
 <main>
-    <header>보스 알리미 PRO <div id="pwr" class="global-pwr is-on" onclick="togglePwr()">⏻</div></header>
+    <header>보스 관제 사령부 <div id="pwr" class="global-pwr is-on" onclick="togglePwr()">⏻</div></header>
     <div class="content">
         <div id="dash" class="pane active">
-            <div style="display:grid; grid-template-columns: 1fr 380px; gap: 20px;">
-                <div class="card" style="text-align:center; border-top:5px solid var(--accent);">
-                    <div style="font-weight:bold; color:#888;">NEXT TARGET</div>
-                    <div id="d-name" style="font-size:2.2em; font-weight:bold; margin:10px 0;">대기 중</div>
-                    <div id="d-timer" style="font-family:Orbitron; font-size:5.5em; color:var(--accent);">00:00:00</div>
-                    <button onclick="copyKakao()" style="background:#fee500; border:none; padding:12px 30px; border-radius:8px; font-weight:bold; cursor:pointer;">📢 카톡 공지 복사</button>
+            <div style="display:grid; grid-template-columns: 1fr 380px; gap: 25px;">
+                <div class="card" style="text-align:center; border-top:6px solid var(--accent);">
+                    <div style="font-weight:bold; color:#888;">CURRENT TARGET</div>
+                    <div id="d-name" style="font-size:2.5em; font-weight:bold; margin:10px 0;">대기 중</div>
+                    <div id="d-timer" style="font-family:Orbitron; font-size:6.5em; color:var(--accent);">00:00:00</div>
+                    <button onclick="copyKakao()" style="background:#fee500; border:none; padding:15px 50px; border-radius:10px; font-weight:bold; cursor:pointer; font-size:1.1em;">📢 카톡 공지 복사</button>
                 </div>
-                <div class="card"><h3>🔔 알림 로그</h3><div id="logs" style="font-size:0.85em; line-height:1.7; height:300px; overflow-y:auto;"></div></div>
+                <div class="card">
+                    <h3 style="margin-top:0;">🔔 실시간 이벤트 로그</h3>
+                    <div id="logs" style="font-size:0.9em; line-height:1.8; height:350px; overflow-y:auto; border-top:1px solid #eee; padding-top:10px;"></div>
+                </div>
             </div>
         </div>
 
         <div id="set-txt" class="pane">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <h2 style="margin:0;">텍스트 동기화</h2>
-                <button style="background:var(--primary); color:white; border:none; padding:8px 20px; border-radius:6px; font-weight:bold;" onclick="saveText()">반영하기</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2 style="margin:0;">텍스트 동기화 공지</h2>
+                <button style="background:var(--primary); color:white; border:none; padding:10px 30px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="saveText()">공지 내용 적용하기</button>
             </div>
-            <textarea id="txt-ed" style="width:100%; height:450px; padding:20px; border-radius:10px; border:1px solid #ddd; font-family:monospace; font-size:1.1em; line-height:1.6;"></textarea>
+            <textarea id="txt-ed" class="text-editor" placeholder="12.29&#10;21:13 야룬..."></textarea>
         </div>
 
         <div id="sched" class="pane">
             <div class="srv-tabs">
-                <button id="srv-m" class="srv-btn active" onclick="srvSw('main')">본서버</button>
+                <button id="srv-m" class="srv-btn active" onclick="srvSw('main')">오딘(본서버)</button>
                 <button id="srv-i" class="srv-btn" onclick="srvSw('inv')">침공서버</button>
             </div>
             <div id="sched-cont"></div>
@@ -96,27 +104,27 @@
 
         <div id="calc" class="pane">
             <div class="card">
-                <h2 style="text-align:center; margin:0 0 15px 0;">⚔️ 전술 광폭화 엔진</h2>
-                <select id="calc-sel" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:15px; font-weight:bold;"></select>
+                <h2 style="text-align:center; margin:0 0 20px 0;">⚔️ 전술 광폭화 추적 시스템</h2>
+                <select id="calc-sel" style="width:100%; padding:15px; border-radius:10px; border:1px solid #ddd; margin-bottom:20px; font-weight:bold; font-size:1.2em;"></select>
                 
                 <div class="battle-grid">
                     <div class="battle-box">
-                        <span class="label-sm">시작 후 경과 시간</span>
+                        <span class="label-sm">전투 시작 후 경과</span>
                         <span class="val-txt" id="b-elap">00:00</span>
                     </div>
                     <div class="battle-box">
-                        <span class="label-sm" id="b-label">잡힘 예상 (HP 33.8%)</span>
+                        <span class="label-sm" id="b-label">처치 예상 (33.8%)</span>
                         <span class="val-txt" id="b-timer">--:--</span>
                     </div>
                 </div>
                 
                 <div class="calc-btns">
-                    <button class="c-btn" style="background:#455a64;" onclick="btl('start')">시작</button>
-                    <button class="c-btn" style="background:var(--warning);" onclick="btl('kwang')">광 (Gwang)</button>
-                    <button class="c-btn" style="background:var(--danger);" onclick="btl('kill')">잡힘</button>
+                    <button class="c-btn" style="background:#455a64;" onclick="btl('start')">시작 (Start)</button>
+                    <button class="c-btn" style="background:var(--warning);" onclick="btl('kwang')">광 (33.8%)</button>
+                    <button class="c-btn" style="background:var(--danger);" onclick="btl('kill')">잡힘 (Killed)</button>
                 </div>
                 
-                <div id="btl-res" style="margin-top:15px; padding:15px; background:#f0f7ff; border-radius:10px; text-align:center; font-weight:bold; display:none;"></div>
+                <div id="btl-res" style="margin-top:20px; padding:20px; background:#f0f7ff; border:2px dashed var(--accent); border-radius:15px; text-align:center; font-weight:bold; font-size:1.1em; display:none;"></div>
             </div>
         </div>
     </div>
@@ -126,6 +134,7 @@
 <video id="pip-video" autoplay muted playsinline></video>
 
 <script>
+    // 1. 보스 리스트 (image_fbf582 기반)
     const bosses = [
         { w: "요툰헤임", b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야룬", r:240}, {n:"티르", r:1440}] },
         { w: "니다벨리르", b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}] },
@@ -135,7 +144,7 @@
 
     let st = {
         on: true, srv: 'main',
-        timers: JSON.parse(localStorage.getItem('v24_timers')) || { main: [], inv: [] },
+        timers: JSON.parse(localStorage.getItem('v25_timers')) || { main: [], inv: [] },
         battle: { s: null, k: null, est: 0 },
         alerted: { m5: [], m1: [] }
     };
@@ -144,13 +153,34 @@
         renderSched(); syncTxt();
         const sel = document.getElementById('calc-sel');
         bosses.forEach(g => g.b.forEach(b => sel.innerHTML += `<option value="${b.n}">${b.n}</option>`));
-        // 고성능 루프 엔진 (0.1초)
         setInterval(loop, 100);
     }
 
-    function togglePwr() { st.on = !st.on; document.getElementById('pwr').classList.toggle('is-on', st.on); document.body.classList.toggle('system-off', !st.on); }
+    // 💡 핵심: 젠 시간 즉각 표시 해결책
+    function onInputChange(el) {
+        const name = el.dataset.name;
+        const val = el.value;
+        const sec = parseSmart(val);
+        
+        if (sec > 0) {
+            const target = Date.now() + (sec * 1000);
+            updateExpectedCell(name, target); // 즉시 젠 시간 셀 업데이트
+            setTimer(name, sec, val); // 타이머 저장
+        } else {
+            document.getElementById(`zen-${name}`).innerText = "--:--";
+        }
+    }
 
-    // 💡 광폭화 전투 엔진 로직 (HP 33.8% 보정)
+    function updateExpectedCell(name, timestamp) {
+        const el = document.getElementById(`zen-${name}`);
+        if(el) {
+            const date = new Date(timestamp);
+            el.innerText = date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
+            el.style.color = "var(--primary)";
+        }
+    }
+
+    // 💡 전술 광폭화 로직 (역카운팅 -> 오버전환)
     function btl(type) {
         if(!st.on) return;
         const now = Date.now();
@@ -160,23 +190,25 @@
         if(type === 'start') {
             st.battle = { s: now, k: null, est: 0 };
             tEl.innerText = "--:--"; tEl.classList.remove('over-mode');
-            lEl.innerText = "잡힘 예상 (HP 33.8%)";
+            lEl.innerText = "처치 예상 (역카운팅)";
             document.getElementById('btl-res').style.display = 'none';
         } else if(type === 'kwang') {
             if(!st.battle.s) return;
             st.battle.k = now;
             const t1 = (now - st.battle.s) / 1000;
-            // 💡 보정 공식: (33.8% / 66.2%) * T1
+            // 💡 33.8% 보정 공식: (33.8/66.2) * T1
             st.battle.est = Math.floor(t1 * 0.51);
+            addLog(`광폭화! 남은 HP 33.8% 예상 처리시간: ${st.battle.est}초`);
         } else if(type === 'kill') {
             if(!st.battle.s) return;
             const name = document.getElementById('calc-sel').value;
             const b = findBoss(name);
-            if(b) setTimer(name, b.r * 60);
+            if(b) setTimer(name, b.r * 60, "자동");
             
             const total = Math.floor((now - st.battle.s)/1000);
             const r = document.getElementById('btl-res');
-            r.innerText = `[${name}] 처치 완료! (총 ${total}초 소요)`; r.style.display = 'block';
+            r.innerText = `[${name}] 분석 결과: 총 ${total}초 소요 (예상 대비 ${Math.floor((now - st.battle.k)/1000) - st.battle.est}초 오차)`;
+            r.style.display = 'block';
             st.battle = { s: null, k: null, est: 0 };
         }
     }
@@ -185,7 +217,6 @@
         if(!st.on) return;
         const now = Date.now();
 
-        // 1. 계산기 실시간 드로잉 (시간 멈춤 해결)
         if(st.battle.s && !st.battle.k) {
             document.getElementById('b-elap').innerText = formatSimple((now - st.battle.s)/1000);
         }
@@ -199,14 +230,12 @@
                 tEl.innerText = formatSimple(remain);
                 tEl.classList.remove('over-mode');
             } else {
-                // 💡 제로 도달 시 오버타임(+) 전환
                 tEl.innerText = "+" + formatSimple(Math.abs(remain));
                 tEl.classList.add('over-mode');
                 lEl.innerText = "처치 지연 시간 (Overtime)";
             }
         }
 
-        // 2. 대시보드 & 타이머 관리
         const list = [...st.timers[st.srv]].sort((a,b) => a.t - b.t);
         if(list.length > 0) {
             document.getElementById('d-name').innerText = list[0].n;
@@ -214,22 +243,19 @@
         }
 
         st.timers[st.srv].forEach(tm => {
-            const el = document.getElementById(`zen-${tm.n}`);
-            if(el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
-            
-            const d = Math.floor((tm.t - now)/1000);
-            if(d === 300 && !st.alerted.m5.includes(tm.n)) { playTTS(`${tm.n} 5분 전.`); st.alerted.m5.push(tm.n); }
-            if(d === 60 && !st.alerted.m1.includes(tm.n)) { playTTS(`${tm.n} 1분 전.`); st.alerted.m1.push(tm.n); }
+            const diff = Math.floor((tm.t - now)/1000);
+            if(diff === 300 && !st.alerted.m5.includes(tm.n)) { playTTS(`${tm.n} 5분 전.`); st.alerted.m5.push(tm.n); }
+            if(diff === 60 && !st.alerted.m1.includes(tm.n)) { playTTS(`${tm.n} 1분 전.`); st.alerted.m1.push(tm.n); }
         });
         drawPIP(list);
     }
 
-    // 📺 PiP 위젯 (image_feab7d 콤팩트 스타일)
+    // 📺 PiP 위젯 (image_feab7d 콤팩트 디자인)
     function drawPIP(list) {
         const ctx = document.getElementById('pip-canvas').getContext('2d');
         ctx.fillStyle = "#fff"; ctx.fillRect(0,0,220,120);
         ctx.fillStyle = "#2d3436"; ctx.fillRect(0,0,220,35);
-        ctx.fillStyle = "#fff"; ctx.font = "bold 13px Arial"; ctx.fillText("오딘 관제 PiP", 15, 23);
+        ctx.fillStyle = "#fff"; ctx.font = "bold 13px Arial"; ctx.fillText("보스 알리미 PRO", 15, 23);
         if(list.length > 0) {
             const n = list[0]; const d = n.t - Date.now();
             ctx.fillStyle = "#0984e3"; ctx.font = "bold 22px 'Noto Sans KR'"; ctx.textAlign = "center"; ctx.fillText(n.n, 110, 75);
@@ -237,32 +263,40 @@
         }
     }
 
-    // [기본 기능들]
+    // [유틸리티 & 렌더링]
     function renderSched() {
         const c = document.getElementById('sched-cont'); let h = '';
         bosses.forEach(g => {
             h += `<div class="banner">${g.w}</div><table><tbody>`;
             g.b.forEach(b => {
-                const sv = localStorage.getItem(`v24_in_${b.n}`) || '';
-                h += `<tr><td width="140"><strong>${b.n}</strong></td><td><input type="text" class="v-in" data-name="${b.n}" value="${sv}" placeholder="남은시간"></td><td id="zen-${b.n}" style="font-family:Orbitron; font-weight:bold; color:#777;">--:--</td><td><button style="background:var(--danger); color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;" onclick="setTimer('${b.n}', ${b.r * 60})">잡음</button></td></tr>`;
+                const sv = localStorage.getItem(`v25_in_${b.n}`) || '';
+                const existing = st.timers[st.srv].find(t => t.n === b.n);
+                const zen = existing ? new Date(existing.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false}) : '--:--';
+                h += `<tr><td class="b-name-td">${b.n}</td><td><input type="text" class="v-in" data-name="${b.n}" value="${sv}" oninput="onInputChange(this)"></td><td id="zen-${b.n}" class="zen-time-td">${zen}</td><td><button class="btn-killed" onclick="setTimer('${b.n}', ${b.r * 60}, '자동')">잡음</button></td></tr>`;
             });
             h += `</tbody></table>`;
         });
         c.innerHTML = h;
         const ins = document.querySelectorAll('.v-in');
-        ins.forEach((el, i) => el.addEventListener('keydown', (e) => { if(e.key==='Enter') { const s = parseSmart(el.value); if(s>0) setTimer(el.dataset.name, s, el.value); if(ins[i+1]) ins[i+1].focus(); } }));
+        ins.forEach((el, i) => el.addEventListener('keydown', (e) => { if(e.key==='Enter' && ins[i+1]) ins[i+1].focus(); }));
     }
+
     function parseSmart(s) { 
-        if(!s) return 0; const p = s.split(/[:\s]+/).map(Number);
+        if(!s) return 0;
+        const korMatch = s.match(/(\d+)시간\s*(\d+)분/) || s.match(/(\d+)분/);
+        if(korMatch) { if(korMatch.length === 3) return (parseInt(korMatch[1])*3600) + (parseInt(korMatch[2])*60); return parseInt(korMatch[1])*60; }
+        const p = s.split(/[:\s]+/).map(Number);
         if(p.length===3) return p[0]*3600+p[1]*60+p[2]; if(p.length===2) return p[0]*60+p[1]; return p[0]*60;
     }
-    function setTimer(n, s, raw = "자동") {
+
+    function setTimer(n, s, raw) {
         const t = Date.now() + (s * 1000); const i = st.timers[st.srv].findIndex(x => x.n === n);
-        if(i > -1) st.timers[st.srv][i].t = t; else st.timers[st.srv].push({ n: n, t: t });
-        if(raw !== "자동") localStorage.setItem(`v24_in_${n}`, raw);
-        save(); syncTxt();
+        if(i > -1) st.timers[st.srv][i].t = t; else st.timers[st.srv].push({ n, t });
+        if(raw !== "자동") localStorage.setItem(`v25_in_${n}`, raw);
+        save(); updateExpectedCell(n, t); syncTxt();
     }
-    function save() { localStorage.setItem('v24_timers', JSON.stringify(st.timers)); }
+    function togglePwr() { st.on = !st.on; document.getElementById('pwr').classList.toggle('is-on', st.on); document.body.classList.toggle('system-off', !st.on); }
+    function save() { localStorage.setItem('v25_timers', JSON.stringify(st.timers)); }
     function srvSw(s) { st.srv = s; document.querySelectorAll('.srv-btn').forEach(b => b.classList.remove('active')); document.getElementById('srv-'+s[0]).classList.add('active'); renderSched(); syncTxt(); }
     function tab(id) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); event.currentTarget.classList.add('active'); if(id==='set-txt') syncTxt(); }
     function formatTimer(ms) { if(ms < 0) return "00:00:00"; const h = Math.floor(ms/3600000); const m = Math.floor((ms%3600000)/60000); const s = Math.floor((ms%60000)/1000); return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
@@ -272,6 +306,7 @@
     function syncTxt() { const n = new Date(); let txt = `${n.getMonth()+1}.${n.getDate()}\n`; st.timers[st.srv].sort((a,b)=>a.t-b.t).forEach(tm => { txt += `${new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} ${tm.n}\n`; }); document.getElementById('txt-ed').value = txt; }
     function saveText() { const lines = document.getElementById('txt-ed').value.split('\n'); let dl = ""; const nt = []; lines.forEach(l => { if(l.includes('.')) dl = l.trim(); const m = l.match(/(\d{2}:\d{2})\s+(.+)/); if(m && dl) { const [mon, day] = dl.split('.').map(Number); const [hh, mm] = m[1].split(':').map(Number); nt.push({ n: m[2].trim(), t: new Date(new Date().getFullYear(), mon-1, day, hh, mm).getTime() }); } }); st.timers[st.srv] = nt; save(); renderSched(); tab('dash'); }
     function findBoss(n) { let res = null; bosses.forEach(g => g.b.forEach(b => { if(b.n===n) res=b; })); return res; }
+    function addLog(m) { const box = document.getElementById('logs'); box.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${m}</div>` + box.innerHTML; }
     init();
 </script>
 </body>

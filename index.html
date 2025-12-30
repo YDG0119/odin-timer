@@ -3,136 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>보스 알리미 V29 - 아키텍트 커스텀</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <title>BOSS CONTROL CENTER V31</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Orbitron:wght@600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #8e24aa; --accent: #1e88e5; --bg: #f8f9fa;
-            --danger: #d32f2f; --warning: #ffa000; --sidebar-w: 75px;
-            --success: #44bd32; --black: #2d3436; --border: #dee2e6;
+            --bg-page: #f4f5f7; --bg-card: #ffffff; --border-color: #dee2e6;
+            --primary: #1a237e; --primary-light: #e8eaf6;
+            --text-main: #212529; --text-sub: #6c757d;
+            --danger: #d32f2f; --warning: #ef6c00; --success: #2e7d32;
+            --sidebar-w: 220px; --header-h: 60px;
         }
-        body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        body.system-off { filter: grayscale(1) brightness(0.8); pointer-events: none; }
-        body.system-off header, body.system-off .global-pwr, body.system-off nav { pointer-events: auto !important; filter: none !important; }
 
-        nav { width: var(--sidebar-w); background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
-        .nav-item { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; color: #777; font-size: 22px; transition: 0.2s; }
-        .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(142, 36, 170, 0.3); }
+        /* Base Styles */
+        body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg-page); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; font-size: 13px; }
+        body.system-off { filter: grayscale(1) brightness(0.9); pointer-events: none; }
+        body.system-off .global-controls { pointer-events: auto !important; filter: none !important; }
 
+        /* Sidebar (Icon + Text Label) */
+        nav { width: var(--sidebar-w); background: #ffffff; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 15px 0; z-index: 1000; }
+        .nav-brand { padding: 0 25px 20px; font-weight: 700; font-size: 16px; color: var(--primary); border-bottom: 1px solid #f1f3f5; margin-bottom: 15px; }
+        .nav-item { display: flex; align-items: center; padding: 12px 25px; cursor: pointer; color: var(--text-sub); transition: 0.2s; gap: 12px; font-weight: 500; font-size: 14px; }
+        .nav-item:hover { background: #f8f9fa; color: var(--primary); }
+        .nav-item.active { background: var(--primary-light); color: var(--primary); border-left: 4px solid var(--primary); }
+
+        /* Main Frame */
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        header { height: 60px; background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: bold; position: relative; font-size: 1.2em; color: var(--primary); }
-        .header-btns { position: absolute; right: 20px; display: flex; align-items: center; gap: 15px; }
-        .wakelock-btn { font-size: 0.7em; padding: 5px 10px; border-radius: 20px; border: 1px solid var(--border); cursor: pointer; font-weight: bold; background: #fff; transition: 0.2s; }
-        .wakelock-btn.on { background: var(--success); color: white; border-color: var(--success); }
-        .global-pwr { font-size: 1.5em; cursor: pointer; color: var(--danger); }
-        .global-pwr.is-on { color: var(--success); }
+        header { height: var(--header-h); background: #fff; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; }
+        .page-title { font-size: 18px; font-weight: 700; color: #333; }
+        .global-controls { display: flex; align-items: center; gap: 15px; }
+        .btn-wl { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 11px; font-weight: 700; cursor: pointer; }
+        .btn-wl.on { background: var(--success); color: #fff; border-color: var(--success); }
 
-        .content { flex: 1; padding: 20px; overflow-y: auto; }
-        .pane { display: none; max-width: 1200px; margin: 0 auto; }
-        .pane.active { display: block; animation: fadeIn 0.3s ease; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .content { flex: 1; padding: 25px; overflow-y: auto; }
+        .pane { display: none; max-width: 1300px; margin: 0 auto; animation: fadeIn 0.15s ease; }
+        .pane.active { display: block; }
+        .card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
 
-        /* 도구바 스타일 (V29 추가) */
-        .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 15px; background: #eee; padding: 10px; border-radius: 10px; }
-        .toolbar input[type="text"], .toolbar input[type="number"] { padding: 8px; border-radius: 5px; border: 1px solid var(--border); }
-        .tool-btn { padding: 8px 12px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; font-size: 0.85em; transition: 0.1s; }
-        .tool-btn:active { transform: scale(0.95); }
+        /* Dashboard Layout */
+        .dash-grid { display: grid; grid-template-columns: 1fr 400px; gap: 20px; }
+        .target-hero { text-align: center; padding: 30px 0; }
+        .timer-val { font-family: 'Orbitron'; font-size: 48px; color: var(--primary); margin: 10px 0; }
+        .imminent .timer-val { color: var(--danger); animation: blink 1s infinite; }
+        
+        .copy-group { display: flex; gap: 8px; justify-content: center; margin-top: 20px; }
+        .btn-copy { height: 40px; padding: 0 20px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; transition: 0.1s; font-size: 13px; }
+        .btn-top3 { background: var(--primary); color: #fff; }
+        .btn-all { background: #f1f3f5; color: #495057; border: 1px solid #dee2e6; }
 
-        /* 월드 배너 및 테이블 접기 */
-        .banner { padding: 12px 15px; color: white; font-weight: bold; font-size: 0.9em; border-radius: 8px; margin-top: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .banner:hover { opacity: 0.9; }
-        .banner-btns { display: flex; gap: 8px; align-items: center; }
-        .world-del-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; cursor: pointer; }
-        .world-del-btn:hover { background: var(--danger); }
-        .fold-content { transition: max-height 0.3s ease-out; overflow: hidden; }
-        .is-folded .fold-content { display: none; }
+        .log-box { font-size: 12px; line-height: 1.8; height: 400px; overflow-y: auto; display: flex; flex-direction: column-reverse; background: #fafafa; padding: 15px; border-radius: 6px; border: 1px solid #eee; }
 
-        table { width: 100%; border-collapse: collapse; background: #fff; margin-top: 5px; }
-        td { padding: 10px 15px; border-bottom: 1px solid #f1f3f5; }
-        .v-in { width: 130px; padding: 8px; border: 2px solid #eee; border-radius: 8px; text-align: center; font-family: 'Orbitron'; font-weight: bold; font-size: 1.1em; }
-        .btn-killed { background: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-del { background: #636e72; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-left: 5px; }
+        /* Scheduler & Toolbar */
+        .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 12px; background: #f8f9fa; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px; }
+        .toolbar input { height: 32px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 12px; }
+        .btn-tool { height: 32px; padding: 0 12px; border-radius: 6px; border: 1px solid #ced4da; background: #fff; cursor: pointer; font-weight: 500; font-size: 12px; }
+        .btn-tool:hover { background: #f1f3f5; }
 
-        /* ⚔️ 배틀 보드 */
-        .battle-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 15px; }
-        .battle-box { background: #f9fafb; padding: 25px; border-radius: 15px; text-align: center; border: 1px solid #eee; }
-        .val-txt { font-family: 'Orbitron'; font-size: 3.5em; display: block; line-height: 1.1; }
-        .over-mode { color: var(--danger) !important; }
+        /* Boss Row List */
+        .world-section { margin-bottom: 10px; }
+        .world-banner { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; background: #fff; border: 1px solid var(--border-color); border-left: 5px solid var(--primary); border-radius: 6px; cursor: pointer; font-weight: 700; }
+        .boss-row { display: grid; grid-template-columns: 1fr 140px 100px 80px 60px; align-items: center; padding: 8px 15px; background: #fff; border-bottom: 1px solid #f1f3f5; gap: 10px; }
+        .boss-row:hover { background: #fcfcfc; }
+        .row-name { font-weight: 700; font-size: 14px; }
+        .row-zen { font-family: 'Orbitron'; font-weight: 600; color: var(--text-sub); text-align: center; }
+        .btn-row-kill { background: var(--primary); color: #fff; border: none; height: 32px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 12px; }
+        .btn-row-del { color: var(--danger); background: none; border: none; cursor: pointer; font-size: 18px; }
 
-        /* 모달 (백업/복원용) */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-card { background: white; padding: 25px; border-radius: 15px; width: 90%; max-width: 600px; }
-        .modal-card textarea { width: 100%; height: 200px; margin: 10px 0; font-family: monospace; font-size: 0.8em; }
+        /* Battle Board */
+        .battle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .battle-unit { background: #f8f9fa; padding: 25px; border-radius: 12px; text-align: center; border: 1px solid #eee; }
+        .battle-val { font-family: 'Orbitron'; font-size: 36px; display: block; margin-top: 10px; }
+
+        /* Text Editor */
+        .txt-area { width: 100%; height: 500px; border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; font-family: monospace; font-size: 14px; line-height: 1.8; resize: none; box-sizing: border-box; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } }
-        #pip-video { position: fixed; bottom: 0; right: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+        @keyframes blink { 50% { opacity: 0.6; } }
+        #pip-video { position: fixed; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            nav { width: 100%; height: auto; flex-direction: row; overflow-x: auto; padding: 5px; }
+            .nav-brand { display: none; }
+            .dash-grid { grid-template-columns: 1fr; }
+            .boss-row { grid-template-columns: 1fr 100px 70px 50px; }
+            .v-in { width: 80px; }
+        }
     </style>
 </head>
 <body>
 
-<nav id="sidebar">
-    <div class="nav-item active" onclick="tab('dash', this)">🏠</div>
-    <div class="nav-item" onclick="tab('set-txt', this)">🕒</div>
-    <div class="nav-item" onclick="tab('sched', this)">📅</div>
-    <div class="nav-item" onclick="tab('battle', this)">⚔️</div>
-    <div class="nav-item" onclick="tab('zen-calc', this)">🧮</div>
-    <div class="nav-item" onclick="togglePIP()">📺</div>
+<nav>
+    <div class="nav-brand">B-CONTROL Desk</div>
+    <div class="nav-item active" onclick="tab('dash', this)">🏠 Dashboard</div>
+    <div class="nav-item" onclick="tab('set-txt', this)">🕒 Text Ops</div>
+    <div class="nav-item" onclick="tab('sched', this)">📅 Schedule</div>
+    <div class="nav-item" onclick="tab('battle', this)">⚔ Battle Ops</div>
+    <div class="nav-item" onclick="tab('zen-calc', this)">🧮 Forced Sync</div>
+    <div class="nav-item" onclick="togglePIP()">📺 Toggle PIP</div>
 </nav>
 
 <main>
     <header>
-        보스 관제 사령부 V29
-        <div class="header-btns">
-            <div id="wl-btn" class="wakelock-btn" onclick="toggleWakeLock()">🛡 화면 유지 OFF</div>
-            <div id="pwr" class="global-pwr is-on" onclick="togglePwr()">⏻</div>
+        <div class="page-title" id="page-title-label">Dashboard</div>
+        <div class="global-controls">
+            <div id="wl-btn" class="btn-wl" onclick="toggleWakeLock()">🛡 화면 유지 OFF</div>
+            <div id="pwr" class="global-pwr is-on" style="cursor:pointer; font-size:24px;" onclick="togglePwr()">⏻</div>
         </div>
     </header>
+
     <div class="content">
         <div id="dash" class="pane active">
-            <div style="display:grid; grid-template-columns: 1fr 380px; gap: 20px;">
-                <div class="card" style="text-align:center; border-top:6px solid var(--accent);">
-                    <div style="font-weight:bold; color:#888;">CURRENT TARGET</div>
-                    <div id="d-name" style="font-size:2.5em; font-weight:bold; margin:10px 0;">대기 중</div>
-                    <div id="d-timer" style="font-family:Orbitron; font-size:6em; color:var(--accent); margin-bottom: 5px;">00:00:00</div>
-                    <div id="top3-preview" style="margin: 15px auto; max-width: 320px; font-size: 0.9em; text-align: left;"></div>
-                    <div style="display:flex; gap:10px; justify-content:center;">
-                        <button onclick="copyKakao('top3')" style="background:#fee500; border:none; padding:12px 20px; border-radius:10px; font-weight:bold; cursor:pointer;">Top3 복사</button>
-                        <button onclick="copyKakao('all')" style="background:#eee; border:none; padding:12px 20px; border-radius:10px; font-weight:bold; cursor:pointer;">전체 복사</button>
+            <div class="dash-grid">
+                <div class="card target-hero" id="hero-card">
+                    <div style="font-weight:700; color:var(--text-sub); font-size:14px;">CURRENT MISSION TARGET</div>
+                    <div id="d-name" style="font-size:24px; font-weight:700; margin-top:15px;">대기 중</div>
+                    <div id="d-timer" class="timer-val">00:00:00</div>
+                    <div id="d-sub-info" style="color:var(--text-sub); font-weight:500;">-</div>
+                    
+                    <div style="margin: 20px auto; max-width: 350px; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 8px;" id="top3-list"></div>
+
+                    <div class="copy-group">
+                        <button class="btn-copy btn-top3" onclick="copyKakao('top3')">📢 Top3 공지 복사</button>
+                        <button class="btn-copy btn-all" onclick="copyKakao('all')">📋 전체 목록 복사</button>
                     </div>
                 </div>
                 <div class="card">
-                    <h3 style="margin-top:0;">🔔 이벤트 로그</h3>
-                    <div id="logs" style="font-size:0.85em; line-height:1.7; height:350px; overflow-y:auto; display:flex; flex-direction:column-reverse;"></div>
+                    <div style="font-weight:700; margin-bottom:15px; font-size:14px;">EVENT LOGS</div>
+                    <div id="logs" class="log-box"></div>
                 </div>
             </div>
         </div>
 
         <div id="set-txt" class="pane">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <h2 style="margin:0;">공지 텍스트 동기화</h2>
-                <button style="background:var(--primary); color:white; border:none; padding:10px 30px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="saveText()">저장 후 적용</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="margin:0;">Ops Manual Sync</h3>
+                <button class="btn-copy btn-top3" style="height:36px;" onclick="saveText()">저장 후 시스템 적용</button>
             </div>
-            <textarea id="txt-ed" class="text-editor" style="width:100%; height:500px; padding:20px; border-radius:10px; border:1px solid #ddd;"></textarea>
+            <textarea id="txt-ed" class="txt-area"></textarea>
         </div>
 
         <div id="sched" class="pane">
             <div class="toolbar">
-                <input type="text" id="search-boss" placeholder="보스 검색..." oninput="handleSearch(this.value)">
-                <label style="font-size:0.85em; font-weight:bold;"><input type="checkbox" id="active-only" onchange="applyFilters()"> 활성 타이머만</label>
-                <div style="width:1px; height:20px; background:#ccc; margin:0 10px;"></div>
-                <button class="tool-btn" onclick="toggleAllFolds(false)">전체 펼치기</button>
-                <button class="tool-btn" onclick="toggleAllFolds(true)">전체 접기</button>
-                <div style="width:1px; height:20px; background:#ccc; margin:0 10px;"></div>
-                <button class="tool-btn" style="background:var(--danger); color:white;" onclick="clearAllTimers()">전체 타이머 삭제</button>
-                <button class="tool-btn" style="background:var(--accent); color:white;" onclick="openBackup()">백업/복원</button>
+                <input type="text" id="search-boss" placeholder="보스명 검색..." style="width:180px;" oninput="handleSearch(this.value)">
+                <label style="font-weight:500; font-size:12px; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                    <input type="checkbox" id="active-only" onchange="applyFilters()"> 활성 타이머만
+                </label>
+                <div style="flex:1;"></div>
+                <button class="btn-tool" onclick="toggleAllFolds(false)">전체 펼치기</button>
+                <button class="btn-tool" onclick="toggleAllFolds(true)">전체 접기</button>
+                <button class="btn-tool" style="color:var(--danger);" onclick="clearAllTimers()">전체 삭제</button>
+                <button class="btn-tool" onclick="openBackup()">Export/Import</button>
             </div>
             
-            <div class="toolbar">
-                <span style="font-size:0.85em; font-weight:bold;">시간 일괄 이동(Shift):</span>
-                <input type="number" id="shift-min" style="width:60px;" value="0"> 분
-                <button class="tool-btn" onclick="applyShift(1)">+ 적용</button>
-                <button class="tool-btn" onclick="applyShift(-1)">- 적용</button>
-                <small style="color:#666;">(활성 타이머 대상)</small>
+            <div class="toolbar" style="background:#fff;">
+                <span style="font-weight:700; font-size:12px; margin-right:10px;">Time Shift (활성):</span>
+                <input type="number" id="shift-min" style="width:60px;" value="0">
+                <button class="btn-tool" onclick="applyShift(1)">+ 분 추가</button>
+                <button class="btn-tool" onclick="applyShift(-1)">- 분 차감</button>
             </div>
 
             <div id="sched-cont"></div>
@@ -140,30 +167,37 @@
 
         <div id="battle" class="pane">
             <div class="card">
-                <h2 style="text-align:center; margin:0 0 20px 0;">⚔️ 전술 배틀 추적</h2>
+                <h3 style="text-align:center; margin:0 0 20px 0;">Tactical Battle Tracker</h3>
                 <div class="battle-grid">
-                    <div class="battle-box"><span class="label-sm">전투 경과</span><span class="val-txt" id="b-elap">00:00</span></div>
-                    <div class="battle-box"><span class="label-sm" id="b-label">잡힘 예상 (HP 33.8%)</span><span class="val-txt" id="b-timer">--:--</span></div>
+                    <div class="battle-unit">
+                        <span style="font-size:11px; font-weight:700; color:var(--text-sub);">ELAPSED TIME</span>
+                        <span class="battle-val" id="b-elap">00:00</span>
+                    </div>
+                    <div class="battle-unit">
+                        <span style="font-size:11px; font-weight:700; color:var(--text-sub);" id="b-label">ESTIMATED KILL (HP 33.8%)</span>
+                        <span class="battle-val" id="b-timer" style="color:var(--danger);">--:--</span>
+                    </div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
-                    <button class="c-btn" style="background:#455a64;" onclick="btl('start')">시작</button>
-                    <button class="c-btn" style="background:var(--warning);" onclick="btl('kwang')">광</button>
-                    <button class="c-btn" style="background:var(--danger);" onclick="btl('kill')">잡힘</button>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:20px;">
+                    <button class="btn-copy btn-all" style="height:50px; background:#455a64; color:#fff;" onclick="btl('start')">START</button>
+                    <button class="btn-copy btn-all" style="height:50px; background:var(--warning); color:#fff;" onclick="btl('kwang')">BERSERK</button>
+                    <button class="btn-copy btn-top3" style="height:50px;" onclick="btl('kill')">KILLED</button>
                 </div>
+                <div id="btl-res" style="margin-top:20px; padding:15px; border-radius:8px; background:#f8f9fa; border:1px solid #eee; text-align:center; font-weight:700; display:none;"></div>
             </div>
         </div>
 
         <div id="zen-calc" class="pane">
-            <div class="card" style="display:grid; grid-template-columns:1fr 1fr; gap:25px;">
+            <div class="card" style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
                 <div>
-                    <h3>🔄 젠 시간 업데이트</h3>
-                    <select id="zc-sel" style="width:100%; padding:15px; border-radius:10px; border:1px solid #ddd; font-weight:bold; margin-bottom:15px;"></select>
-                    <input type="text" id="zc-in" class="v-in" style="width:100%; box-sizing:border-box; border:2px solid var(--accent);" placeholder="분 초 (예: 8 44)">
-                    <button class="btn-apply" style="background:var(--accent); color:white; border:none; padding:18px; border-radius:10px; font-weight:bold; width:100%; margin-top:15px; cursor:pointer;" onclick="applyZenCalc()">강제 업데이트 실행</button>
+                    <h3 style="margin-top:0;">Force Update</h3>
+                    <select id="zc-sel" style="width:100%; height:40px; border-radius:8px; border:1px solid var(--border-color); font-weight:700; margin-bottom:15px;"></select>
+                    <input type="text" id="zc-in" style="width:100%; height:45px; box-sizing:border-box; border:2px solid var(--primary); border-radius:8px; text-align:center; font-family:'Orbitron'; font-size:18px;" placeholder="분 초 입력 (예: 8 44)">
+                    <button class="btn-copy btn-top3" style="width:100%; height:50px; margin-top:20px;" onclick="applyZenCalc()">업데이트 강제 적용</button>
                 </div>
-                <div style="background:#f0f7ff; border:2px dashed var(--accent); border-radius:15px; padding:25px; text-align:center;">
-                    <span style="font-weight:bold; color:var(--accent);">업데이트 예정 젠 시간</span>
-                    <span class="val-txt" id="zc-preview" style="color:var(--accent); font-size:3em; margin:10px 0;">--:--:--</span>
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#f8f9fa; border-radius:12px; border:1px dashed var(--primary);">
+                    <span style="font-weight:700; color:var(--primary);">NEXT SPAWN PREVIEW</span>
+                    <span id="zc-preview" style="font-family:'Orbitron'; font-size:42px; color:var(--primary); margin:15px 0;">--:--:--</span>
                 </div>
             </div>
         </div>
@@ -172,13 +206,12 @@
 
 <div id="backup-modal" class="modal">
     <div class="modal-card">
-        <h3>📦 데이터 백업 및 복원</h3>
-        <p style="font-size:0.8em; color:#666;">아래 JSON 데이터를 복사하여 보관하거나, 백업된 데이터를 붙여넣어 복원하세요.</p>
+        <h3>System Backup / Restore</h3>
         <textarea id="backup-data"></textarea>
-        <div style="display:flex; gap:10px; justify-content:flex-end;">
-            <button class="tool-btn" onclick="copyBackup()">클립보드 복사</button>
-            <button class="tool-btn" style="background:var(--primary); color:white;" onclick="importData()">복원 실행</button>
-            <button class="tool-btn" onclick="closeBackup()">닫기</button>
+        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:15px;">
+            <button class="btn-tool" onclick="copyBackup()">클립보드 복사</button>
+            <button class="btn-tool" style="background:var(--primary); color:#fff;" onclick="importData()">데이터 복원</button>
+            <button class="btn-tool" onclick="closeBackup()">닫기</button>
         </div>
     </div>
 </div>
@@ -202,182 +235,73 @@
     bosses.forEach(g => g.b.forEach(b => BOSS_WORLD_MAP[b.n] = g.w));
 
     let st = { 
-        on: true, 
-        timers: JSON.parse(localStorage.getItem('v28_timers')) || [], 
+        on: true, timers: JSON.parse(localStorage.getItem('v28_timers')) || [], 
         battle: { s: null, k: null, est: 0 },
         foldState: JSON.parse(localStorage.getItem('v29_fold_state')) || {},
-        searchTerm: '',
-        activeOnly: false,
-        wakeLock: null
+        searchTerm: '', wakeLock: null
     };
 
     function init() {
         renderSched(); syncTxt();
         const zcSel = document.getElementById('zc-sel');
         bosses.forEach(g => g.b.forEach(b => zcSel.innerHTML += `<option value="${b.n}">${b.n}</option>`));
-        
         document.getElementById('zc-in').addEventListener('input', (e) => {
             const sec = parseMinSec(e.target.value);
             document.getElementById('zc-preview').innerText = sec > 0 ? new Date(Date.now() + sec*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}) : "--:--:--";
         });
-
-        // 🛡 화면 꺼짐 방지 재활성화
         document.addEventListener('visibilitychange', () => { if (st.wakeLock !== null && document.visibilityState === 'visible') requestWakeLock(true); });
-        
         setInterval(loop, 500);
-        addLog("V29 편의기능 패키지 가동 완료");
+        addLog("배틀 스테이션 기동 성공");
     }
 
-    // 1) 월드 단위 접기/펼치기
-    function toggleFold(world) {
-        st.foldState[world] = !st.foldState[world];
-        localStorage.setItem('v29_fold_state', JSON.stringify(st.foldState));
-        renderSched();
-    }
-    function toggleAllFolds(shouldFold) {
-        bosses.forEach(g => st.foldState[g.w] = shouldFold);
-        localStorage.setItem('v29_fold_state', JSON.stringify(st.foldState));
-        renderSched();
-        addLog(`전체 월드 ${shouldFold ? '접기' : '펼치기'}`);
+    function tab(id, el) {
+        document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        if(el) el.classList.add('active');
+        document.getElementById('page-title-label').innerText = el.innerText.split(' ').slice(1).join(' ');
+        if(id==='set-txt') syncTxt();
     }
 
-    // 2) 검색 및 필터
-    let searchTimeout;
-    function handleSearch(val) {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            st.searchTerm = val.toLowerCase();
-            applyFilters();
-        }, 250);
-    }
-    function applyFilters() {
-        st.activeOnly = document.getElementById('active-only').checked;
-        const now = Date.now();
-        document.querySelectorAll('.world-container').forEach(container => {
-            const world = container.dataset.world;
-            let visibleInWorld = 0;
-            container.querySelectorAll('tr').forEach(row => {
-                const name = row.dataset.name.toLowerCase();
-                const timer = st.timers.find(t => t.n === row.dataset.name);
-                const isActive = timer && (timer.t - now > 0);
-                
-                const matchesSearch = name.includes(st.searchTerm);
-                const matchesActive = !st.activeOnly || isActive;
-                
-                if (matchesSearch && matchesActive) { row.style.display = ''; visibleInWorld++; }
-                else { row.style.display = 'none'; }
-            });
-            container.style.display = (visibleInWorld > 0) ? '' : 'none';
-        });
-    }
-
-    // 3) 일괄 삭제
-    function clearAllTimers() {
-        if (!confirm("모든 타이머 정보를 삭제할까요? (입력값은 유지됩니다)")) return;
-        st.timers = [];
-        saveStorage();
-        renderSched();
-        addLog("전체 타이머 일괄 삭제");
-    }
-    function clearWorldTimers(world) {
-        if (!confirm(`${world}의 모든 타이머를 삭제할까요?`)) return;
-        const bossesInWorld = bosses.find(g => g.w === world).b.map(b => b.n);
-        st.timers = st.timers.filter(t => !bossesInWorld.includes(t.n));
-        saveStorage();
-        renderSched();
-        addLog(`${world} 타이머 삭제`);
-    }
-
-    // 4) 시간 일괄 이동 (Shift)
-    function applyShift(direction) {
-        const mins = parseInt(document.getElementById('shift-min').value) || 0;
-        if (mins <= 0) return;
-        const now = Date.now();
-        const offset = mins * 60000 * direction;
-        let count = 0;
-        st.timers = st.timers.map(t => {
-            if (t.t - now > 0) { t.t += offset; t.m5 = false; t.m1 = false; count++; }
-            return t;
-        });
-        saveStorage();
-        renderSched();
-        addLog(`활성 보스 ${count}개 시간 ${direction > 0 ? '+' : '-'}${mins}분 이동`);
-    }
-
-    // 5) 백업 및 복원
-    function openBackup() {
-        const data = {
-            timers: st.timers,
-            inputs: {},
-            folds: st.foldState
-        };
-        bosses.forEach(g => g.b.forEach(b => {
-            const val = localStorage.getItem(`v28_in_${b.n}`);
-            if (val) data.inputs[b.n] = val;
-        }));
-        document.getElementById('backup-data').value = JSON.stringify(data);
-        document.getElementById('backup-modal').style.display = 'flex';
-    }
-    function copyBackup() {
-        const ta = document.getElementById('backup-data');
-        ta.select();
-        document.execCommand('copy');
-        alert("백업 데이터가 클립보드에 복사되었습니다.");
-    }
-    function importData() {
-        try {
-            const data = JSON.parse(document.getElementById('backup-data').value);
-            if (confirm("기존 데이터를 덮어쓰고 복원할까요?")) {
-                st.timers = data.timers || [];
-                st.foldState = data.folds || {};
-                Object.keys(data.inputs || {}).forEach(name => localStorage.setItem(`v28_in_${name}`, data.inputs[name]));
-                saveStorage();
-                renderSched();
-                tab('dash', document.querySelector('.nav-item'));
-                closeBackup();
-                addLog("데이터 복원 성공");
-            }
-        } catch (e) { alert("JSON 형식이 올바르지 않습니다."); }
-    }
-    function closeBackup() { document.getElementById('backup-modal').style.display = 'none'; }
-
-    // 6) Wake Lock
-    async function toggleWakeLock() {
-        if (!('wakeLock' in navigator)) return alert("이 브라우저는 화면 유지 기능을 지원하지 않습니다.");
-        if (st.wakeLock) {
-            await st.wakeLock.release();
-            st.wakeLock = null;
-            addLog("화면 유지 해제");
-        } else {
-            requestWakeLock(false);
+    function handleEnterNav(el, idx) {
+        const inputs = Array.from(document.querySelectorAll('.v-in'));
+        const sec = parseSmart(el.value);
+        if(sec > 0) setTimer(el.dataset.name, sec, el.value);
+        for(let i = idx + 1; i < inputs.length; i++) {
+            if(inputs[i].offsetParent !== null) { inputs[i].focus(); inputs[i].select(); break; }
         }
     }
-    async function requestWakeLock(silent) {
-        try {
-            st.wakeLock = await navigator.wakeLock.request('screen');
-            document.getElementById('wl-btn').innerText = "🛡 화면 유지 ON";
-            document.getElementById('wl-btn').classList.add('on');
-            if (!silent) addLog("화면 유지 가동");
-        } catch (err) { console.error(`${err.name}, ${err.message}`); }
-    }
 
-    // [표준 엔진 및 렌더링]
     function loop() {
         if(!st.on) return;
         const now = Date.now();
         st.timers = st.timers.filter(t => (now - t.t) < 600000);
         st.timers.forEach(tm => {
             const d = Math.floor((tm.t - now) / 1000);
-            if(d <= 300 && d > 295 && !tm.m5) { playTTS(`${tm.n} 5분 전.`); tm.m5 = true; addLog(`${tm.n} 5분 전 알림`); }
-            if(d <= 60 && d > 55 && !tm.m1) { playTTS(`${tm.n} 1분 전.`); tm.m1 = true; addLog(`${tm.n} 1분 전 알림`); }
+            if(d <= 300 && d > 295 && !tm.m5) { playTTS(`${tm.n} 5분 전.`); tm.m5 = true; addLog(`${tm.n} T-300 알림 발송`); }
+            if(d <= 60 && d > 55 && !tm.m1) { playTTS(`${tm.n} 1분 전.`); tm.m1 = true; addLog(`${tm.n} T-60 알림 발송`); }
         });
         const list = [...st.timers].sort((a,b) => a.t - b.t);
         const upcoming = list.filter(t => t.t > now);
         const next = upcoming.length > 0 ? upcoming[0] : null;
-        document.getElementById('d-name').innerText = next ? next.n : "대기 중";
+        
+        document.getElementById('d-name').innerText = next ? next.n : "No Active Mission";
         document.getElementById('d-timer').innerText = next ? formatTimer(next.t - now) : "00:00:00";
-        st.timers.forEach(tm => { const el = document.getElementById(`zen-${tm.n}`); if(el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}); });
-        updateDashPreview(upcoming);
+        document.getElementById('d-sub-info').innerText = next ? `SPAWN AT: ${new Date(next.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} (${BOSS_WORLD_MAP[next.n]})` : "-";
+        document.getElementById('hero-card').className = (next && (next.t - now < 300000)) ? 'card target-hero imminent' : 'card target-hero';
+
+        st.timers.forEach(tm => {
+            const el = document.getElementById(`zen-${tm.n}`);
+            if(el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
+        });
+
+        document.getElementById('top3-list').innerHTML = upcoming.slice(0, 3).map(t => `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>${t.n}</span><b style="color:var(--primary);">${formatTimer(t.t - now).substring(3)}</b></div>`).join('') || '<div style="color:#aaa; text-align:center;">리젠 대기 보스 없음</div>';
+
+        if(st.battle.s && !st.battle.k) document.getElementById('b-elap').innerText = formatSimple((now - st.battle.s)/1000);
+        if(st.battle.k) {
+            const rem = st.battle.est - Math.floor((now - st.battle.k)/1000);
+            document.getElementById('b-timer').innerText = (rem >= 0 ? "" : "+") + formatSimple(Math.abs(rem));
+        }
         drawPIP(upcoming);
     }
 
@@ -385,68 +309,87 @@
         const c = document.getElementById('sched-cont'); let h = '';
         bosses.forEach(g => {
             const isFolded = st.foldState[g.w] === true;
-            h += `<div class="world-container ${isFolded ? 'is-folded' : ''}" data-world="${g.w}">
-                <div class="banner" style="background:${g.c}" onclick="if(event.target==this) toggleFold('${g.w}')">
+            h += `<div class="world-section ${isFolded ? 'is-folded' : ''}" data-world="${g.w}">
+                <div class="world-banner" style="border-left-color:${g.c}" onclick="if(event.target==this) toggleFold('${g.w}')">
                     <span>${isFolded ? '▶' : '▼'} ${g.w}</span>
-                    <div class="banner-btns">
-                        <button class="world-del-btn" onclick="clearWorldTimers('${g.w}')">이 월드 삭제</button>
-                    </div>
+                    <button class="world-del-btn" style="background:${g.c}; filter:brightness(0.8);" onclick="clearWorldTimers('${g.w}')">World Clear</button>
                 </div>
-                <div class="fold-content"><table><tbody>`;
+                <div class="fold-content">`;
             g.b.forEach(b => {
                 const sv = localStorage.getItem(`v28_in_${b.n}`) || '';
                 const ex = st.timers.find(t => t.n === b.n);
                 const zen = ex ? new Date(ex.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false}) : '--:--';
-                h += `<tr data-name="${b.n}"><td width="140"><strong>${b.n}</strong></td><td><input type="text" class="v-in" value="${sv}" onkeydown="if(event.key==='Enter') setTimer('${b.n}', parseSmart(this.value), this.value)" placeholder="분 입력"></td><td id="zen-${b.n}" style="font-family:Orbitron;font-weight:bold;color:#555;text-align:center;">${zen}</td><td width="130"><button class="btn-killed" onclick="setTimer('${b.n}',${b.r*60},'자동')">잡음</button><button class="btn-del" onclick="delTimer('${b.n}')">삭제</button></td></tr>`;
+                h += `<div class="boss-row" data-name="${b.n}">
+                    <div class="row-name">${b.n}</div>
+                    <input type="text" class="v-in" data-name="${b.n}" value="${sv}" placeholder="분 입력">
+                    <div id="zen-${b.n}" class="row-zen">${zen}</div>
+                    <button class="btn-row-kill" onclick="setTimer('${b.n}',${b.r*60},'자동')">Killed</button>
+                    <button class="btn-row-del" onclick="delTimer('${b.n}')">×</button>
+                </div>`;
             });
-            h += `</tbody></table></div></div>`;
+            h += `</div></div>`;
         });
         c.innerHTML = h;
+        document.querySelectorAll('.v-in').forEach((el, i, ins) => el.onkeydown = (e) => { if(e.key === 'Enter') handleEnterNav(el, i); });
         applyFilters();
     }
 
-    // [유틸리티]
-    function setTimer(n, s, raw) {
-        const t = Date.now() + (s * 1000); const i = st.timers.findIndex(x => x.n === n);
-        const entry = { n, t, m5: false, m1: false };
-        if(i > -1) st.timers[i] = entry; else st.timers.push(entry);
-        if(raw !== "자동") localStorage.setItem(`v28_in_${n}`, raw);
-        saveStorage(); addLog(`${n} 시간 설정`);
+    // 💡 Battle logic
+    function btl(type) {
+        if(!st.on) return;
+        const now = Date.now();
+        if(type === 'start') { st.battle = { s: now, k: null, est: 0 }; document.getElementById('btl-res').style.display='none'; addLog("교전 개시"); }
+        else if(type === 'kwang') { if(!st.battle.s) return; st.battle.k = now; st.battle.est = Math.floor(((now - st.battle.s)/1000) * 0.51); addLog("광폭화 발생 (HP 33.8%)"); }
+        else if(type === 'kill') { 
+            if(st.battle.s) {
+                const elap = Math.floor((now-st.battle.s)/1000);
+                document.getElementById('btl-res').innerText = `전투 종료: ${elap}초 소요`;
+                document.getElementById('btl-res').style.display='block';
+            }
+            addLog("타겟 처치 완료"); st.battle = { s: null, k: null, est: 0 }; 
+        }
     }
-    function delTimer(n) { st.timers = st.timers.filter(t => t.n !== n); localStorage.removeItem(`v28_in_${n}`); saveStorage(); renderSched(); addLog(`${n} 삭제`); }
-    function saveStorage() { localStorage.setItem('v28_timers', JSON.stringify(st.timers)); syncTxt(); }
-    function addLog(m) { const box = document.getElementById('logs'); const div = document.createElement('div'); div.innerHTML = `<span style="color:#888;">[${new Date().toLocaleTimeString()}]</span> ${m}`; box.appendChild(div); }
+
+    // [Utility & Storage]
+    function toggleFold(w) { st.foldState[w] = !st.foldState[w]; localStorage.setItem('v29_fold_state', JSON.stringify(st.foldState)); renderSched(); }
+    function toggleAllFolds(s) { bosses.forEach(g => st.foldState[g.w] = s); localStorage.setItem('v29_fold_state', JSON.stringify(st.foldState)); renderSched(); }
+    function setTimer(n, s, raw) { const t = Date.now() + (s * 1000); const i = st.timers.findIndex(x => x.n === n); const entry = { n, t, m5: false, m1: false }; if(i > -1) st.timers[i] = entry; else st.timers.push(entry); if(raw !== "자동") localStorage.setItem(`v28_in_${n}`, raw); saveStore(); addLog(`${n} 데이터 입력됨`); }
+    function delTimer(n) { st.timers = st.timers.filter(t => t.n !== n); localStorage.removeItem(`v28_in_${n}`); saveStore(); renderSched(); addLog(`${n} 삭제됨`); }
+    function saveStore() { localStorage.setItem('v28_timers', JSON.stringify(st.timers)); syncTxt(); }
+    function handleSearch(v) { st.searchTerm = v.toLowerCase(); applyFilters(); }
+    function applyFilters() {
+        const activeOnly = document.getElementById('active-only').checked; const now = Date.now();
+        document.querySelectorAll('.world-section').forEach(sec => {
+            let visible = 0; sec.querySelectorAll('.boss-row').forEach(row => {
+                const name = row.dataset.name.toLowerCase(); const timer = st.timers.find(t => t.n === row.dataset.name);
+                const show = name.includes(st.searchTerm) && (!activeOnly || (timer && timer.t > now));
+                row.style.display = show ? 'grid' : 'none'; if(show) visible++;
+            });
+            sec.style.display = visible > 0 ? 'block' : 'none';
+        });
+    }
+    function addLog(m) { const box = document.getElementById('logs'); const div = document.createElement('div'); div.innerHTML = `<span style="color:#aaa;">[${new Date().toLocaleTimeString()}]</span> ${m}`; box.appendChild(div); }
     function parseSmart(s) { if(!s) return 0; const kor = s.match(/(\d+)시간\s*(\d+)분/) || s.match(/(\d+)분/); if(kor) return kor.length === 3 ? (parseInt(kor[1])*3600)+(parseInt(kor[2])*60) : parseInt(kor[1])*60; const p = s.split(/[:\s]+/).map(Number); if(p.length===3) return p[0]*3600+p[1]*60+p[2]; if(p.length===2) return p[0]*60+p[1]; return p[0]*60; }
     function parseMinSec(s) { if(!s) return 0; const p = s.split(/[:\s]+/).filter(x => x !== "").map(Number); return p.length >= 2 ? (p[0]*60)+p[1] : (p.length===1 ? p[0]*60 : 0); }
     function formatTimer(ms) { if(ms < 0) return "00:00:00"; const h = Math.floor(ms/3600000); const m = Math.floor((ms%3600000)/60000); const s = Math.floor((ms%60000)/1000); return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
     function formatSimple(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${(Math.floor(s%60)).toString().padStart(2,'0')}`; }
     function playTTS(m) { if(st.on) { const u = new SpeechSynthesisUtterance(m); u.lang = 'ko-KR'; window.speechSynthesis.speak(u); } }
-    function tab(id, el) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); if(el) el.classList.add('active'); if(id==='set-txt') syncTxt(); }
-    function togglePwr() { st.on = !st.on; document.getElementById('pwr').classList.toggle('is-on', st.on); document.body.classList.toggle('system-off', !st.on); addLog(`시스템 ${st.on?'가동':'정지'}`); }
+    function togglePwr() { st.on = !st.on; document.getElementById('pwr').classList.toggle('is-on', st.on); document.body.classList.toggle('system-off', !st.on); addLog(`System Power ${st.on?'ON':'OFF'}`); }
     function syncTxt() { const n = new Date(); let txt = `${n.getMonth()+1}.${n.getDate()}\n`; st.timers.sort((a,b)=>a.t-b.t).forEach(tm => { txt += `${new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} ${tm.n}\n`; }); document.getElementById('txt-ed').value = txt; }
-    function saveText() { const lines = document.getElementById('txt-ed').value.split('\n'); let dl = ""; const nt = []; lines.forEach(l => { if(l.includes('.')) dl = l.trim(); const m = l.match(/(\d{2}:\d{2})\s+(.+)/); if(m && dl) { const [mon, day] = dl.split('.').map(Number); const [hh, mm] = m[1].split(':').map(Number); nt.push({ n: m[2].trim(), t: new Date(new Date().getFullYear(), mon-1, day, hh, mm).getTime(), m5:false, m1:false }); } }); st.timers = nt; saveStorage(); renderSched(); tab('dash', document.querySelector('.nav-item')); addLog("텍스트 동기화 완료"); }
-    function copyKakao(mode) {
-        const now = Date.now();
-        const activeTimers = st.timers.sort((a,b) => a.t - b.t);
-        if (activeTimers.length === 0) return alert("현재 등록된 젠 타이머 없음");
-        const dateHeader = `[${new Date().toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric', weekday: 'short' })} 오딘 보스 젠 알림]`;
-        let txt = mode === 'top3' ? dateHeader + '\n' : `${new Date().getMonth()+1}.${new Date().getDate()}\n`;
-        const list = mode === 'top3' ? activeTimers.filter(t => t.t > now).slice(0, 3) : activeTimers;
-        list.forEach((t, i) => {
-            const zTime = new Date(t.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
-            if (mode === 'top3') txt += `${i+1}) ${zTime} ${t.n} (${BOSS_WORLD_MAP[t.n] || "-"}) - 남은 ${formatTimer(t.t - now).substring(3)}\n`;
-            else txt += `${zTime} ${t.n}\n`;
-        });
-        navigator.clipboard.writeText(txt.trim()).then(() => alert("복사 완료!"));
-    }
-    function updateDashPreview(upcoming) {
-        const area = document.getElementById('top3-preview');
-        area.innerHTML = upcoming.slice(0, 3).map(t => `<div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding:5px 0;"><span>${t.n}</span><b style="color:var(--accent)">${formatTimer(t.t - Date.now()).substring(3)}</b></div>`).join('') || '<div style="color:#aaa; text-align:center;">리젠 예정 보스 없음</div>';
-    }
-    function applyZenCalc() { const name = document.getElementById('zc-sel').value; const val = document.getElementById('zc-in').value; const sec = parseMinSec(val); if(sec > 0) { setTimer(name, sec, val); document.getElementById('zc-in').value = ""; renderSched(); } }
-    function btl(type) { if(!st.on) return; const now = Date.now(); if(type === 'start') { st.battle = { s: now, k: null, est: 0 }; addLog("전투 시작"); } else if(type === 'kwang') { if(!st.battle.s) return; st.battle.k = now; st.battle.est = Math.floor(((now - st.battle.s)/1000) * 0.51); addLog("광폭화"); } else if(type === 'kill') { addLog("처치 완료"); st.battle = { s: null, k: null, est: 0 }; } }
-    function drawPIP(list) { const ctx = document.getElementById('pip-canvas').getContext('2d'); ctx.fillStyle = "#fff"; ctx.fillRect(0,0,220,120); ctx.fillStyle = "#2d3436"; ctx.fillRect(0,0,220,35); ctx.fillStyle = "#fff"; ctx.font = "bold 13px Arial"; ctx.fillText("보스 알리미 PRO", 15, 23); if(list.length > 0) { const n = list[0]; const d = n.t - Date.now(); ctx.fillStyle = "#0984e3"; ctx.font = "bold 22px 'Noto Sans KR'"; ctx.textAlign = "center"; ctx.fillText(n.n, 110, 75); ctx.fillStyle = "#000"; ctx.font = "bold 32px Orbitron"; ctx.fillText(formatTimer(d).substring(3), 110, 108); } }
+    function saveText() { const lines = document.getElementById('txt-ed').value.split('\n'); let dl = ""; const nt = []; lines.forEach(l => { if(l.includes('.')) dl = l.trim(); const m = l.match(/(\d{2}:\d{2})\s+(.+)/); if(m && dl) { const [mon, day] = dl.split('.').map(Number); const [hh, mm] = m[1].split(':').map(Number); nt.push({ n: m[2].trim(), t: new Date(new Date().getFullYear(), mon-1, day, hh, mm).getTime(), m5:false, m1:false }); } }); st.timers = nt; saveStore(); renderSched(); tab('dash', document.querySelectorAll('.nav-item')[0]); addLog(" Ops Sync Complete"); }
+    function copyKakao(mode) { const now = Date.now(); const list = mode === 'top3' ? st.timers.filter(t => t.t > now).sort((a,b) => a.t - b.t).slice(0, 3) : st.timers.sort((a,b) => a.t - b.t); if (list.length === 0) return alert("데이터 없음"); const dH = `[${new Date().toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric', weekday: 'short' })} 오딘 보스 젠]`; let txt = mode === 'top3' ? dH + '\n' : `${new Date().getMonth()+1}.${new Date().getDate()}\n`; list.forEach((t, i) => { const zT = new Date(t.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}); if (mode === 'top3') txt += `${i+1}) ${zT} ${t.n} (${BOSS_WORLD_MAP[t.n] || "-"}) - 남은 ${formatTimer(t.t - now).substring(3)}\n`; else txt += `${zT} ${t.n}\n`; }); navigator.clipboard.writeText(txt.trim()).then(() => alert("복사 완료")); }
+    function applyShift(dir) { const mins = parseInt(document.getElementById('shift-min').value) || 0; if (mins <= 0) return; const now = Date.now(); st.timers = st.timers.map(t => { if (t.t > now) t.t += mins * 60000 * dir; return t; }); saveStore(); renderSched(); addLog(`전체 타이머 ${dir>0?'+':'-'}${mins}분 이동`); }
+    function clearAllTimers() { if(confirm("초기화?")) { st.timers = []; saveStore(); renderSched(); } }
+    function clearWorldTimers(w) { if(confirm(`${w} 초기화?`)) { const bL = bosses.find(g => g.w === w).b.map(b => b.n); st.timers = st.timers.filter(t => !bL.includes(t.n)); saveStore(); renderSched(); } }
+    function openBackup() { document.getElementById('backup-data').value = JSON.stringify({timers:st.timers, folds:st.foldState}); document.getElementById('backup-modal').style.display='flex'; }
+    function copyBackup() { const t = document.getElementById('backup-data'); t.select(); document.execCommand('copy'); alert("복사됨"); }
+    function importData() { try { const d = JSON.parse(document.getElementById('backup-data').value); st.timers = d.timers || []; st.foldState = d.folds || {}; saveStore(); renderSched(); closeBackup(); } catch(e) { alert("JSON 오류"); } }
+    function closeBackup() { document.getElementById('backup-modal').style.display='none'; }
+    async function toggleWakeLock() { if(!('wakeLock' in navigator)) return; if(st.wakeLock) { await st.wakeLock.release(); st.wakeLock=null; document.getElementById('wl-btn').innerText="🛡 화면 유지 OFF"; document.getElementById('wl-btn').classList.remove('on'); } else { requestWakeLock(false); } }
+    async function requestWakeLock(s) { try { st.wakeLock = await navigator.wakeLock.request('screen'); document.getElementById('wl-btn').innerText="🛡 화면 유지 ON"; document.getElementById('wl-btn').classList.add('on'); } catch(e){} }
+    function drawPIP(list) { const ctx = document.getElementById('pip-canvas').getContext('2d'); ctx.fillStyle = "#fff"; ctx.fillRect(0,0,220,120); ctx.fillStyle = "#2d3436"; ctx.fillRect(0,0,220,35); ctx.fillStyle = "#fff"; ctx.font = "bold 13px Arial"; ctx.fillText("B-CONTROL PiP", 15, 23); if(list.length > 0) { const n = list[0]; const d = n.t - Date.now(); ctx.fillStyle = "#1a237e"; ctx.font = "bold 22px 'Noto Sans KR'"; ctx.textAlign = "center"; ctx.fillText(n.n, 110, 75); ctx.fillStyle = "#000"; ctx.font = "bold 32px Orbitron"; ctx.fillText(formatTimer(d).substring(3), 110, 108); } }
     async function togglePIP() { const v = document.getElementById('pip-video'); if (document.pictureInPictureElement) await document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); await v.play(); await v.requestPictureInPicture(); } }
+
     init();
 </script>
 </body>

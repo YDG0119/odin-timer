@@ -3,41 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOSS OPS CENTER V32.3 HD FINAL</title>
+    <title>BOSS OPS CENTER V32.4 HD FINAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --primary: #1a237e; --primary-light: #e8eaf6; --border: #dee2e6; --danger: #d32f2f; --warning: #ef6c00; }
         body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background: #f4f5f7; margin: 0; display: flex; height: 100vh; overflow: hidden; font-size: 13px; }
-        
-        /* 클릭 오류 방지 패치 */
         body.system-off .content { filter: grayscale(1) brightness(0.9); pointer-events: none; }
         header, nav { pointer-events: auto !important; }
-
         nav { width: 220px; background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 15px 0; z-index: 1000; flex-shrink: 0; }
         .nav-brand { padding: 0 25px 20px; font-weight: 900; font-size: 16px; color: var(--primary); border-bottom: 1px solid #f1f3f5; margin-bottom: 15px; }
         .nav-item { display: flex; align-items: center; padding: 12px 25px; cursor: pointer; color: #6c757d; transition: 0.2s; gap: 12px; font-weight: 700; }
         .nav-item.active { background: var(--primary-light); color: var(--primary); border-left: 4px solid var(--primary); }
-
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         header { height: 60px; background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; flex-shrink: 0; }
-        
         .content { flex: 1; padding: 20px; overflow-y: auto; display: flex; justify-content: center; }
         .pane { display: none; width: 100%; max-width: 720px; animation: fadeIn 0.15s ease; }
         .pane.active { display: block; }
         .card { background: #fff; border-radius: 12px; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-
         .timer-big { font-family: 'JetBrains Mono'; font-size: 52px; font-weight: 800; color: var(--primary); margin: 10px 0; letter-spacing: -2px; }
         .timer-10m { color: #f59e0b !important; }
         .timer-5m { color: #ef4444 !important; }
         .timer-1m { color: #b91c1c !important; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-
         .boss-row { display: grid; grid-template-columns: 35px 115px 1fr 100px 75px 35px; align-items: center; padding: 10px 15px; border-bottom: 1px solid #f1f3f5; gap: 8px; }
         .v-in { height: 32px; width: 100%; border-radius: 6px; border: 1px solid #ced4da; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 13px; }
         .v-in::placeholder { font-family: 'Inter'; font-weight: 400; font-size: 10px; color: #94a3b8; }
         .zen-time-display { font-family: 'JetBrains Mono'; font-weight: 700; text-align: right; color: #475569; }
-        .prev-time { font-size: 10px; color: var(--warning); font-weight: 700; height: 12px; text-align: right; }
         .log-box { font-family: 'JetBrains Mono'; font-size: 11px; height: 220px; overflow-y: auto; display: flex; flex-direction: column-reverse; background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; }
         .p-btn { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 800; font-size: 11px; transition: 0.2s; }
         .p-btn.active { background: var(--primary); color: #fff; }
@@ -47,7 +39,7 @@
 <body onkeydown="handleKeys(event)">
 
 <nav>
-    <div class="nav-brand italic text-center text-blue-900 font-black uppercase">B-OPS V32.3 HD</div>
+    <div class="nav-brand italic text-center text-blue-900 font-black uppercase">B-OPS V32.4 HD</div>
     <div class="nav-item active" onclick="tab('dash', this)">🏠 Dashboard</div>
     <div class="nav-item" onclick="tab('sched', this)">📅 Boss Schedule</div>
     <div class="nav-item" onclick="tab('calc', this)">🖩 계산기 (Calculator)</div>
@@ -70,14 +62,14 @@
     <div class="content">
         <div id="dash" class="pane active">
             <div id="hero-card" class="card text-center py-8">
-                <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Next Target</div>
+                <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Next Boss Target</div>
                 <div id="d-name" class="text-3xl font-black mt-2 leading-none text-blue-900">대기 중</div>
                 <div id="d-timer" class="timer-big">00:00:00</div>
                 <div id="d-meta" class="text-sm text-gray-500 font-bold font-mono">-</div>
                 <div id="top3-list" class="mt-8 text-left bg-gray-50 p-5 rounded-2xl border border-gray-100 space-y-2 font-mono"></div>
                 <div class="mt-6 flex justify-center gap-3">
                     <button class="p-btn active px-8 py-3 shadow-lg" onclick="copyKakao('top3')">📢 Top3 복사</button>
-                    <button class="p-btn bg-gray-200 text-gray-700 px-8 py-3" onclick="copyKakao('all')">📋 전체 복사</button>
+                    <button class="p-btn bg-gray-200 text-gray-700 px-8 py-3" onclick="copyKakao('all')">📋 카톡용 전체 복사</button>
                 </div>
             </div>
             <div class="card"><div id="logs" class="log-box"></div></div>
@@ -86,7 +78,6 @@
         <div id="sched" class="pane">
             <div class="card flex gap-3 items-center bg-gray-50 border-none mb-4 shadow-sm">
                 <input type="text" id="search-boss" placeholder="보스 필터..." class="border rounded-md px-3 py-1 text-sm flex-1 outline-none focus:border-blue-900" oninput="handleSearch(this.value)">
-                <label class="text-xs font-bold flex gap-1 items-center cursor-pointer"><input type="checkbox" id="active-only" onchange="applyFilters()"> 활성만</label>
                 <button class="p-btn border bg-white text-red-500 font-black" onclick="confirmClear()">CLEAR ALL</button>
             </div>
             <div id="sched-cont"></div>
@@ -97,24 +88,23 @@
                 <div class="card shadow-md">
                     <h3 class="font-black mb-6 text-center text-lg italic border-b pb-2">젠 계산기</h3>
                     <div class="grid grid-cols-2 gap-2 mb-6 text-center font-mono">
-                        <div class="bg-gray-50 p-4 border rounded-xl"><small class="text-gray-400 font-black uppercase">Remain</small><div id="zc-remain" class="text-2xl font-black text-gray-500">--:--</div></div>
-                        <div class="bg-blue-50 p-4 border border-blue-100 rounded-xl"><small class="text-blue-400 font-black uppercase">Spawn</small><div id="zc-preview" class="text-2xl font-black text-red-500">--:--:--</div></div>
+                        <div class="bg-gray-50 p-4 border rounded-xl"><small class="text-gray-400 font-black">남은 시간</small><div id="zc-remain" class="text-2xl font-black text-gray-500">--:--</div></div>
+                        <div class="bg-blue-50 p-4 border border-blue-100 rounded-xl"><small class="text-blue-400 font-black">젠 시각</small><div id="zc-preview" class="text-2xl font-black text-red-500">--:--:--</div></div>
                     </div>
-                    <select id="zc-sel" class="w-full h-11 border rounded-lg mb-4 font-bold px-3 bg-gray-50 outline-none focus:border-blue-900"></select>
-                    <input type="text" id="zc-in" class="w-full h-14 text-center font-mono text-3xl border-2 border-blue-900 rounded-xl mb-4 bg-blue-50" placeholder="예: 0430, 8 44" oninput="updateZenPreview(this.value)">
-                    <button class="p-btn active w-full h-14 text-sm font-black shadow-md" onclick="applyZenCalc()">시간 업데이트 및 저장</button>
+                    <select id="zc-sel" class="w-full h-11 border rounded-lg mb-4 font-bold px-3 bg-gray-50"></select>
+                    <input type="text" id="zc-in" class="w-full h-14 text-center font-mono text-3xl border-2 border-blue-900 rounded-xl mb-4 bg-blue-50" placeholder="예: 0430, 1일 2시간" oninput="updateZenPreview(this.value)">
+                    <button class="p-btn active w-full h-14 text-sm font-black shadow-md" onclick="applyZenCalc()">업데이트 및 저장</button>
                 </div>
-
                 <div class="card shadow-md">
                     <h3 class="font-black mb-6 text-center text-lg italic border-b pb-2 text-red-700">광 계산기</h3>
                     <div class="grid grid-cols-2 gap-2 mb-10 text-center font-mono">
                         <div class="bg-gray-50 p-6 rounded-xl border"><small class="font-black text-gray-400 uppercase">전투 진행</small><div id="b-elap" class="text-3xl font-black mt-2 text-slate-700">00:00</div></div>
-                        <div class="bg-red-50 p-6 rounded-xl border border-red-100"><small class="font-black text-red-500 uppercase">잡힘 예상</small><div id="b-timer" class="text-3xl font-black mt-2 text-red-600">--:--</div></div>
+                        <div class="bg-red-50 p-6 rounded-xl border border-red-100"><small class="font-black text-red-500 uppercase">예상 잡힘</small><div id="b-timer" class="text-3xl font-black mt-2 text-red-600">--:--</div></div>
                     </div>
                     <div class="grid grid-cols-3 gap-3">
-                        <button class="p-btn bg-slate-700 text-white h-14 font-black transition active:scale-95 shadow-md" onclick="btl('start')">시작</button>
-                        <button class="p-btn bg-orange-500 text-white h-14 font-black transition active:scale-95 shadow-md" onclick="btl('kwang')">광</button>
-                        <button class="p-btn active h-14 font-black transition active:scale-95 shadow-lg" onclick="btl('kill')">잡힘</button>
+                        <button class="p-btn bg-slate-700 text-white h-14 font-black" onclick="btl('start')">시작</button>
+                        <button class="p-btn bg-orange-500 text-white h-14 font-black" onclick="btl('kwang')">광</button>
+                        <button class="p-btn active h-14 font-black shadow-md" onclick="btl('kill')">잡힘</button>
                     </div>
                 </div>
             </div>
@@ -122,8 +112,8 @@
 
         <div id="set-txt" class="pane">
             <div class="card shadow-md">
-                <div class="flex justify-between items-center mb-4"><h3 class="font-black">Text Sync Editor</h3><button class="p-btn active px-6" onclick="saveText()">저장 및 동기화</button></div>
-                <textarea id="txt-ed" class="w-full h-[520px] border p-6 font-mono text-sm rounded-2xl resize-none bg-gray-50 shadow-inner border-gray-200 outline-none focus:border-blue-900"></textarea>
+                <div class="flex justify-between items-center mb-4"><h3 class="font-black">Text Sync Editor</h3><button class="p-btn active" onclick="saveText()">저장</button></div>
+                <textarea id="txt-ed" class="w-full h-[520px] border p-6 font-mono text-sm rounded-2xl resize-none bg-gray-50 border-gray-200 outline-none focus:border-blue-900"></textarea>
             </div>
         </div>
     </div>
@@ -133,42 +123,40 @@
 <video id="pip-video" autoplay muted playsinline style="display:none;"></video>
 
 <script>
-/* [데이터] 요청 정렬 순서 (요툰~던전) 완벽 고정 */
+/* [데이터] 도균님 요청 순서 및 명칭 완전 고정 */
 const bosses = [
-    { w: "요툰하임", c: "#3f51b5", b: [
-        {n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, 
-        {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야른", r:240}, {n:"티르", r:1440}
-    ]},
-    { w: "니다벨리르", c: "#43a047", b: [
-        {n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, 
-        {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}
-    ]},
-    { w: "알브하임", c: "#ef6c00", b: [
-        {n:"스바르트", r:240}, {n:"두라스로르", r:480}, {n:"모네가름", r:120}, {n:"드라우그", r:240}, 
-        {n:"굴베이그", r:480}, {n:"오딘", r:1440}
-    ]},
-    { w: "무스펠하임", c: "#c62828", b: [
-        {n:"메기르", r:120}, {n:"신마라", r:720}, {n:"헤르가름", r:120}, {n:"탕그리스니르", r:240}, 
-        {n:"엘드룬", r:720}, {n:"우로보로스", r:1440}, {n:"수르트", r:1440}
-    ]},
-    { w: "아스가르드", c: "#7b1fa2", b: [
-        {n:"발리", r:120}, {n:"노트", r:480}, {n:"샤무크", r:120}, {n:"스칼드메르", r:120}, 
-        {n:"그로아", r:1440}, {n:"미미르", r:240}
-    ]},
-    { w: "니플하임", c: "#0097a7", b: [
-        {n:"히로킨", r:1440}, {n:"호드", r:1440}, {n:"헤이드", r:1440}, {n:"프레이", r:1440}, {n:"이미르", r:1440}
-    ]},
-    { w: "바나하임", c: "#689f38", b: [
-        {n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}
-    ]},
-    { w: "던전", c: "#455a64", b: [
-        {n:"4층", r:480}, {n:"7층", r:480}, {n:"10층", r:480}, 
-        {n:"최하층굴베", r:480}, {n:"최하층강글", r:480}, {n:"최하층스네르", r:480}
-    ]}
+    { w: "요툰하임", c: "#3f51b5", b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야른", r:240}, {n:"티르", r:1440}] },
+    { w: "니다벨리르", c: "#43a047", b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}] },
+    { w: "알브하임", c: "#ef6c00", b: [{n:"스바르트", r:240}, {n:"두라스로르", r:480}, {n:"모네가름", r:120}, {n:"드라우그", r:240}, {n:"굴베이그", r:480}, {n:"오딘", r:1440}] },
+    { w: "무스펠하임", c: "#c62828", b: [{n:"메기르", r:120}, {n:"신마라", r:720}, {n:"헤르가름", r:120}, {n:"탕그리스니르", r:240}, {n:"엘드룬", r:720}, {n:"우로보로스", r:1440}, {n:"수르트", r:1440}] },
+    { w: "아스가르드", c: "#7b1fa2", b: [{n:"발리", r:120}, {n:"노트", r:480}, {n:"샤무크", r:120}, {n:"스칼드메르", r:120}, {n:"그로아", r:1440}, {n:"미미르", r:240}] },
+    { w: "니플하임", c: "#0097a7", b: [{n:"히로킨", r:1440}, {n:"호드", r:1440}, {n:"헤이드", r:1440}, {n:"프레이", r:1440}, {n:"이미르", r:1440}] },
+    { w: "바나하임", c: "#689f38", b: [{n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}] },
+    { w: "던전", c: "#455a64", b: [{n:"4층", r:480}, {n:"7층", r:480}, {n:"10층", r:480}, {n:"최하층굴베", r:480}, {n:"최하층강글", r:480}, {n:"최하층스네르", r:480}] }
 ];
 
 const BOSS_WORLD_MAP = {}; bosses.forEach(g => g.b.forEach(b => BOSS_WORLD_MAP[b.n] = g.w));
 let st = { on: true, profile: 'A', timers: [], pins: [], battle: { s: null, k: null, est: 0 }, foldState: {}, timeOffsetMs: 0, _keyCache: {} };
+
+/* [카톡 내보내기] 요청 형식 복구 */
+function copyKakao(mode) {
+    const now = Date.now();
+    let list = [...st.timers].sort((a, b) => a.t - b.t);
+    if (mode === 'top3') list = list.filter(t => t.t > now).slice(0, 3);
+    if (!list.length) return alert("데이터가 없습니다.");
+
+    const d = new Date();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    let txt = mode === 'top3' ? `[${mm}.${dd} TOP3 보스 젠]\n` : `${mm}.${dd}\n`;
+
+    list.forEach(t => {
+        const timeStr = new Date(t.t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        txt += `${timeStr} ${t.n}\n`;
+    });
+
+    navigator.clipboard.writeText(txt.trim()).then(() => alert("복사 완료!"));
+}
 
 /* [핵심] hhmm 파싱 엔진 */
 function parseSmart(s) {
@@ -191,7 +179,7 @@ function parseSmart(s) {
     return 0;
 }
 
-/* [UI] SafeKey & HD PiP+ */
+/* [UI] SafeKey & HD PiP+ (광폭화 연동) */
 function fnv1a32(str) {
     let h = 0x811c9dc5;
     for (let i=0; i<str.length; i++) { h ^= str.charCodeAt(i); h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0; }
@@ -243,13 +231,13 @@ function loop() {
         if (el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
     }
 
-    const list = [...st.timers].sort((a,b) => a.t - b.t);
-    const upcoming = list.filter(t => t.t > now);
+    const upcoming = [...st.timers].sort((a,b) => a.t - b.t).filter(t => t.t > now);
     const next = upcoming[0];
 
     if (next) {
         const rem = next.t - now;
         __dom.dName.innerText = next.n; __dom.dTimer.innerText = formatTimer(rem);
+        __dom.dMeta.innerText = `${new Date(next.t).toLocaleTimeString()} (${BOSS_WORLD_MAP[next.n]})`;
         __dom.dTimer.classList.remove('timer-10m', 'timer-5m', 'timer-1m');
         if (rem <= 60000) __dom.dTimer.classList.add('timer-1m');
         else if (rem <= 300000) __dom.dTimer.classList.add('timer-5m');
@@ -260,20 +248,9 @@ function loop() {
     
     if (st.battle.s && !st.battle.k) { __dom.bElap.innerText = formatSimple((Date.now()-st.battle.s)/1000); __dom.bTimer.innerText = "--:--"; }
     else if (st.battle.k) { const rem = st.battle.est - Math.floor((Date.now()-st.battle.k)/1000); __dom.bTimer.innerText = (rem>=0?"":"+")+formatSimple(Math.abs(rem)); }
+    else { __dom.bElap.innerText = "00:00"; __dom.bTimer.innerText = "--:--"; }
 
     drawPIP(upcoming);
-}
-
-function btl(type) {
-    const now = Date.now(); cacheDom();
-    if(type==='start') { st.battle.s=now; st.battle.k=null; st.battle.est=0; addLog("전투 시작(Start)"); } 
-    else if(type==='kwang') { if(!st.battle.s) return; st.battle.k=now; st.battle.est=Math.floor(((now-st.battle.s)/1000)*0.51); addLog("광폭화 진입(Berserk)"); } 
-    else if(type==='kill') { 
-        st.battle.s=null; st.battle.k=null; st.battle.est=0; 
-        addLog("대상 처치(Neutralized)"); 
-        if(__dom.bElap) __dom.bElap.innerText = "00:00"; 
-        if(__dom.bTimer) __dom.bTimer.innerText = "--:--"; 
-    }
 }
 
 function handleEnterNav(el) {
@@ -287,25 +264,25 @@ function renderSched() {
     const cont = document.getElementById('sched-cont'); let html = '';
     const timerMap = new Map(st.timers.map(t => [t.n, t]));
     bosses.forEach(g => {
-        html += `<div class="world-section mb-3 border rounded-xl overflow-hidden shadow-sm"><div class="bg-gray-100 p-3 font-black text-[10px] flex justify-between cursor-pointer" onclick="toggleFold('${g.w}')"><span class="uppercase">${g.w}</span></div><div class="world-content">`;
+        html += `<div class="world-section mb-3 border rounded-xl overflow-hidden shadow-sm"><div class="bg-gray-100 p-3 font-black text-[10px] flex justify-between cursor-pointer" onclick="toggleFold('${g.w}')"><span>${g.w.toUpperCase()}</span></div><div class="world-content">`;
         g.b.forEach(b => {
             const tm = timerMap.get(b.n);
             const zenTxt = tm ? new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}) : '--:--';
-            html += `<div class="boss-row"><button onclick="togglePin('${b.n}')" class="text-lg">📍</button><b class="text-sm truncate">${b.n}</b><input type="text" data-name="${b.n}" class="v-in" placeholder="예: 0430, 8 44" oninput="previewSpawn(this)" onkeydown="if(event.key==='Enter') handleEnterNav(this)"><div class="zen-time-display"><div id="zen-${safeKey(b.n)}">${zenTxt}</div><div id="prev-${safeKey(b.n)}" class="prev-time"></div></div><button onclick="setTimer('${b.n}', ${b.r*60}, '자동')" class="bg-blue-900 text-white text-[10px] py-1 rounded font-bold transition hover:bg-black uppercase">Killed</button><button onclick="delTimer('${b.n}')" class="text-red-400 font-bold text-lg hover:text-red-600 transition">×</button></div>`;
+            html += `<div class="boss-row"><button onclick="togglePin('${b.n}')" class="text-lg">📍</button><b class="text-sm truncate">${b.n}</b><input type="text" data-name="${b.n}" class="v-in" placeholder="예: 0430 (4시간30분), 8 44" onkeydown="if(event.key==='Enter') handleEnterNav(this)"><div class="zen-time-display"><div id="zen-${safeKey(b.n)}">${zenTxt}</div></div><button onclick="setTimer('${b.n}', ${b.r*60}, '자동')" class="bg-blue-900 text-white text-[10px] py-1 rounded font-bold hover:bg-black transition">KILLED</button><button onclick="delTimer('${b.n}')" class="text-red-400 font-bold text-lg hover:text-red-600 transition">×</button></div>`;
         });
         html += `</div></div>`;
     });
     cont.innerHTML = html;
 }
 
-function previewSpawn(el) { const s = parseSmart(el.value); const box = document.getElementById(`prev-${safeKey(el.dataset.name)}`); box.innerText = s > 0 ? `Soon ${new Date(Date.now() + st.timeOffsetMs + s*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})}` : ""; }
+function renderSched_Partial() { st.timers.forEach(tm => { const el = document.getElementById(`zen-${safeKey(tm.n)}`); if (el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}); }); }
 function triggerAlert(name, msg) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(`${name} ${msg}입니다.`); u.lang = 'ko-KR'; window.speechSynthesis.speak(u); try { const c = (__audioCtx || (__audioCtx = new AudioContext())); if(c.state==='suspended') c.resume(); const g = c.createGain(); const o = c.createOscillator(); g.gain.setValueAtTime(0.0001, c.currentTime); g.gain.exponentialRampToValueAtTime(0.15, c.currentTime+0.01); g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime+0.18); o.frequency.value = 440; o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime+0.2); o.onended = () => { o.disconnect(); g.disconnect(); }; } catch(e){} }
 function setTimer(n, s, raw) { const t = Date.now() + st.timeOffsetMs + (s * 1000); st.timers = st.timers.filter(x => x.n !== n); st.timers.push({ n, t, m10: false, m5: false, m1: false, lastD: s + 1 }); save(); renderSched_Partial(); }
-function renderSched_Partial() { st.timers.forEach(tm => { const el = document.getElementById(`zen-${safeKey(tm.n)}`); if (el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}); }); }
 function togglePwr() { st.on = !st.on; document.getElementById('pwr').style.color = st.on ? '#16a34a' : '#94a3b8'; document.body.classList.toggle('system-off', !st.on); if(!st.on) window.speechSynthesis.cancel(); }
 function save() { localStorage.setItem(`v32_data_${st.profile}`, JSON.stringify({ timers: st.timers, pins: st.pins, fold: st.foldState })); }
 function switchProfile(p) { st.profile = p; const d = JSON.parse(localStorage.getItem(`v32_data_${p}`)) || {}; st.timers = d.timers || []; st.pins = d.pins || []; st.foldState = d.fold || {}; renderSched(); }
 function tab(id, el) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+function btl(type) { const now = Date.now(); if(type==='start') { st.battle.s=now; st.battle.k=null; addLog("전투 시작."); } else if(type==='kwang') { if(!st.battle.s) return; st.battle.k=now; st.battle.est=Math.floor(((now-st.battle.s)/1000)*0.51); addLog("광폭화 진입."); } else if(type==='kill') { st.battle.s=null; st.battle.k=null; addLog("대상 처치."); } }
 function updateZenPreview(v) { const s = parseSmart(v); document.getElementById('zc-remain').innerText = s > 0 ? formatSimple(s) : "--:--"; document.getElementById('zc-preview').innerText = s > 0 ? new Date(Date.now() + st.timeOffsetMs + s*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}) : "--:--:--"; }
 function applyZenCalc() { const n = document.getElementById('zc-sel').value; const s = parseSmart(document.getElementById('zc-in').value); if (s <= 0) return alert("시간 형식을 확인하세요."); setTimer(n, s, ""); document.getElementById('zc-in').value = ""; updateZenPreview(""); tab('dash', document.querySelector('.nav-item')); }
 async function togglePIP() { const v = document.getElementById('pip-video'); if (document.pictureInPictureElement) await document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); await v.play(); await v.requestPictureInPicture(); } }
@@ -317,7 +294,7 @@ function delTimer(n) { st.timers = st.timers.filter(x => x.n !== n); save(); ren
 function confirmClear() { if(confirm("초기화하시겠습니까?")) { st.timers = []; save(); renderSched(); } }
 function toggleFold(w) { st.foldState[w] = !st.foldState[w]; save(); renderSched(); }
 function handleSearch(v) { const stm = v.toLowerCase(); document.querySelectorAll('.boss-row').forEach(row => { const n = row.querySelector('b').innerText.toLowerCase(); row.style.display = n.includes(stm) ? 'grid' : 'none'; }); }
-function testAlert() { triggerAlert("테스트", "정상입니다."); }
+function testAlert() { triggerAlert("테스트", "정상 작동."); }
 function handleKeys(e) { if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; if(e.key==='/'){e.preventDefault(); document.getElementById('search-boss').focus();} }
 function saveText() { const lines = document.getElementById('txt-ed').value.split('\n'); const nt = []; lines.forEach(l => { const m = l.match(/(\d{2}:\d{2})\s+(.+)/); if(m) nt.push({ n: m[2].trim(), t: new Date(new Date().setHours(m[1].split(':')[0], m[1].split(':')[1], 0, 0)).getTime(), m10:false, m5:false, m1:false, lastD: 9999 }); }); st.timers = nt; save(); renderSched(); }
 

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOSS OPS CENTER V32</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    <title>BOSS OPS CENTER V32.1 MASTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-page: #f4f5f7; --bg-card: #ffffff; --border: #dee2e6;
@@ -14,81 +14,60 @@
             --sidebar-w: 220px; --header-h: 60px;
         }
 
-        /* Base Setup */
-        body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg-page); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; font-size: 13px; }
+        body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background: var(--bg-page); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; font-size: 13px; }
         body.system-off { filter: grayscale(1) brightness(0.9); pointer-events: none; }
-        body.system-off header, body.system-off .global-controls, body.system-off nav { pointer-events: auto !important; filter: none !important; }
+        body.system-off header, body.system-off nav { pointer-events: auto !important; filter: none !important; }
 
-        /* Sidebar 리디자인 (Icon + Text Label) */
+        /* Sidebar */
         nav { width: var(--sidebar-w); background: #ffffff; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 15px 0; z-index: 1000; flex-shrink: 0; }
-        .nav-brand { padding: 0 25px 20px; font-weight: 700; font-size: 16px; color: var(--primary); border-bottom: 1px solid #f1f3f5; margin-bottom: 15px; }
-        .nav-item { display: flex; align-items: center; padding: 12px 25px; cursor: pointer; color: var(--text-sub); transition: 0.2s; gap: 12px; font-weight: 500; font-size: 14px; }
+        .nav-brand { padding: 0 25px 20px; font-weight: 900; font-size: 16px; color: var(--primary); border-bottom: 1px solid #f1f3f5; margin-bottom: 15px; letter-spacing: -0.5px; }
+        .nav-item { display: flex; align-items: center; padding: 12px 25px; cursor: pointer; color: var(--text-sub); transition: 0.2s; gap: 12px; font-weight: 700; font-size: 13px; }
         .nav-item:hover { background: #f8f9fa; color: var(--primary); }
         .nav-item.active { background: var(--primary-light); color: var(--primary); border-left: 4px solid var(--primary); }
 
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         header { height: var(--header-h); background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; flex-shrink: 0; }
         
-        /* 멀티 프로필 조작부 */
-        .profile-group { display: flex; gap: 5px; background: #f1f3f5; padding: 4px; border-radius: 8px; }
-        .p-btn { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 700; font-size: 11px; transition: 0.2s; }
+        /* 창 사이즈 최적화 */
+        .content { flex: 1; padding: 20px; overflow-y: auto; display: flex; justify-content: center; }
+        .pane { display: none; width: 100%; max-width: 720px; animation: fadeIn 0.15s ease; }
+        .pane.active { display: block; }
+        .card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+
+        /* Dashboard Components */
+        .hero-section { text-align: center; padding: 25px 0; border-bottom: 1px solid #f8f9fa; }
+        .timer-big { font-family: 'JetBrains Mono'; font-size: 52px; font-weight: 700; color: var(--primary); margin: 10px 0; letter-spacing: -2px; }
+        .imminent .timer-big { color: var(--danger); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        
+        .boss-row { display: grid; grid-template-columns: 35px 90px 1fr 100px 75px 35px; align-items: center; padding: 10px 15px; background: #fff; border-bottom: 1px solid #f1f3f5; gap: 8px; }
+        .zen-time-display { font-family: 'JetBrains Mono'; font-weight: 700; text-align: right; color: var(--text-main); font-size: 13px; }
+        .prev-time { font-size: 10px; color: var(--warning); font-weight: 700; height: 12px; }
+
+        .v-in { height: 30px; width: 100%; border-radius: 6px; border: 1px solid #dee2e6; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 12px; background: #fdfdfd; }
+        .v-in:focus { border-color: var(--primary); outline: none; background: #fff; box-shadow: 0 0 0 3px var(--primary-light); }
+
+        .chip { padding: 6px 14px; border-radius: 20px; background: #f1f3f5; border: 1px solid #e2e8f0; cursor: pointer; font-size: 11px; font-weight: 700; }
+        .chip.is-fav { border-color: #ffd700; background: #fffdf0; color: #b79500; }
+        
+        .log-box { font-family: 'JetBrains Mono'; font-size: 11px; height: 300px; overflow-y: auto; display: flex; flex-direction: column-reverse; background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; line-height: 1.6; }
+        
+        .profile-group { display: flex; gap: 4px; background: #f1f3f5; padding: 4px; border-radius: 10px; }
+        .p-btn { padding: 6px 14px; border-radius: 7px; border: none; cursor: pointer; font-weight: 800; font-size: 10px; transition: 0.2s; }
         .p-btn.active { background: var(--primary); color: #fff; }
 
-        .content { flex: 1; padding: 25px; overflow-y: auto; }
-        .pane { display: none; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.15s ease; }
-        .pane.active { display: block; }
-        .card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
-
-        /* 대시보드 및 리스트 컴포넌트 */
-        .dash-grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; }
-        .hero-section { text-align: center; padding: 20px 0; border-bottom: 1px solid #f8f9fa; margin-bottom: 20px; }
-        .timer-big { font-family: 'Orbitron'; font-size: 56px; font-weight: 700; color: var(--primary); margin: 10px 0; }
-        .imminent .timer-big { color: var(--danger); }
-        
-        .row-list { display: flex; flex-direction: column; }
-        .boss-row { display: grid; grid-template-columns: 40px 1fr 140px 110px 80px 40px; align-items: center; padding: 8px 15px; background: #fff; border-bottom: 1px solid #f1f3f5; gap: 10px; }
-        .boss-row:hover { background: #fafafa; }
-        .world-section { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
-        .world-banner { height: 44px; background: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; cursor: pointer; font-weight: 700; border-left: 5px solid var(--primary); }
-        .is-folded .world-content { display: none; }
-
-        .v-in { height: 32px; width: 100%; border-radius: 4px; border: 1px solid #ced4da; text-align: center; font-family: 'Orbitron'; font-weight: 600; font-size: 13px; }
-        .v-in:focus { border-color: var(--primary); outline: none; background: #f0f4ff; }
-        .zen-time-display { font-family: 'Orbitron'; font-weight: 600; text-align: center; color: var(--text-sub); }
-        
-        /* 퀵 액션 & 칩 */
-        .fav-recent-bar { display: flex; flex-wrap: wrap; gap: 6px; margin: 15px 0; justify-content: center; }
-        .chip { padding: 5px 12px; border-radius: 20px; background: #f1f3f5; border: 1px solid #e2e8f0; cursor: pointer; font-size: 11px; font-weight: 500; transition: 0.1s; }
-        .chip.is-fav { border-color: #ffd700; background: #fffdf0; }
-        .chip:hover { border-color: var(--primary); color: var(--primary); }
-
-        /* Undo Toast */
-        #undo-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #2d3436; color: #fff; padding: 12px 25px; border-radius: 30px; display: none; align-items: center; gap: 15px; z-index: 5000; box-shadow: 0 8px 20px rgba(0,0,0,0.2); animation: slideUp 0.3s ease; }
-        .undo-btn { color: #55efc4; font-weight: 700; cursor: pointer; text-decoration: underline; }
-
-        .log-box { font-size: 12px; height: 380px; overflow-y: auto; display: flex; flex-direction: column-reverse; background: #fafafa; padding: 12px; border: 1px solid #eee; border-radius: 4px; line-height: 1.7; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } }
-        @keyframes slideUp { from { transform: translate(-50%, 20px); opacity: 0; } }
-        #pip-video { position: fixed; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
-
-        @media (max-width: 768px) {
-            body { flex-direction: column; }
-            nav { width: 100%; height: auto; flex-direction: row; overflow-x: auto; padding: 5px; }
-            .nav-brand { display: none; }
-            .dash-grid { grid-template-columns: 1fr; }
-            .boss-row { grid-template-columns: 35px 1fr 100px 50px 35px; }
-            .boss-row > div:nth-child(4) { display: none; }
-        }
+        #undo-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #2d3436; color: #fff; padding: 12px 25px; border-radius: 30px; display: none; align-items: center; gap: 15px; z-index: 5000; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        .undo-btn { color: #55efc4; font-weight: 700; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
-<body onkeydown="handleKeys(event)">
+<body>
 
 <nav id="sidebar">
-    <div class="nav-brand">B-OPS Desk</div>
+    <div class="nav-brand">B-OPS V32.1</div>
     <div class="nav-item active" onclick="tab('dash', this)">🏠 Dashboard</div>
-    <div class="nav-item" onclick="tab('set-txt', this)">🕒 Text Ops</div>
-    <div class="nav-item" onclick="tab('sched', this)">📅 Schedule</div>
+    <div class="nav-item" onclick="tab('sched', this)">📅 Boss Schedule</div>
+    <div class="nav-item" onclick="tab('set-txt', this)">🕒 Text Sync</div>
     <div class="nav-item" onclick="tab('battle', this)">⚔ Battle Ops</div>
     <div class="nav-item" onclick="tab('zen-calc', this)">🧮 Forced Update</div>
     <div class="nav-item" onclick="togglePIP()">📺 Toggle PIP</div>
@@ -101,108 +80,95 @@
             <button class="p-btn" data-p="B" onclick="switchProfile('B')">PROFILE B</button>
             <button class="p-btn" data-p="C" onclick="switchProfile('C')">PROFILE C</button>
         </div>
-        <div style="display:flex; align-items:center; gap:12px;">
-            <button class="p-btn" style="background:#fff; border:1px solid var(--border);" onclick="testAlert()">🔔 Test Alert</button>
-            <button id="wl-btn" class="p-btn" style="background:#fff; border:1px solid var(--border);" onclick="toggleWakeLock()">🛡 화면 유지 OFF</button>
-            <div id="pwr" style="cursor:pointer; font-size:24px; color:var(--success);" onclick="togglePwr()">⏻</div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button class="p-btn" style="background:#fff; border:1px solid var(--border);" onclick="testAlert()">🔔 Test</button>
+            <button id="wl-btn" class="p-btn" style="background:#fff; border:1px solid var(--border);" onclick="toggleWakeLock()">🛡 화면유지 OFF</button>
+            <div id="pwr" style="cursor:pointer; font-size:24px; color:var(--success); margin-left:10px;" onclick="togglePwr()">⏻</div>
         </div>
     </header>
 
     <div class="content">
         <div id="dash" class="pane active">
-            <div class="dash-grid">
-                <div>
-                    <div class="card hero-section" id="hero-card">
-                        <div style="font-weight:700; color:var(--text-sub); font-size:12px; letter-spacing:1px;">ACTIVE MISSION</div>
-                        <div id="d-name" style="font-size:26px; font-weight:700; margin-top:12px;">대기 중</div>
-                        <div id="d-timer" class="timer-big">00:00:00</div>
-                        <div id="d-meta" style="color:var(--text-sub); font-weight:500;">-</div>
+            <div class="card hero-section" id="hero-card">
+                <div style="font-weight:800; color:var(--text-sub); font-size:11px; letter-spacing:1.5px; opacity:0.7;">ACTIVE MISSION</div>
+                <div id="d-name" style="font-size:32px; font-weight:900; margin-top:10px; letter-spacing:-1px;">대기 중</div>
+                <div id="d-timer" class="timer-big">00:00:00</div>
+                <div id="d-meta" style="color:var(--text-sub); font-weight:700; font-size:13px;">-</div>
 
-                        <div style="display:flex; gap:10px; margin: 20px 0; background:#f8f9fa; padding:10px; border-radius:8px;">
-                            <select id="quick-sel" style="flex:1; height:38px; border-radius:6px; border:1px solid var(--border); font-weight:700; padding:0 10px;"></select>
-                            <button class="p-btn active" style="height:38px; padding:0 20px; font-size:12px;" onclick="quickKill()">KILLED</button>
-                        </div>
-                        
-                        <div id="fav-panel" class="fav-recent-bar"></div>
-
-                        <div id="top3-list" style="margin-top:20px; text-align:left; background:#f4f5f7; padding:15px; border-radius:8px;"></div>
-
-                        <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
-                            <button class="p-btn active" style="height:40px; padding:0 25px;" onclick="copyKakao('top3')">📢 Top3 복사</button>
-                            <button class="p-btn" style="height:40px; padding:0 25px; background:#eee; color:#333;" onclick="copyKakao('all')">📋 전체 복사</button>
-                        </div>
-                    </div>
+                <div style="display:flex; gap:8px; margin: 25px 0; background:var(--primary-light); padding:12px; border-radius:12px;">
+                    <select id="quick-sel" style="flex:1; height:40px; border-radius:8px; border:1px solid #cbd5e0; font-weight:700; padding:0 12px;"></select>
+                    <button class="p-btn active" style="height:40px; padding:0 25px; font-size:12px;" onclick="quickKill()">KILLED</button>
                 </div>
-                <div class="card">
-                    <div style="font-weight:700; margin-bottom:12px; color:var(--primary); font-size:14px;">MISSION COMMAND LOGS</div>
-                    <div id="logs" class="log-box"></div>
+                
+                <div id="fav-panel" class="fav-recent-bar"></div>
+                <div id="top3-list" style="margin-top:20px; text-align:left; background:#f8f9fa; padding:18px; border-radius:12px; border:1px solid #edf2f7;"></div>
+
+                <div style="display:flex; gap:10px; justify-content:center; margin-top:25px;">
+                    <button class="p-btn active" style="height:42px; padding:0 30px; font-size:13px;" onclick="copyKakao('top3')">📢 Top3 복사</button>
+                    <button class="p-btn" style="height:42px; padding:0 30px; background:#e2e8f0; color:#475569;" onclick="copyKakao('all')">📋 전체 복사</button>
                 </div>
             </div>
-        </div>
-
-        <div id="set-txt" class="pane">
+            
             <div class="card">
-                <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                    <h3>Manual Ops Synchronization</h3>
-                    <button class="p-btn active" style="height:36px;" onclick="saveText()">저장 후 적용</button>
-                </div>
-                <textarea id="txt-ed" style="width:100%; height:550px; border:1px solid var(--border); padding:20px; font-family:monospace; line-height:1.8; border-radius:8px; resize:none;"></textarea>
+                <div style="font-weight:800; margin-bottom:12px; color:var(--primary); font-size:12px; letter-spacing:0.5px;">MISSION COMMAND LOGS</div>
+                <div id="logs" class="log-box"></div>
             </div>
         </div>
 
         <div id="sched" class="pane">
-            <div class="card" style="padding:12px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; background:#f8f9fa; margin-bottom:15px;">
-                <input type="text" id="search-boss" placeholder="보스 필터..." style="width:180px; height:34px; padding:0 10px; border:1px solid #ddd; border-radius:6px;" oninput="handleSearch(this.value)">
-                <label style="display:flex; align-items:center; gap:5px; font-weight:700; font-size:12px;"><input type="checkbox" id="active-only" onchange="applyFilters()"> 활성만</label>
+            <div class="card" style="padding:15px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; background:#f8f9fa; margin-bottom:15px; border-radius:12px;">
+                <input type="text" id="search-boss" placeholder="보스명 필터..." style="width:160px; height:34px; padding:0 12px; border:1px solid #ddd; border-radius:8px;" oninput="handleSearch(this.value)">
+                <label style="display:flex; align-items:center; gap:6px; font-weight:700; font-size:12px;"><input type="checkbox" id="active-only" onchange="applyFilters()"> 활성만</label>
                 <div style="flex:1;"></div>
-                <button class="p-btn" style="background:#fff; border:1px solid #ddd;" onclick="toggleAllFolds(false)">모두 펼치기</button>
-                <button class="p-btn" style="background:#fff; border:1px solid #ddd;" onclick="toggleAllFolds(true)">모두 접기</button>
-                <button class="p-btn" style="background:#fff; border:1px solid #ddd; color:var(--danger);" onclick="confirmClear()">전체 초기화</button>
-                <button class="p-btn" style="background:#fff; border:1px solid #ddd;" onclick="openBackup()">JSON Backup</button>
+                <button class="p-btn" style="background:#fff; border:1px solid #ddd;" onclick="toggleAllFolds(false)">펼치기</button>
+                <button class="p-btn" style="background:#fff; border:1px solid #ddd;" onclick="toggleAllFolds(true)">접기</button>
+                <button class="p-btn" style="background:#fff; border:1px solid #ddd; color:var(--danger);" onclick="confirmClear()">초기화</button>
             </div>
-            
-            <div class="card" style="padding:12px; display:flex; gap:10px; align-items:center; margin-bottom:15px;">
-                <span style="font-weight:700; font-size:12px;">Batch Time Shift:</span>
-                <input type="number" id="shift-min" style="width:60px; height:32px; text-align:center; border:1px solid #ddd; border-radius:4px;" value="0">
-                <button class="p-btn" style="background:#fff; border:1px solid #ddd;" onclick="applyShift(1)">+ 분 추가</button>
-                <button class="p-btn" style="background:#fff; border:1px solid #ddd;" onclick="applyShift(-1)">- 분 차감</button>
-            </div>
-
             <div id="sched-cont"></div>
         </div>
 
+        <div id="set-txt" class="pane">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="margin:0; font-weight:900;">Manual Ops Synchronization</h3>
+                    <button class="p-btn active" style="height:36px; padding:0 20px;" onclick="saveText()">저장 후 적용</button>
+                </div>
+                <textarea id="txt-ed" style="width:100%; height:500px; border:1px solid var(--border); padding:20px; font-family:'JetBrains Mono'; font-size:13px; line-height:1.8; border-radius:10px; resize:none; background:#fcfcfc;"></textarea>
+            </div>
+        </div>
+
         <div id="battle" class="pane">
-            <div class="card" style="max-width:600px; margin: 0 auto;">
-                <h3 style="text-align:center;">Tactical Battle Tracker</h3>
+            <div class="card">
+                <h3 style="text-align:center; font-weight:900; margin-top:0;">Tactical Battle Tracker</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin:25px 0;">
-                    <div style="background:#f8f9fa; padding:25px; border-radius:12px; text-align:center; border:1px solid #eee;">
-                        <small style="font-weight:700; color:#888;">ELAPSED TIME</small>
-                        <div id="b-elap" style="font-family:Orbitron; font-size:36px; font-weight:700; margin-top:5px;">00:00</div>
+                    <div style="background:#f8f9fa; padding:25px; border-radius:15px; text-align:center; border:1px solid #eee;">
+                        <small style="font-weight:800; color:#999; letter-spacing:1px;">ELAPSED</small>
+                        <div id="b-elap" style="font-family:Orbitron; font-size:40px; font-weight:700; margin-top:5px; color:#2d3436;">00:00</div>
                     </div>
-                    <div style="background:#f8f9fa; padding:25px; border-radius:12px; text-align:center; border:1px solid #eee;">
-                        <small style="font-weight:700; color:#888;">HP 33.8% PREDICTED</small>
-                        <div id="b-timer" style="font-family:Orbitron; font-size:36px; font-weight:700; color:var(--danger); margin-top:5px;">--:--</div>
+                    <div style="background:#fff5f5; padding:25px; border-radius:15px; text-align:center; border:1px solid #fed7d7;">
+                        <small style="font-weight:800; color:#e53e3e; letter-spacing:1px;">BERSERK PREDICT</small>
+                        <div id="b-timer" style="font-family:Orbitron; font-size:40px; font-weight:700; color:var(--danger); margin-top:5px;">--:--</div>
                     </div>
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
-                    <button class="p-btn" style="height:50px; background:#455a64; color:#fff;" onclick="btl('start')">START</button>
-                    <button class="p-btn" style="height:50px; background:var(--warning); color:#fff;" onclick="btl('kwang')">BERSERK</button>
-                    <button class="p-btn active" style="height:50px;" onclick="btl('kill')">KILLED</button>
+                    <button class="p-btn" style="height:55px; background:#455a64; color:#fff; font-size:13px;" onclick="btl('start')">START</button>
+                    <button class="p-btn" style="height:55px; background:var(--warning); color:#fff; font-size:13px;" onclick="btl('kwang')">BERSERK</button>
+                    <button class="p-btn active" style="height:55px; font-size:13px;" onclick="btl('kill')">KILLED</button>
                 </div>
             </div>
         </div>
 
         <div id="zen-calc" class="pane">
-            <div class="card" style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
+            <div class="card" style="display:grid; grid-template-columns: 1fr; gap:20px;">
                 <div>
-                    <h3>Mission Force Update</h3>
-                    <select id="zc-sel" style="width:100%; height:42px; border-radius:8px; border:1px solid var(--border); margin-bottom:15px; font-weight:700; padding:0 10px;"></select>
-                    <input type="text" id="zc-in" style="width:100%; height:50px; text-align:center; font-family:Orbitron; font-size:24px; border:2px solid var(--primary); border-radius:8px;" placeholder="분 초 입력 (예: 8 44)">
-                    <button class="p-btn active" style="width:100%; height:50px; margin-top:20px; font-size:14px;" onclick="applyZenCalc()">UPDATE MISSION TIME</button>
+                    <h3 style="margin-top:0; font-weight:900;">Mission Force Update</h3>
+                    <select id="zc-sel" style="width:100%; height:45px; border-radius:10px; border:1px solid var(--border); margin-bottom:15px; font-weight:700; padding:0 15px; background:#fff;"></select>
+                    <input type="text" id="zc-in" style="width:100%; height:60px; text-align:center; font-family:'JetBrains Mono'; font-size:32px; border:2px solid var(--primary); border-radius:10px; background:#f0f4ff;" placeholder="0 0" oninput="previewCalc(this.value)">
+                    <button class="p-btn active" style="width:100%; height:55px; margin-top:20px; font-size:15px; letter-spacing:1px;" onclick="applyZenCalc()">UPDATE MISSION TIME</button>
                 </div>
-                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--primary-light); border-radius:12px; border:1px dashed var(--primary);">
-                    <span style="font-weight:700; color:var(--primary); font-size:14px;">SPAWN AT (PREVIEW)</span>
-                    <span id="zc-preview" style="font-family:Orbitron; font-size:42px; color:var(--primary); margin:15px 0;">--:--:--</span>
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#f8faff; border-radius:15px; border:2px dashed var(--primary); padding:30px;">
+                    <span style="font-weight:800; color:var(--primary); font-size:12px; letter-spacing:1px; margin-bottom:10px;">SPAWN AT (PREVIEW)</span>
+                    <span id="zc-preview" style="font-family:'JetBrains Mono'; font-size:48px; color:var(--primary); font-weight:700;">--:--:--</span>
                 </div>
             </div>
         </div>
@@ -214,18 +180,19 @@
     <span class="undo-btn" onclick="executeUndo()">되돌리기 (Undo)</span>
 </div>
 
-<canvas id="pip-canvas" width="220" height="120" style="display:none;"></canvas>
-<video id="pip-video" autoplay muted playsinline></video>
+<canvas id="pip-canvas" width="240" height="135" style="display:none;"></canvas>
+<video id="pip-video" autoplay muted playsinline style="display:none;"></video>
 
 <script>
+    /* [1] 전 지역 보스 데이터 통합 & 야른 명칭 수정 */
     const bosses = [
-        { w: "요툰헤임", c: "#3f51b5", b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야룬", r:240}, {n:"티르", r:1440}] },
+        { w: "요툰하임", c: "#3f51b5", b: [{n:"야른", r:240}, {n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"티르", r:1440}] },
         { w: "니다벨리르", c: "#43a047", b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}] },
-        { w: "알브헤임", c: "#ef6c00", b: [{n:"스바르트", r:240}, {n:"두라스로르", r:480}, {n:"모네가름", r:120}, {n:"드라우그", r:240}, {n:"굴베이그", r:480}, {n:"오딘", r:1440}] },
+        { w: "알브하임", c: "#ef6c00", b: [{n:"스바르트", r:240}, {n:"두라스로르", r:480}, {n:"모네가름", r:120}, {n:"드라우그", r:240}, {n:"굴베이그", r:480}, {n:"오딘", r:1440}] },
         { w: "무스펠하임", c: "#c62828", b: [{n:"메기르", r:120}, {n:"신마라", r:720}, {n:"헤르가름", r:120}, {n:"탕그리스니르", r:240}, {n:"엘드룬", r:720}, {n:"우로보로스", r:1440}, {n:"수르트", r:1440}] },
-        { w: "아스가르드", c: "#7b1fa2", b: [{n:"발리", r:120}, {n:"노트", r:480}, {n:"샤무크", r:120}, {n:"스칼드메르", r:120}, {n:"화신그로아", r:1440}, {n:"미미르", r:240}] },
+        { w: "바나하임", c: "#689f38", b: [{n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}, {n:"피르가브", r:240}] },
+        { w: "아스가르드", c: "#7b1fa2", b: [{n:"발리", r:120}, {n:"노트", r:480}, {n:"샤무크", r:120}, {n:"스칼드메르", r:120}, {n:"화신그로아", r:1440}, {n:"미미르", r:240}, {n:"이미르", r:240}, {n:"모르가나", r:240}] },
         { w: "니플하임", c: "#0097a7", b: [{n:"히로킨", r:1440}, {n:"호드", r:1440}, {n:"헤이드", r:1440}, {n:"대교주", r:1440}, {n:"프레이", r:1440}, {n:"이미르", r:1440}] },
-        { w: "바나하임", c: "#689f38", b: [{n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}] },
         { w: "던전", c: "#455a64", b: [{n:"지감7층", r:480}, {n:"지감4층", r:480}, {n:"지감10층", r:480}, {n:"최하층 굴베이그", r:480}] }
     ];
 
@@ -233,11 +200,50 @@
     bosses.forEach(g => g.b.forEach(b => BOSS_WORLD_MAP[b.n] = g.w));
 
     let st = {
-        on: true, profile: 'A', timers: [], favs: [], recent: [],
+        on: true, profile: 'A', timers: [], favs: [], recent: [], pins: [],
         battle: { s: null, k: null, est: 0 },
         foldState: {}, searchTerm: '', wakeLock: null,
-        undoStack: null, undoT: null
+        undoStack: null, undoT: null, _keyCache: {}
     };
+
+    /* [2] Safe DOM Key (FNV-1a 32-bit Hash) */
+    function fnv1a32(str) {
+        let h = 0x811c9dc5;
+        for (let i = 0; i < str.length; i++) {
+            h ^= str.charCodeAt(i);
+            h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+        }
+        return h >>> 0;
+    }
+    function safeKey(name) {
+        const k = String(name);
+        if (st._keyCache[k]) return st._keyCache[k];
+        const v = "b" + fnv1a32(k).toString(36);
+        st._keyCache[k] = v;
+        return v;
+    }
+    const zenId = (n) => `zen-${safeKey(n)}`;
+    const prevId = (n) => `prev-${safeKey(n)}`;
+
+    /* [3] Audio Context Singleton & Leak Fix */
+    let __audioCtx = null;
+    function getAudioCtx() {
+        if (!__audioCtx) __audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        try { if (__audioCtx.state === "suspended") __audioCtx.resume(); } catch (e) {}
+        return __audioCtx;
+    }
+
+    /* [4] Migration (야룬 -> 야른) */
+    function migrateYarun() {
+        const oldN = "야룬", newN = "야른";
+        st.timers.forEach(t => { if(t.n === oldN) t.n = newN; });
+        ["favs", "recent", "pins"].forEach(k => { if(st[k]) st[k] = st[k].map(x => x === oldN ? newN : x); });
+        const oldInput = localStorage.getItem(`v29_${st.profile}_in_${oldN}`);
+        if(oldInput) {
+            localStorage.setItem(`v29_${st.profile}_in_${newN}`, oldInput);
+            localStorage.removeItem(`v29_${st.profile}_in_${oldN}`);
+        }
+    }
 
     function init() {
         const lastP = localStorage.getItem('v29_current_p') || 'A';
@@ -250,207 +256,192 @@
             qSel.innerHTML += opt; zSel.innerHTML += opt;
         }));
 
-        document.getElementById('zc-in').addEventListener('input', (e) => {
-            const sec = parseMinSec(e.target.value);
-            document.getElementById('zc-preview').innerText = sec > 0 ? new Date(Date.now() + sec*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}) : "--:--:--";
-        });
-
         document.addEventListener('visibilitychange', () => { if(st.wakeLock && document.visibilityState === 'visible') requestWakeLock(true); });
-        setInterval(loop, 500);
-        addLog("Mission Desk Initialized");
-    }
-
-    /* ---------------------------------------------------------
-       V29 PATCH PACK LOGIC INTEGRATED
-       --------------------------------------------------------- */
-
-    function normalizeTimers() {
-      const now = Date.now();
-      st.timers = (st.timers || []).map(x => {
-        const t = typeof x.t === 'number' ? x.t : Number(x.t);
-        const d = Math.floor((t - now) / 1000);
-        return { n: x.n, t, m5: !!x.m5, m1: !!x.m1, lastD: (typeof x.lastD === 'number') ? x.lastD : d };
-      });
+        setInterval(loop, 1000);
+        addLog("Mission Desk Master V32.1 Ready");
     }
 
     function switchProfile(p) {
-      st.profile = p;
-      localStorage.setItem('v29_current_p', p);
-      document.querySelectorAll('.p-btn[data-p]').forEach(b => b.classList.toggle('active', b.dataset.p === p));
+        st.profile = p; localStorage.setItem('v29_current_p', p);
+        document.querySelectorAll('.p-btn[data-p]').forEach(b => b.classList.toggle('active', b.dataset.p === p));
 
-      const stored = localStorage.getItem(`v29_${p}_timers`);
-      if (!stored && p === 'A') st.timers = JSON.parse(localStorage.getItem('v28_timers')) || [];
-      else st.timers = JSON.parse(stored) || [];
+        st.timers = JSON.parse(localStorage.getItem(`v29_${p}_timers`)) || [];
+        st.favs = JSON.parse(localStorage.getItem(`v29_${p}_favs`)) || [];
+        st.recent = JSON.parse(localStorage.getItem(`v29_${p}_recent`)) || [];
+        st.foldState = JSON.parse(localStorage.getItem(`v29_${p}_fold`)) || {};
+        st.pins = JSON.parse(localStorage.getItem(`v29_${p}_pins`)) || [];
 
-      st.favs = JSON.parse(localStorage.getItem(`v29_${p}_favs`)) || [];
-      st.recent = JSON.parse(localStorage.getItem(`v29_${p}_recent`)) || [];
-      st.foldState = JSON.parse(localStorage.getItem(`v29_${p}_fold`)) || {};
-
-      normalizeTimers();
-      renderSched(); renderFavs(); syncTxt();
-      addLog(`Profile ${p} Loaded`);
-    }
-
-    function pushUndo(msg) {
-      st.undoStack = { timers: JSON.parse(JSON.stringify(st.timers || [])), recent: JSON.parse(JSON.stringify(st.recent || [])) };
-      const toast = document.getElementById('undo-toast');
-      document.getElementById('undo-msg').innerText = msg;
-      toast.style.display = 'flex';
-      if (st.undoT) clearTimeout(st.undoT);
-      st.undoT = setTimeout(() => { toast.style.display = 'none'; st.undoStack = null; }, 5000);
-    }
-
-    function executeUndo() {
-      if (!st.undoStack) return;
-      st.timers = st.undoStack.timers || [];
-      st.recent = st.undoStack.recent || [];
-      saveStore(); renderSched(); renderFavs();
-      document.getElementById('undo-toast').style.display = 'none';
-      addLog("Undo executed");
-    }
-
-    function applyZenCalc() {
-      const name = document.getElementById('zc-sel').value;
-      const raw = (document.getElementById('zc-in').value || "").trim();
-      const sec = parseMinSec(raw);
-      if (sec <= 0) return alert("Please enter min sec. e.g., 8 44");
-      setTimer(name, sec, raw);
-      document.getElementById('zc-in').value = "";
-      document.getElementById('zc-preview').innerText = "--:--:--";
-      addLog(`[FORCE] ${name} forced sync (${raw})`);
-    }
-
-    function btl(type) {
-      if (!st.on) return;
-      const now = Date.now();
-      if (type === 'start') { st.battle = { s: now, k: null, est: 0 }; addLog("Engagement Started"); }
-      else if (type === 'kwang') {
-        if (!st.battle.s) return;
-        st.battle.k = now;
-        st.battle.est = Math.floor(((now - st.battle.s) / 1000) * 0.51);
-        addLog("Berserk Triggered");
-      } else if (type === 'kill') { addLog("Target Neutralized"); st.battle = { s: null, k: null, est: 0 }; }
-    }
-
-    function setTimer(n, s, raw) {
-      pushUndo(`${n} update`);
-      const t = Date.now() + (s * 1000);
-      const now = Date.now();
-      const d0 = Math.floor((t - now) / 1000);
-      const entry = { n, t, m5: false, m1: false, lastD: d0 };
-      const i = (st.timers || []).findIndex(x => x.n === n);
-      if (i > -1) st.timers[i] = entry; else st.timers.push(entry);
-      st.recent = [n, ...st.recent.filter(x => x !== n)].slice(0, 5);
-      if (raw !== "자동") localStorage.setItem(`v29_${st.profile}_in_${n}`, raw);
-      saveStore(); renderFavs(); addLog(`${n} mission set`);
+        migrateYarun();
+        renderSched(); renderFavs(); syncTxt();
+        addLog(`Profile ${p} Loaded`);
     }
 
     function loop() {
-      if (!st.on) return;
-      const now = Date.now();
-      st.timers = (st.timers || []).filter(t => (now - t.t) < 600000); // 10 min expiry
+        if (!st.on) return;
+        const now = Date.now();
+        st.timers = st.timers.filter(t => (now - t.t) < 600000);
 
-      st.timers.forEach(tm => {
-        const d = Math.floor((tm.t - now) / 1000);
-        const prev = (typeof tm.lastD === 'number') ? tm.lastD : d;
-        if (!tm.m5 && prev > 300 && d <= 300) { triggerAlert(tm.n, "5분 전"); tm.m5 = true; }
-        if (!tm.m1 && prev > 60 && d <= 60) { triggerAlert(tm.n, "1분 전"); tm.m1 = true; }
-        tm.lastD = d;
-      });
+        st.timers.forEach(tm => {
+            const d = Math.floor((tm.t - now) / 1000);
+            const prev = (typeof tm.lastD === 'number') ? tm.lastD : d;
+            if (!tm.m5 && prev > 300 && d <= 300) { triggerAlert(tm.n, "5분 전"); tm.m5 = true; }
+            if (!tm.m1 && prev > 60 && d <= 60) { triggerAlert(tm.n, "1분 전"); tm.m1 = true; }
+            tm.lastD = d;
 
-      const list = [...st.timers].sort((a, b) => a.t - b.t);
-      const upcoming = list.filter(t => t.t > now);
-      const next = upcoming.length ? upcoming[0] : null;
+            // Loop Optimization: Only update specific IDs
+            const el = document.getElementById(zenId(tm.n));
+            if (el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
+        });
 
-      document.getElementById('d-name').innerText = next ? next.n : "대기 중";
-      document.getElementById('d-timer').innerText = next ? formatTimer(next.t - now) : "00:00:00";
-      document.getElementById('d-meta').innerText = next ? `${new Date(next.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} (${BOSS_WORLD_MAP[next.n]})` : "-";
-      document.getElementById('hero-card').className = (next && (next.t - now < 300000)) ? 'card hero-section imminent' : 'card hero-section';
+        const pinSet = new Set(st.pins);
+        const list = [...st.timers].sort((a, b) => {
+            const ap = pinSet.has(a.n) ? 1 : 0;
+            const bp = pinSet.has(b.n) ? 1 : 0;
+            return ap !== bp ? bp - ap : a.t - b.t;
+        });
 
-      st.timers.forEach(tm => {
-        const el = document.getElementById(`zen-${tm.n}`);
-        if (el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
-      });
+        const upcoming = list.filter(t => t.t > now);
+        const next = upcoming.length ? upcoming[0] : null;
 
-      document.getElementById('top3-list').innerHTML = upcoming.slice(0, 3).map((t, i) => `
-          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;">
-            <span><b>${i+1}.</b> ${t.n}</span>
-            <span style="color:var(--primary); font-family:Orbitron; font-weight:700;">${formatTimer(t.t - now).substring(3)}</span>
-          </div>`).join('') || '<div style="color:#aaa; text-align:center;">리젠 예정 보스 없음</div>';
+        document.getElementById('d-name').innerText = next ? next.n : "대기 중";
+        document.getElementById('d-timer').innerText = next ? formatTimer(next.t - now) : "00:00:00";
+        document.getElementById('d-meta').innerText = next ? `${new Date(next.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} (${BOSS_WORLD_MAP[next.n]})` : "-";
+        document.getElementById('hero-card').className = (next && (next.t - now < 300000)) ? 'card hero-section imminent shadow-lg' : 'card hero-section';
 
-      if (st.battle.s && !st.battle.k) document.getElementById('b-elap').innerText = formatSimple((now - st.battle.s) / 1000);
-      if (st.battle.k) {
-        const rem = st.battle.est - Math.floor((now - st.battle.k) / 1000);
-        document.getElementById('b-timer').innerText = (rem >= 0 ? "" : "+") + formatSimple(Math.abs(rem));
-      }
-      drawPIP(upcoming);
+        document.getElementById('top3-list').innerHTML = upcoming.slice(0, 3).map((t, i) => `
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #edf2f7; align-items:center;">
+                <span style="font-weight:700;">${pinSet.has(t.n)?'📌 ':''}${i+1}. ${t.n}</span>
+                <span style="color:var(--primary); font-family:'JetBrains Mono'; font-weight:700; font-size:14px;">${formatTimer(t.t - now).substring(3)}</span>
+            </div>`).join('') || '<div style="color:#aaa; text-align:center;">리젠 예정 보스 없음</div>';
+
+        if (st.battle.s && !st.battle.k) document.getElementById('b-elap').innerText = formatSimple((now - st.battle.s) / 1000);
+        if (st.battle.k) {
+            const rem = st.battle.est - Math.floor((now - st.battle.k) / 1000);
+            document.getElementById('b-timer').innerText = (rem >= 0 ? "" : "+") + formatSimple(Math.abs(rem));
+        }
+        drawPIP(upcoming);
+    }
+
+    function triggerAlert(name, msg) {
+        addLog(`[ALERT] ${name} ${msg}`);
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(`${name} ${msg}입니다.`);
+        u.lang = 'ko-KR'; window.speechSynthesis.speak(u);
+
+        try {
+            const ctx = getAudioCtx();
+            const gain = ctx.createGain();
+            const osc = ctx.createOscillator();
+            gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
+            osc.frequency.value = 440;
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(); osc.stop(ctx.currentTime + 0.2);
+            osc.onended = () => { osc.disconnect(); gain.disconnect(); };
+        } catch(e){}
     }
 
     function renderSched() {
-      const c = document.getElementById('sched-cont'); let h = '';
-      bosses.forEach(g => {
-        const folded = st.foldState[g.w] === true;
-        h += `<div class="world-section ${folded ? 'is-folded' : ''}" data-world="${g.w}">
-            <div class="world-banner" style="border-left-color:${g.c}" onclick="toggleFold('${g.w}')">
-              <span>${folded ? '▶' : '▼'} ${g.w}</span>
-              <button class="p-btn" style="height:28px; font-size:10px; background:#f8f9fa;" onclick="event.stopPropagation(); clearWorldTimers('${g.w}')">World Clear</button>
-            </div>
-            <div class="world-content">`;
-        g.b.forEach(b => {
-          const v29 = localStorage.getItem(`v29_${st.profile}_in_${b.n}`);
-          const sv = (v29 !== null && v29 !== undefined) ? v29 : (localStorage.getItem(`v28_in_${b.n}`) || '');
-          const isFav = st.favs.includes(b.n);
-          h += `<div class="boss-row" data-name="${b.n}">
-              <div style="cursor:pointer; font-size:18px; color:${isFav ? '#f1c40f' : '#ccc'};" onclick="toggleFav('${b.n}')">${isFav ? '★' : '☆'}</div>
-              <div style="font-weight:700;">${b.n}</div>
-              <div><input type="text" class="v-in" data-name="${b.n}" value="${sv}" placeholder="분/초" onkeydown="if(event.key==='Enter') handleEnterNav(this, Array.from(document.querySelectorAll('.v-in')).indexOf(this))"></div>
-              <div id="zen-${b.n}" class="zen-time-display">--:--</div>
-              <button class="p-btn active" style="height:32px; font-size:11px;" onclick="setTimer('${b.n}', ${b.r*60}, '자동')">Killed</button>
-              <button class="p-btn" style="height:32px; width:32px; padding:0; color:var(--danger); background:#fff;" onclick="delTimer('${b.n}')">×</button>
-            </div>`;
+        const c = document.getElementById('sched-cont'); let h = '';
+        const timerMap = new Map(st.timers.map(t => [t.n, t]));
+        const pinSet = new Set(st.pins);
+
+        bosses.forEach(g => {
+            const folded = st.foldState[g.w] === true;
+            h += `<div class="world-section ${folded ? 'is-folded' : ''}" data-world="${g.w}">
+                <div class="world-banner" style="border-left-color:${g.c}" onclick="toggleFold('${g.w}')">
+                    <span style="font-size:13px;">${folded ? '▶' : '▼'} <b>${g.w}</b></span>
+                    <button class="p-btn" style="height:28px; font-size:10px; background:#f8f9fa;" onclick="event.stopPropagation(); clearWorldTimers('${g.w}')">World Clear</button>
+                </div>
+                <div class="world-content">`;
+            g.b.forEach(b => {
+                const sv = localStorage.getItem(`v29_${st.profile}_in_${b.n}`) || '';
+                const isFav = st.favs.includes(b.n);
+                const isPin = pinSet.has(b.n);
+                const tm = timerMap.get(b.n);
+                const zenTxt = tm ? new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}) : '--:--';
+
+                h += `<div class="boss-row" data-name="${b.n}">
+                    <div style="cursor:pointer; font-size:16px;" onclick="togglePin('${b.n}')">${isPin ? '📌' : '📍'}</div>
+                    <div style="font-weight:700; display:flex; align-items:center; gap:5px;">
+                        <span style="cursor:pointer; font-size:18px; color:${isFav ? '#ffd700' : '#ccc'};" onclick="toggleFav('${b.n}')">${isFav ? '★' : '☆'}</span>
+                        ${b.n}
+                    </div>
+                    <div>
+                        <input type="text" class="v-in" data-name="${b.n}" value="${sv}" placeholder="분/초" 
+                            oninput="previewSpawn(this)"
+                            onblur="clearPreview(this)"
+                            onkeydown="if(event.key==='Enter') handleEnterNav(this, Array.from(document.querySelectorAll('.v-in')).indexOf(this))">
+                    </div>
+                    <div class="zen-time-display">
+                        <div id="${zenId(b.n)}">${zenTxt}</div>
+                        <div id="${prevId(b.n)}" class="prev-time uppercase"></div>
+                    </div>
+                    <button class="p-btn active" style="height:30px; font-size:11px;" onclick="setTimer('${b.n}', ${b.r*60}, '자동')">Killed</button>
+                    <button class="p-btn" style="height:30px; width:30px; padding:0; color:var(--danger); background:#fff;" onclick="delTimer('${b.n}')">×</button>
+                </div>`;
+            });
+            h += `</div></div>`;
         });
-        h += `</div></div>`;
-      });
-      c.innerHTML = h; applyFilters();
+        c.innerHTML = h; applyFilters();
+    }
+
+    /* Live Preview */
+    function previewSpawn(el) {
+        const name = el.dataset.name;
+        const sec = parseSmart(el.value);
+        const box = document.getElementById(prevId(name));
+        if (sec > 0) {
+            const time = new Date(Date.now() + sec * 1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
+            box.innerText = `Soon ${time}`;
+        } else box.innerText = "";
+    }
+    function clearPreview(el) { document.getElementById(prevId(el.dataset.name)).innerText = ""; }
+    function previewCalc(val) {
+        const sec = parseSmart(val);
+        document.getElementById('zc-preview').innerText = sec > 0 ? new Date(Date.now() + sec*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}) : "--:--:--";
+    }
+
+    function togglePin(n) {
+        const i = st.pins.indexOf(n);
+        if(i > -1) st.pins.splice(i, 1); else st.pins.push(n);
+        localStorage.setItem(`v29_${st.profile}_pins`, JSON.stringify(st.pins));
+        renderSched();
+    }
+
+    /* Logic Overrides */
+    function setTimer(n, s, raw) {
+        pushUndo(`${n} update`);
+        const t = Date.now() + (s * 1000);
+        const now = Date.now();
+        const entry = { n, t, m5: false, m1: false, lastD: Math.floor((t - now) / 1000) };
+        st.timers = st.timers.filter(x => x.n !== n);
+        st.timers.push(entry);
+        st.recent = [n, ...st.recent.filter(x => x !== n)].slice(0, 5);
+        if (raw !== "자동") localStorage.setItem(`v29_${st.profile}_in_${n}`, raw);
+        saveStore(); renderSched(); renderFavs(); addLog(`${n} mission set`);
     }
 
     function parseSmart(s) {
-      if (!s) return 0;
-      s = String(s).trim();
-      let m = s.match(/(\d+)\s*시간\s*(\d+)\s*분(?:\s*(\d+)\s*초?)?/);
-      if (m) return (+m[1]) * 3600 + (+m[2]) * 60 + (m[3] ? +m[3] : 0);
-      m = s.match(/(\d+)\s*분\s*(\d+)\s*초/);
-      if (m) return (+m[1]) * 60 + (+m[2]);
-      m = s.match(/(\d+)\s*분/);
-      if (m) return (+m[1]) * 60;
-      const parts = s.split(/[:\s]+/).filter(Boolean).map(Number);
-      if (parts.some(v => Number.isNaN(v))) return 0;
-      if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-      if (parts.length === 2) return parts[0] * 60 + parts[1];
-      if (parts.length === 1) return parts[0] * 60;
-      return 0;
+        if (!s) return 0;
+        s = String(s).trim();
+        const parts = s.split(/[:\s]+/).filter(Boolean).map(Number);
+        if (parts.length === 2) return parts[0] * 60 + parts[1];
+        if (parts.length === 1 && !isNaN(parts[0])) return parts[0] * 60;
+        return 0;
     }
 
-    /* ---------------------------------------------------------
-       AUXILIARY FUNCTIONS
-       --------------------------------------------------------- */
-
+    function confirmClear() { if(confirm("CLEAR 를 입력하면 전체 초기화됩니다.")) { pushUndo("Full Clear"); st.timers = []; saveStore(); renderSched(); } }
     function saveStore() {
         localStorage.setItem(`v29_${st.profile}_timers`, JSON.stringify(st.timers));
         localStorage.setItem(`v29_${st.profile}_recent`, JSON.stringify(st.recent));
         localStorage.setItem(`v29_${st.profile}_fold`, JSON.stringify(st.foldState));
+        localStorage.setItem(`v29_${st.profile}_pins`, JSON.stringify(st.pins));
         syncTxt();
     }
 
-    function handleEnterNav(el, idx) {
-        const inputs = Array.from(document.querySelectorAll('.v-in'));
-        const sec = parseSmart(el.value);
-        if(sec > 0) setTimer(el.dataset.name, sec, el.value);
-        for(let i = idx + 1; i < inputs.length; i++) {
-            if(inputs[i].offsetParent !== null) { inputs[i].focus(); inputs[i].select(); break; }
-        }
-    }
-
+    /* Keep existing UI functions */
     function toggleFold(w) { st.foldState[w] = !st.foldState[w]; saveStore(); renderSched(); }
     function toggleAllFolds(s) { bosses.forEach(g => st.foldState[g.w] = s); saveStore(); renderSched(); }
     function handleSearch(v) { st.searchTerm = v.toLowerCase(); applyFilters(); }
@@ -465,39 +456,20 @@
             sec.style.display = visible > 0 ? 'block' : 'none';
         });
     }
-
     function delTimer(n) { pushUndo(`${n} deleted`); st.timers = st.timers.filter(t => t.n !== n); saveStore(); renderSched(); }
-    function confirmClear() { if(confirm("Clear all timers?")) { pushUndo("Full Clear"); st.timers = []; saveStore(); renderSched(); } }
     function clearWorldTimers(w) { if(confirm(`${w} Clear?`)) { const list = bosses.find(g => g.w === w).b.map(b => b.n); st.timers = st.timers.filter(t => !list.includes(t.n)); saveStore(); renderSched(); } }
     function applyShift(dir) { const mins = parseInt(document.getElementById('shift-min').value) || 0; if(mins <= 0) return; pushUndo(`Shift ${mins}m`); const now = Date.now(); st.timers = st.timers.map(t => { if (t.t > now) t.t += mins * 60000 * dir; return t; }); saveStore(); renderSched(); }
-    
-    function tab(id, el) {
-        document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if(el) el.classList.add('active');
-        if(id==='set-txt') syncTxt();
-    }
-
-    function triggerAlert(name, msg) {
-        addLog(`[ALERT] ${name} ${msg}`);
-        playTTS(`${name} ${msg}입니다.`);
-        try { const ctx = new AudioContext(); const osc = ctx.createOscillator(); osc.connect(ctx.destination); osc.frequency.value = 440; osc.start(); osc.stop(ctx.currentTime + 0.2); } catch(e){}
-    }
-
-    function playTTS(m) { if(st.on){ const u = new SpeechSynthesisUtterance(m); u.lang='ko-KR'; window.speechSynthesis.speak(u); } }
-    function addLog(m) { const box = document.getElementById('logs'); const div = document.createElement('div'); div.innerHTML = `<span style="color:#aaa;">[${new Date().toLocaleTimeString()}]</span> ${m}`; box.appendChild(div); }
-    function syncTxt() { const n = new Date(); let txt = `PROFILE ${st.profile} - ${n.getMonth()+1}.${n.getDate()}\n`; st.timers.sort((a,b)=>a.t-b.t).forEach(tm => { txt += `${new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} ${tm.n}\n`; }); document.getElementById('txt-ed').value = txt; }
+    function tab(id, el) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); if(el) el.classList.add('active'); if(id==='set-txt') syncTxt(); }
+    function addLog(m) { const box = document.getElementById('logs'); const div = document.createElement('div'); div.innerHTML = `<span style="color:#718096; font-weight:700;">[${new Date().toLocaleTimeString()}]</span> ${m}`; box.appendChild(div); }
+    function syncTxt() { let txt = `B-OPS PROFILE ${st.profile} SYNC\n`; st.timers.sort((a,b)=>a.t-b.t).forEach(tm => { txt += `${new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} ${tm.n}\n`; }); document.getElementById('txt-ed').value = txt; }
     function saveText() { const lines = document.getElementById('txt-ed').value.split('\n'); const nt = []; lines.forEach(l => { const m = l.match(/(\d{2}:\d{2})\s+(.+)/); if(m) nt.push({ n: m[2].trim(), t: new Date(new Date().setHours(m[1].split(':')[0], m[1].split(':')[1], 0, 0)).getTime(), m5:false, m1:false, lastD: 9999 }); }); st.timers = nt; saveStore(); renderSched(); tab('dash', document.querySelectorAll('.nav-item')[0]); }
-    function togglePwr() { st.on = !st.on; document.getElementById('pwr').style.color = st.on ? 'var(--success)' : '#ccc'; document.body.classList.toggle('system-off', !st.on); addLog(`System ${st.on?'ON':'OFF'}`); }
+    function togglePwr() { st.on = !st.on; document.getElementById('pwr').style.color = st.on ? 'var(--success)' : '#ccc'; document.body.classList.toggle('system-off', !st.on); if(!st.on) window.speechSynthesis.cancel(); addLog(`System ${st.on?'ON':'OFF'}`); }
     function findBoss(n) { let r = null; bosses.forEach(g => g.b.forEach(b => { if(b.n===n) r=b; })); return r; }
-    function parseMinSec(s) { const p = (s||"").split(/[:\s]+/).filter(Boolean).map(Number); return p.length>=2?(p[0]*60)+p[1]:(p.length===1?p[0]*60:0); }
     function formatTimer(ms) { if(ms<0) return "00:00:00"; const h=Math.floor(ms/3600000), m=Math.floor((ms%3600000)/60000), s=Math.floor((ms%60000)/1000); return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
     function formatSimple(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${(Math.floor(s%60)).toString().padStart(2,'0')}`; }
     function testAlert() { triggerAlert("테스트", "알림 테스트"); }
     async function toggleWakeLock() { if(!('wakeLock' in navigator)) return alert("Not supported"); if(st.wakeLock){ await st.wakeLock.release(); st.wakeLock=null; document.getElementById('wl-btn').innerText="🛡 화면 유지 OFF"; } else { requestWakeLock(false); } }
     async function requestWakeLock(silent) { try { st.wakeLock = await navigator.wakeLock.request('screen'); document.getElementById('wl-btn').innerText="🛡 화면 유지 ON"; } catch(e){} }
-    function toggleFav(n) { const i = st.favs.indexOf(n); if(i > -1) st.favs.splice(i, 1); else st.favs.push(n); localStorage.setItem(`v29_${st.profile}_favs`, JSON.stringify(st.favs)); renderSched(); renderFavs(); }
     function renderFavs() { const p = document.getElementById('fav-panel'); let h = ''; st.favs.forEach(n => h += `<div class="chip is-fav" onclick="quickKill('${n}')">⭐ ${n}</div>`); st.recent.forEach(n => { if(!st.favs.includes(n)) h += `<div class="chip" onclick="quickKill('${n}')">${n}</div>`; }); p.innerHTML = h; }
     function quickKill(name) { const n = name || document.getElementById('quick-sel').value; const b = findBoss(n); if(b) setTimer(n, b.r * 60, "자동"); }
     function copyKakao(mode) {
@@ -514,17 +486,17 @@
     }
     function drawPIP(list) {
         const ctx = document.getElementById('pip-canvas').getContext('2d');
-        ctx.fillStyle="#fff"; ctx.fillRect(0,0,220,120);
-        ctx.fillStyle="#2d3436"; ctx.fillRect(0,0,220,35);
+        ctx.fillStyle="#fff"; ctx.fillRect(0,0,240,135);
+        ctx.fillStyle="#1a237e"; ctx.fillRect(0,0,240,35);
         ctx.fillStyle="#fff"; ctx.font="bold 13px Arial"; ctx.fillText("B-OPS PiP", 15, 23);
         if(list.length>0){
-            const n=list[0], d=n.t-Date.now();
-            ctx.fillStyle="#1a237e"; ctx.font="bold 22px 'Noto Sans KR'"; ctx.textAlign="center"; ctx.fillText(n.n, 110, 75);
-            ctx.fillStyle="#000"; ctx.font="bold 32px Orbitron"; ctx.fillText(formatTimer(d).substring(3), 110, 108);
+            const pinSet = new Set(st.pins); const n=list[0], d=n.t-Date.now();
+            ctx.fillStyle="#1a237e"; ctx.font="bold 20px 'Inter'"; ctx.textAlign="center"; ctx.fillText((pinSet.has(n.n)?'📌 ':'')+n.n, 120, 75);
+            ctx.fillStyle="#000"; ctx.font="bold 32px 'JetBrains Mono'"; ctx.fillText(formatTimer(d).substring(3), 120, 115);
         }
     }
     async function togglePIP() { const v = document.getElementById('pip-video'); if (document.pictureInPictureElement) await document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); await v.play(); await v.requestPictureInPicture(); } }
-    function openBackup() { const data = { timers: st.timers, favs: st.favs, folds: st.foldState }; prompt("Backup (Copy JSON):", JSON.stringify(data)); }
+    function openBackup() { const data = { timers: st.timers, favs: st.favs, folds: st.foldState, pins: st.pins }; prompt("Backup (Copy JSON):", JSON.stringify(data)); }
     function handleKeys(e) { if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; if(e.key==='/'){e.preventDefault(); document.getElementById('search-boss').focus();} if(e.ctrlKey && e.key==='z'){e.preventDefault(); executeUndo();} if(e.key>='1'&&e.key<='5'){const items=document.querySelectorAll('.nav-item'); if(items[e.key-1]) items[e.key-1].click();} }
 
     init();

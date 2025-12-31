@@ -3,503 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOSS OPS CENTER V32.1 MASTER</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <title>BOSS OPS CENTER V32.1 HD MASTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --bg-page: #f4f5f7; --bg-card: #ffffff; --border: #dee2e6;
-            --primary: #1a237e; --primary-light: #e8eaf6;
-            --text-main: #212529; --text-sub: #6c757d;
-            --danger: #d32f2f; --warning: #ef6c00; --success: #2e7d32;
-            --sidebar-w: 220px; --header-h: 60px;
-        }
-
-        body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background: var(--bg-page); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; font-size: 13px; }
+        :root { --primary: #1a237e; --primary-light: #e8eaf6; --border: #dee2e6; --danger: #d32f2f; }
+        body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background: #f4f5f7; margin: 0; display: flex; height: 100vh; overflow: hidden; font-size: 13px; }
         body.system-off { filter: grayscale(1) brightness(0.9); pointer-events: none; }
         body.system-off header, body.system-off nav { pointer-events: auto !important; filter: none !important; }
-
-        /* Sidebar */
-        nav { width: var(--sidebar-w); background: #ffffff; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 15px 0; z-index: 1000; flex-shrink: 0; }
-        .nav-brand { padding: 0 25px 20px; font-weight: 900; font-size: 16px; color: var(--primary); border-bottom: 1px solid #f1f3f5; margin-bottom: 15px; letter-spacing: -0.5px; }
-        .nav-item { display: flex; align-items: center; padding: 12px 25px; cursor: pointer; color: var(--text-sub); transition: 0.2s; gap: 12px; font-weight: 700; font-size: 13px; }
-        .nav-item:hover { background: #f8f9fa; color: var(--primary); }
+        
+        /* Sidebar 레이아웃 (720px 최적화 대응) */
+        nav { width: 220px; background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 15px 0; z-index: 1000; flex-shrink: 0; }
+        .nav-brand { padding: 0 25px 20px; font-weight: 900; font-size: 16px; color: var(--primary); border-bottom: 1px solid #f1f3f5; margin-bottom: 15px; }
+        .nav-item { display: flex; align-items: center; padding: 12px 25px; cursor: pointer; color: #6c757d; transition: 0.2s; gap: 12px; font-weight: 700; }
         .nav-item.active { background: var(--primary-light); color: var(--primary); border-left: 4px solid var(--primary); }
 
-        main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        header { height: var(--header-h); background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; flex-shrink: 0; }
+        main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        header { height: 60px; background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; flex-shrink: 0; }
         
-        /* 창 사이즈 최적화 */
         .content { flex: 1; padding: 20px; overflow-y: auto; display: flex; justify-content: center; }
         .pane { display: none; width: 100%; max-width: 720px; animation: fadeIn 0.15s ease; }
         .pane.active { display: block; }
-        .card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .card { background: #fff; border-radius: 12px; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
 
-        /* Dashboard Components */
-        .hero-section { text-align: center; padding: 25px 0; border-bottom: 1px solid #f8f9fa; }
-        .timer-big { font-family: 'JetBrains Mono'; font-size: 52px; font-weight: 700; color: var(--primary); margin: 10px 0; letter-spacing: -2px; }
+        /* 타이머 가독성 (JetBrains Mono) */
+        .timer-big { font-family: 'JetBrains Mono'; font-size: 52px; font-weight: 800; color: var(--primary); margin: 10px 0; letter-spacing: -2px; }
         .imminent .timer-big { color: var(--danger); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
         
-        .boss-row { display: grid; grid-template-columns: 35px 90px 1fr 100px 75px 35px; align-items: center; padding: 10px 15px; background: #fff; border-bottom: 1px solid #f1f3f5; gap: 8px; }
-        .zen-time-display { font-family: 'JetBrains Mono'; font-weight: 700; text-align: right; color: var(--text-main); font-size: 13px; }
+        .boss-row { display: grid; grid-template-columns: 35px 105px 1fr 100px 75px 35px; align-items: center; padding: 10px 15px; border-bottom: 1px solid #f1f3f5; gap: 8px; }
+        .v-in { height: 32px; width: 100%; border-radius: 6px; border: 1px solid #ced4da; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 13px; }
+        .v-in:focus { border-color: var(--primary); outline: none; background: #f0f4ff; }
+        .zen-time-display { font-family: 'JetBrains Mono'; font-weight: 700; text-align: right; color: #475569; }
         .prev-time { font-size: 10px; color: var(--warning); font-weight: 700; height: 12px; }
 
-        .v-in { height: 30px; width: 100%; border-radius: 6px; border: 1px solid #dee2e6; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 12px; background: #fdfdfd; }
-        .v-in:focus { border-color: var(--primary); outline: none; background: #fff; box-shadow: 0 0 0 3px var(--primary-light); }
-
-        .chip { padding: 6px 14px; border-radius: 20px; background: #f1f3f5; border: 1px solid #e2e8f0; cursor: pointer; font-size: 11px; font-weight: 700; }
-        .chip.is-fav { border-color: #ffd700; background: #fffdf0; color: #b79500; }
+        .log-box { font-family: 'JetBrains Mono'; font-size: 11px; height: 300px; overflow-y: auto; display: flex; flex-direction: column-reverse; background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; }
         
-        .log-box { font-family: 'JetBrains Mono'; font-size: 11px; height: 300px; overflow-y: auto; display: flex; flex-direction: column-reverse; background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; line-height: 1.6; }
-        
-        .profile-group { display: flex; gap: 4px; background: #f1f3f5; padding: 4px; border-radius: 10px; }
-        .p-btn { padding: 6px 14px; border-radius: 7px; border: none; cursor: pointer; font-weight: 800; font-size: 10px; transition: 0.2s; }
+        .p-btn { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 800; font-size: 11px; transition: 0.2s; }
         .p-btn.active { background: var(--primary); color: #fff; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } }
-        #undo-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #2d3436; color: #fff; padding: 12px 25px; border-radius: 30px; display: none; align-items: center; gap: 15px; z-index: 5000; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
-        .undo-btn { color: #55efc4; font-weight: 700; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
-<body>
+<body onkeydown="handleKeys(event)">
 
-<nav id="sidebar">
-    <div class="nav-brand">B-OPS V32.1</div>
+<nav>
+    <div class="nav-brand italic">B-OPS V32.1 HD</div>
     <div class="nav-item active" onclick="tab('dash', this)">🏠 Dashboard</div>
     <div class="nav-item" onclick="tab('sched', this)">📅 Boss Schedule</div>
     <div class="nav-item" onclick="tab('set-txt', this)">🕒 Text Sync</div>
     <div class="nav-item" onclick="tab('battle', this)">⚔ Battle Ops</div>
-    <div class="nav-item" onclick="tab('zen-calc', this)">🧮 Forced Update</div>
-    <div class="nav-item" onclick="togglePIP()">📺 Toggle PIP</div>
+    <div class="nav-item" onclick="togglePIP()">📺 Toggle HD-PiP</div>
 </nav>
 
 <main>
     <header>
-        <div class="profile-group">
+        <div class="flex gap-2 bg-gray-100 p-1 rounded-lg">
             <button class="p-btn active" data-p="A" onclick="switchProfile('A')">PROFILE A</button>
             <button class="p-btn" data-p="B" onclick="switchProfile('B')">PROFILE B</button>
-            <button class="p-btn" data-p="C" onclick="switchProfile('C')">PROFILE C</button>
         </div>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <button class="p-btn" style="background:#fff; border:1px solid var(--border);" onclick="testAlert()">🔔 Test</button>
-            <button id="wl-btn" class="p-btn" style="background:#fff; border:1px solid var(--border);" onclick="toggleWakeLock()">🛡 화면유지 OFF</button>
-            <div id="pwr" style="cursor:pointer; font-size:24px; color:var(--success); margin-left:10px;" onclick="togglePwr()">⏻</div>
+        <div class="flex items-center gap-4">
+            <button class="p-btn border bg-white" onclick="testAlert()">🔔 Test</button>
+            <div id="pwr" class="cursor-pointer text-2xl text-green-600 font-bold" onclick="togglePwr()">⏻</div>
         </div>
     </header>
 
     <div class="content">
         <div id="dash" class="pane active">
-            <div class="card hero-section" id="hero-card">
-                <div style="font-weight:800; color:var(--text-sub); font-size:11px; letter-spacing:1.5px; opacity:0.7;">ACTIVE MISSION</div>
-                <div id="d-name" style="font-size:32px; font-weight:900; margin-top:10px; letter-spacing:-1px;">대기 중</div>
+            <div id="hero-card" class="card text-center py-8">
+                <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Next Boss Mission</div>
+                <div id="d-name" class="text-3xl font-black mt-2">대기 중</div>
                 <div id="d-timer" class="timer-big">00:00:00</div>
-                <div id="d-meta" style="color:var(--text-sub); font-weight:700; font-size:13px;">-</div>
-
-                <div style="display:flex; gap:8px; margin: 25px 0; background:var(--primary-light); padding:12px; border-radius:12px;">
-                    <select id="quick-sel" style="flex:1; height:40px; border-radius:8px; border:1px solid #cbd5e0; font-weight:700; padding:0 12px;"></select>
-                    <button class="p-btn active" style="height:40px; padding:0 25px; font-size:12px;" onclick="quickKill()">KILLED</button>
-                </div>
-                
-                <div id="fav-panel" class="fav-recent-bar"></div>
-                <div id="top3-list" style="margin-top:20px; text-align:left; background:#f8f9fa; padding:18px; border-radius:12px; border:1px solid #edf2f7;"></div>
-
-                <div style="display:flex; gap:10px; justify-content:center; margin-top:25px;">
-                    <button class="p-btn active" style="height:42px; padding:0 30px; font-size:13px;" onclick="copyKakao('top3')">📢 Top3 복사</button>
-                    <button class="p-btn" style="height:42px; padding:0 30px; background:#e2e8f0; color:#475569;" onclick="copyKakao('all')">📋 전체 복사</button>
+                <div id="d-meta" class="text-sm text-gray-500 font-bold">-</div>
+                <div id="top3-list" class="mt-8 text-left bg-gray-50 p-5 rounded-2xl border border-gray-100 space-y-2"></div>
+                <div class="mt-6 flex justify-center gap-3">
+                    <button class="p-btn active px-8 py-3" onclick="copyKakao('top3')">📢 Top3 복사</button>
+                    <button class="p-btn bg-gray-200 text-gray-700 px-8 py-3" onclick="copyKakao('all')">📋 전체 복사</button>
                 </div>
             </div>
-            
             <div class="card">
-                <div style="font-weight:800; margin-bottom:12px; color:var(--primary); font-size:12px; letter-spacing:0.5px;">MISSION COMMAND LOGS</div>
+                <div class="text-xs font-black text-blue-900 mb-3">COMMAND LOGS</div>
                 <div id="logs" class="log-box"></div>
             </div>
         </div>
 
         <div id="sched" class="pane">
-            <div class="card" style="padding:15px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; background:#f8f9fa; margin-bottom:15px; border-radius:12px;">
-                <input type="text" id="search-boss" placeholder="보스명 필터..." style="width:160px; height:34px; padding:0 12px; border:1px solid #ddd; border-radius:8px;" oninput="handleSearch(this.value)">
-                <label style="display:flex; align-items:center; gap:6px; font-weight:700; font-size:12px;"><input type="checkbox" id="active-only" onchange="applyFilters()"> 활성만</label>
-                <div style="flex:1;"></div>
-                <button class="p-btn" style="background:#fff; border:1px solid #ddd;" onclick="toggleAllFolds(false)">펼치기</button>
-                <button class="p-btn" style="background:#fff; border:1px solid #ddd;" onclick="toggleAllFolds(true)">접기</button>
-                <button class="p-btn" style="background:#fff; border:1px solid #ddd; color:var(--danger);" onclick="confirmClear()">초기화</button>
+            <div class="card flex gap-3 items-center bg-gray-50 border-none shadow-none mb-4">
+                <input type="text" id="search-boss" placeholder="보스 필터..." class="border rounded-md px-3 py-1 text-sm flex-1" oninput="handleSearch(this.value)">
+                <label class="text-xs font-bold flex gap-1 items-center"><input type="checkbox" id="active-only" onchange="applyFilters()"> 활성만</label>
+                <button class="p-btn border bg-white" onclick="confirmClear()">CLEAR ALL</button>
             </div>
             <div id="sched-cont"></div>
         </div>
 
         <div id="set-txt" class="pane">
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h3 style="margin:0; font-weight:900;">Manual Ops Synchronization</h3>
-                    <button class="p-btn active" style="height:36px; padding:0 20px;" onclick="saveText()">저장 후 적용</button>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-black">Text Sync Editor</h3>
+                    <button class="p-btn active" onclick="saveText()">저장 후 적용</button>
                 </div>
-                <textarea id="txt-ed" style="width:100%; height:500px; border:1px solid var(--border); padding:20px; font-family:'JetBrains Mono'; font-size:13px; line-height:1.8; border-radius:10px; resize:none; background:#fcfcfc;"></textarea>
+                <textarea id="txt-ed" class="w-full h-[500px] border p-5 font-mono text-sm leading-relaxed rounded-xl resize-none bg-gray-50"></textarea>
             </div>
         </div>
 
         <div id="battle" class="pane">
-            <div class="card">
-                <h3 style="text-align:center; font-weight:900; margin-top:0;">Tactical Battle Tracker</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin:25px 0;">
-                    <div style="background:#f8f9fa; padding:25px; border-radius:15px; text-align:center; border:1px solid #eee;">
-                        <small style="font-weight:800; color:#999; letter-spacing:1px;">ELAPSED</small>
-                        <div id="b-elap" style="font-family:Orbitron; font-size:40px; font-weight:700; margin-top:5px; color:#2d3436;">00:00</div>
+            <div class="card max-w-lg mx-auto">
+                <h3 class="text-center font-black mb-6 uppercase tracking-wider">Tactical Battle Tracker</h3>
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div class="bg-gray-50 p-6 rounded-2xl text-center border">
+                        <small class="font-black text-gray-400">ELAPSED</small>
+                        <div id="b-elap" class="text-4xl font-mono font-black mt-2">00:00</div>
                     </div>
-                    <div style="background:#fff5f5; padding:25px; border-radius:15px; text-align:center; border:1px solid #fed7d7;">
-                        <small style="font-weight:800; color:#e53e3e; letter-spacing:1px;">BERSERK PREDICT</small>
-                        <div id="b-timer" style="font-family:Orbitron; font-size:40px; font-weight:700; color:var(--danger); margin-top:5px;">--:--</div>
+                    <div class="bg-red-50 p-6 rounded-2xl text-center border border-red-100">
+                        <small class="font-black text-red-400">BERSERK PREDICT</small>
+                        <div id="b-timer" class="text-4xl font-mono font-black mt-2 text-red-600">--:--</div>
                     </div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
-                    <button class="p-btn" style="height:55px; background:#455a64; color:#fff; font-size:13px;" onclick="btl('start')">START</button>
-                    <button class="p-btn" style="height:55px; background:var(--warning); color:#fff; font-size:13px;" onclick="btl('kwang')">BERSERK</button>
-                    <button class="p-btn active" style="height:55px; font-size:13px;" onclick="btl('kill')">KILLED</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="zen-calc" class="pane">
-            <div class="card" style="display:grid; grid-template-columns: 1fr; gap:20px;">
-                <div>
-                    <h3 style="margin-top:0; font-weight:900;">Mission Force Update</h3>
-                    <select id="zc-sel" style="width:100%; height:45px; border-radius:10px; border:1px solid var(--border); margin-bottom:15px; font-weight:700; padding:0 15px; background:#fff;"></select>
-                    <input type="text" id="zc-in" style="width:100%; height:60px; text-align:center; font-family:'JetBrains Mono'; font-size:32px; border:2px solid var(--primary); border-radius:10px; background:#f0f4ff;" placeholder="0 0" oninput="previewCalc(this.value)">
-                    <button class="p-btn active" style="width:100%; height:55px; margin-top:20px; font-size:15px; letter-spacing:1px;" onclick="applyZenCalc()">UPDATE MISSION TIME</button>
-                </div>
-                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#f8faff; border-radius:15px; border:2px dashed var(--primary); padding:30px;">
-                    <span style="font-weight:800; color:var(--primary); font-size:12px; letter-spacing:1px; margin-bottom:10px;">SPAWN AT (PREVIEW)</span>
-                    <span id="zc-preview" style="font-family:'JetBrains Mono'; font-size:48px; color:var(--primary); font-weight:700;">--:--:--</span>
+                <div class="grid grid-cols-3 gap-3">
+                    <button class="p-btn bg-slate-700 text-white h-14" onclick="btl('start')">START</button>
+                    <button class="p-btn bg-orange-500 text-white h-14" onclick="btl('kwang')">BERSERK</button>
+                    <button class="p-btn active h-14" onclick="btl('kill')">KILLED</button>
                 </div>
             </div>
         </div>
     </div>
 </main>
 
-<div id="undo-toast">
-    <span id="undo-msg">Action processed.</span>
-    <span class="undo-btn" onclick="executeUndo()">되돌리기 (Undo)</span>
-</div>
-
-<canvas id="pip-canvas" width="240" height="135" style="display:none;"></canvas>
+<canvas id="pip-canvas" width="600" height="340" style="display:none;"></canvas>
 <video id="pip-video" autoplay muted playsinline style="display:none;"></video>
 
 <script>
-    /* [1] 전 지역 보스 데이터 통합 & 야른 명칭 수정 */
-    const bosses = [
-        { w: "요툰하임", c: "#3f51b5", b: [{n:"야른", r:240}, {n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"티르", r:1440}] },
-        { w: "니다벨리르", c: "#43a047", b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}] },
-        { w: "알브하임", c: "#ef6c00", b: [{n:"스바르트", r:240}, {n:"두라스로르", r:480}, {n:"모네가름", r:120}, {n:"드라우그", r:240}, {n:"굴베이그", r:480}, {n:"오딘", r:1440}] },
-        { w: "무스펠하임", c: "#c62828", b: [{n:"메기르", r:120}, {n:"신마라", r:720}, {n:"헤르가름", r:120}, {n:"탕그리스니르", r:240}, {n:"엘드룬", r:720}, {n:"우로보로스", r:1440}, {n:"수르트", r:1440}] },
-        { w: "바나하임", c: "#689f38", b: [{n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}, {n:"피르가브", r:240}] },
-        { w: "아스가르드", c: "#7b1fa2", b: [{n:"발리", r:120}, {n:"노트", r:480}, {n:"샤무크", r:120}, {n:"스칼드메르", r:120}, {n:"화신그로아", r:1440}, {n:"미미르", r:240}, {n:"이미르", r:240}, {n:"모르가나", r:240}] },
-        { w: "니플하임", c: "#0097a7", b: [{n:"히로킨", r:1440}, {n:"호드", r:1440}, {n:"헤이드", r:1440}, {n:"대교주", r:1440}, {n:"프레이", r:1440}, {n:"이미르", r:1440}] },
-        { w: "던전", c: "#455a64", b: [{n:"지감7층", r:480}, {n:"지감4층", r:480}, {n:"지감10층", r:480}, {n:"최하층 굴베이그", r:480}] }
-    ];
+/* [1] 전 지역 보스 데이터 통합 (야룬->야른 수정됨) */
+const bosses = [
+    { w: "요툰하임", c: "#3f51b5", b: [{n:"야른", r:240}, {n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"티르", r:1440}] },
+    { w: "니다벨리르", c: "#43a047", b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}] },
+    { w: "알브하임", c: "#ef6c00", b: [{n:"스바르트", r:240}, {n:"두라스로르", r:480}, {n:"모네가름", r:120}, {n:"드라우그", r:240}, {n:"굴베이그", r:480}, {n:"오딘", r:1440}] },
+    { w: "무스펠하임", c: "#c62828", b: [{n:"메기르", r:120}, {n:"신마라", r:720}, {n:"헤르가름", r:120}, {n:"탕그리스니르", r:240}, {n:"엘드룬", r:720}, {n:"우로보로스", r:1440}, {n:"수르트", r:1440}] },
+    { w: "바나하임", c: "#689f38", b: [{n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}, {n:"피르가브", r:240}] },
+    { w: "아스가르드", c: "#7b1fa2", b: [{n:"발리", r:120}, {n:"노트", r:480}, {n:"샤무크", r:120}, {n:"스칼드메르", r:120}, {n:"이미르", r:240}, {n:"모르가나", r:240}] }
+];
+const BOSS_WORLD_MAP = {}; bosses.forEach(g => g.b.forEach(b => BOSS_WORLD_MAP[b.n] = g.w));
 
-    const BOSS_WORLD_MAP = {};
-    bosses.forEach(g => g.b.forEach(b => BOSS_WORLD_MAP[b.n] = g.w));
+let st = { on: true, profile: 'A', timers: [], favs: [], pins: [], battle: { s: null, k: null, est: 0 }, foldState: {}, timeOffsetMs: 0, _keyCache: {} };
 
-    let st = {
-        on: true, profile: 'A', timers: [], favs: [], recent: [], pins: [],
-        battle: { s: null, k: null, est: 0 },
-        foldState: {}, searchTerm: '', wakeLock: null,
-        undoStack: null, undoT: null, _keyCache: {}
-    };
+/* [2] SafeKey & HD PiP 엔진 */
+function fnv1a32(str) {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0; }
+    return h >>> 0;
+}
+function safeKey(n) { if (!st._keyCache[n]) st._keyCache[n] = "b" + fnv1a32(String(n)).toString(36); return st._keyCache[n]; }
 
-    /* [2] Safe DOM Key (FNV-1a 32-bit Hash) */
-    function fnv1a32(str) {
-        let h = 0x811c9dc5;
-        for (let i = 0; i < str.length; i++) {
-            h ^= str.charCodeAt(i);
-            h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
-        }
-        return h >>> 0;
+/* [최적화] HD PiP 렌더링 (600x340) */
+function drawPIP(list) {
+    const canvas = document.getElementById('pip-canvas'); const ctx = canvas.getContext('2d');
+    ctx.fillStyle = "#0f172a"; ctx.fillRect(0, 0, 600, 340);
+    ctx.fillStyle = "#1e293b"; ctx.fillRect(0, 0, 600, 80);
+    ctx.fillStyle = "#94a3b8"; ctx.font = "bold 26px Inter"; ctx.fillText("B-OPS COMMANDER HD", 40, 50);
+    if (list.length > 0) {
+        const next = list[0]; const rem = next.t - (Date.now() + st.timeOffsetMs);
+        ctx.textAlign = "center"; ctx.fillStyle = "#fbbf24"; ctx.font = "900 48px 'Noto Sans KR'";
+        ctx.fillText(next.n, 300, 165);
+        ctx.fillStyle = "#ffffff"; ctx.font = "800 100px 'JetBrains Mono'";
+        ctx.fillText(formatTimer(rem).substring(3), 300, 275);
     }
-    function safeKey(name) {
-        const k = String(name);
-        if (st._keyCache[k]) return st._keyCache[k];
-        const v = "b" + fnv1a32(k).toString(36);
-        st._keyCache[k] = v;
-        return v;
-    }
-    const zenId = (n) => `zen-${safeKey(n)}`;
-    const prevId = (n) => `prev-${safeKey(n)}`;
+}
 
-    /* [3] Audio Context Singleton & Leak Fix */
-    let __audioCtx = null;
-    function getAudioCtx() {
-        if (!__audioCtx) __audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        try { if (__audioCtx.state === "suspended") __audioCtx.resume(); } catch (e) {}
-        return __audioCtx;
-    }
+/* [4] Migration & Audio */
+let __audioCtx = null;
+function getCtx() { if (!__audioCtx) __audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (__audioCtx.state === "suspended") __audioCtx.resume(); return __audioCtx; }
 
-    /* [4] Migration (야룬 -> 야른) */
-    function migrateYarun() {
-        const oldN = "야룬", newN = "야른";
-        st.timers.forEach(t => { if(t.n === oldN) t.n = newN; });
-        ["favs", "recent", "pins"].forEach(k => { if(st[k]) st[k] = st[k].map(x => x === oldN ? newN : x); });
-        const oldInput = localStorage.getItem(`v29_${st.profile}_in_${oldN}`);
-        if(oldInput) {
-            localStorage.setItem(`v29_${st.profile}_in_${newN}`, oldInput);
-            localStorage.removeItem(`v29_${st.profile}_in_${oldN}`);
-        }
-    }
+function migrate() {
+    const o = "야룬", n = "야른";
+    st.timers.forEach(t => { if(t.n === o) t.n = n; });
+    ["favs", "pins"].forEach(k => { if(st[k]) st[k] = st[k].map(x => x === o ? n : x); });
+}
 
-    function init() {
-        const lastP = localStorage.getItem('v29_current_p') || 'A';
-        switchProfile(lastP);
+function triggerAlert(name, msg) {
+    addLog(`[ALERT] ${name} ${msg}`);
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(`${name} ${msg}입니다.`);
+    u.lang = 'ko-KR'; window.speechSynthesis.speak(u);
+    try {
+        const c = getCtx(); const g = c.createGain(); const o = c.createOscillator();
+        g.gain.setValueAtTime(0.0001, c.currentTime); g.gain.exponentialRampToValueAtTime(0.15, c.currentTime + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.18);
+        o.frequency.value = 440; o.connect(g); g.connect(c.destination);
+        o.start(); o.stop(c.currentTime + 0.2); o.onended = () => { o.disconnect(); g.disconnect(); };
+    } catch(e){}
+}
 
-        const qSel = document.getElementById('quick-sel');
-        const zSel = document.getElementById('zc-sel');
-        bosses.forEach(g => g.b.forEach(b => {
-            const opt = `<option value="${b.n}">${b.n}</option>`;
-            qSel.innerHTML += opt; zSel.innerHTML += opt;
-        }));
+/* [핵심] KILLED 및 수동 입력 로직 (반응 속도 최적화) */
+function setTimer(n, s, raw) {
+    const now = Date.now() + st.timeOffsetMs;
+    const t = now + (s * 1000);
+    st.timers = st.timers.filter(x => x.n !== n);
+    st.timers.push({ n, t, m5: false, m1: false, lastD: s });
+    save(); renderSched();
+    addLog(`${n} mission updated.`);
+}
 
-        document.addEventListener('visibilitychange', () => { if(st.wakeLock && document.visibilityState === 'visible') requestWakeLock(true); });
-        setInterval(loop, 1000);
-        addLog("Mission Desk Master V32.1 Ready");
-    }
+/* [3] 정밀 루프 및 최적화 */
+function loop() {
+    if (!st.on) return;
+    const now = Date.now() + st.timeOffsetMs;
+    st.timers = st.timers.filter(t => (now - t.t) < 600000);
 
-    function switchProfile(p) {
-        st.profile = p; localStorage.setItem('v29_current_p', p);
-        document.querySelectorAll('.p-btn[data-p]').forEach(b => b.classList.toggle('active', b.dataset.p === p));
+    st.timers.forEach(tm => {
+        const d = Math.floor((tm.t - now) / 1000);
+        const prev = tm.lastD || d;
+        if (!tm.m5 && prev > 300 && d <= 300) { triggerAlert(tm.n, "5분 전"); tm.m5 = true; }
+        if (!tm.m1 && prev > 60 && d <= 60) { triggerAlert(tm.n, "1분 전"); tm.m1 = true; }
+        tm.lastD = d;
+        const el = document.getElementById(`zen-${safeKey(tm.n)}`);
+        if (el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
+    });
 
-        st.timers = JSON.parse(localStorage.getItem(`v29_${p}_timers`)) || [];
-        st.favs = JSON.parse(localStorage.getItem(`v29_${p}_favs`)) || [];
-        st.recent = JSON.parse(localStorage.getItem(`v29_${p}_recent`)) || [];
-        st.foldState = JSON.parse(localStorage.getItem(`v29_${p}_fold`)) || {};
-        st.pins = JSON.parse(localStorage.getItem(`v29_${p}_pins`)) || [];
+    const list = [...st.timers].sort((a,b) => a.t - b.t);
+    const upcoming = list.filter(t => t.t > now);
+    const next = upcoming[0];
+    document.getElementById('d-name').innerText = next ? next.n : "대기 중";
+    document.getElementById('d-timer').innerText = next ? formatTimer(next.t - now) : "00:00:00";
+    document.getElementById('d-meta').innerText = next ? `${new Date(next.t).toLocaleTimeString()} (${BOSS_WORLD_MAP[next.n]})` : "-";
+    document.getElementById('hero-card').className = (next && (next.t - now < 300000)) ? 'card hero-section imminent shadow-2xl' : 'card hero-section';
 
-        migrateYarun();
-        renderSched(); renderFavs(); syncTxt();
-        addLog(`Profile ${p} Loaded`);
-    }
+    document.getElementById('top3-list').innerHTML = upcoming.slice(0,3).map((t, i) => `
+        <div class="flex justify-between border-b border-gray-100 py-2 items-center">
+            <span class="font-bold text-gray-700">${i+1}. ${t.n}</span>
+            <span class="font-mono font-black text-blue-900">${formatTimer(t.t - now).substring(3)}</span>
+        </div>`).join('') || "리젠 예정 보스 없음";
+    
+    if (st.battle.s && !st.battle.k) document.getElementById('b-elap').innerText = formatSimple((now - st.battle.s) / 1000);
+    drawPIP(upcoming);
+}
 
-    function loop() {
-        if (!st.on) return;
-        const now = Date.now();
-        st.timers = st.timers.filter(t => (now - t.t) < 600000);
-
-        st.timers.forEach(tm => {
-            const d = Math.floor((tm.t - now) / 1000);
-            const prev = (typeof tm.lastD === 'number') ? tm.lastD : d;
-            if (!tm.m5 && prev > 300 && d <= 300) { triggerAlert(tm.n, "5분 전"); tm.m5 = true; }
-            if (!tm.m1 && prev > 60 && d <= 60) { triggerAlert(tm.n, "1분 전"); tm.m1 = true; }
-            tm.lastD = d;
-
-            // Loop Optimization: Only update specific IDs
-            const el = document.getElementById(zenId(tm.n));
-            if (el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
-        });
-
-        const pinSet = new Set(st.pins);
-        const list = [...st.timers].sort((a, b) => {
-            const ap = pinSet.has(a.n) ? 1 : 0;
-            const bp = pinSet.has(b.n) ? 1 : 0;
-            return ap !== bp ? bp - ap : a.t - b.t;
-        });
-
-        const upcoming = list.filter(t => t.t > now);
-        const next = upcoming.length ? upcoming[0] : null;
-
-        document.getElementById('d-name').innerText = next ? next.n : "대기 중";
-        document.getElementById('d-timer').innerText = next ? formatTimer(next.t - now) : "00:00:00";
-        document.getElementById('d-meta').innerText = next ? `${new Date(next.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} (${BOSS_WORLD_MAP[next.n]})` : "-";
-        document.getElementById('hero-card').className = (next && (next.t - now < 300000)) ? 'card hero-section imminent shadow-lg' : 'card hero-section';
-
-        document.getElementById('top3-list').innerHTML = upcoming.slice(0, 3).map((t, i) => `
-            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #edf2f7; align-items:center;">
-                <span style="font-weight:700;">${pinSet.has(t.n)?'📌 ':''}${i+1}. ${t.n}</span>
-                <span style="color:var(--primary); font-family:'JetBrains Mono'; font-weight:700; font-size:14px;">${formatTimer(t.t - now).substring(3)}</span>
-            </div>`).join('') || '<div style="color:#aaa; text-align:center;">리젠 예정 보스 없음</div>';
-
-        if (st.battle.s && !st.battle.k) document.getElementById('b-elap').innerText = formatSimple((now - st.battle.s) / 1000);
-        if (st.battle.k) {
-            const rem = st.battle.est - Math.floor((now - st.battle.k) / 1000);
-            document.getElementById('b-timer').innerText = (rem >= 0 ? "" : "+") + formatSimple(Math.abs(rem));
-        }
-        drawPIP(upcoming);
-    }
-
-    function triggerAlert(name, msg) {
-        addLog(`[ALERT] ${name} ${msg}`);
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(`${name} ${msg}입니다.`);
-        u.lang = 'ko-KR'; window.speechSynthesis.speak(u);
-
-        try {
-            const ctx = getAudioCtx();
-            const gain = ctx.createGain();
-            const osc = ctx.createOscillator();
-            gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
-            osc.frequency.value = 440;
-            osc.connect(gain); gain.connect(ctx.destination);
-            osc.start(); osc.stop(ctx.currentTime + 0.2);
-            osc.onended = () => { osc.disconnect(); gain.disconnect(); };
-        } catch(e){}
-    }
-
-    function renderSched() {
-        const c = document.getElementById('sched-cont'); let h = '';
-        const timerMap = new Map(st.timers.map(t => [t.n, t]));
-        const pinSet = new Set(st.pins);
-
-        bosses.forEach(g => {
-            const folded = st.foldState[g.w] === true;
-            h += `<div class="world-section ${folded ? 'is-folded' : ''}" data-world="${g.w}">
-                <div class="world-banner" style="border-left-color:${g.c}" onclick="toggleFold('${g.w}')">
-                    <span style="font-size:13px;">${folded ? '▶' : '▼'} <b>${g.w}</b></span>
-                    <button class="p-btn" style="height:28px; font-size:10px; background:#f8f9fa;" onclick="event.stopPropagation(); clearWorldTimers('${g.w}')">World Clear</button>
+/* [Render] safeKey 기반 스케줄 리스트 */
+function renderSched() {
+    const cont = document.getElementById('sched-cont');
+    const timerMap = new Map(st.timers.map(t => [t.n, t]));
+    let html = '';
+    bosses.forEach(g => {
+        const folded = st.foldState[g.w];
+        html += `<div class="world-section ${folded ? 'is-folded' : ''} mb-3 border rounded-xl overflow-hidden">
+            <div class="bg-gray-100 p-3 font-black text-[10px] flex justify-between items-center" onclick="toggleFold('${g.w}')">
+                <span>${g.w.toUpperCase()}</span>
+                <button class="text-red-400 hover:underline" onclick="event.stopPropagation(); clearWorld('${g.w}')">World Clear</button>
+            </div>
+            <div class="world-content">`;
+        g.b.forEach(b => {
+            const tm = timerMap.get(b.n);
+            const zenTxt = tm ? new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}) : '--:--';
+            html += `<div class="boss-row">
+                <button onclick="togglePin('${b.n}')" class="text-lg">${st.pins.includes(b.n)?'📌':'📍'}</button>
+                <b class="text-sm truncate">${b.n}</b>
+                <input type="text" data-name="${b.n}" class="v-in" onkeydown="if(event.key==='Enter') setTimer('${b.n}', parseSmart(this.value), this.value)" oninput="previewSpawn(this)" placeholder="0 0">
+                <div class="zen-time-display">
+                    <div id="zen-${safeKey(b.n)}">${zenTxt}</div>
+                    <div id="prev-${safeKey(b.n)}" class="prev-time"></div>
                 </div>
-                <div class="world-content">`;
-            g.b.forEach(b => {
-                const sv = localStorage.getItem(`v29_${st.profile}_in_${b.n}`) || '';
-                const isFav = st.favs.includes(b.n);
-                const isPin = pinSet.has(b.n);
-                const tm = timerMap.get(b.n);
-                const zenTxt = tm ? new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}) : '--:--';
-
-                h += `<div class="boss-row" data-name="${b.n}">
-                    <div style="cursor:pointer; font-size:16px;" onclick="togglePin('${b.n}')">${isPin ? '📌' : '📍'}</div>
-                    <div style="font-weight:700; display:flex; align-items:center; gap:5px;">
-                        <span style="cursor:pointer; font-size:18px; color:${isFav ? '#ffd700' : '#ccc'};" onclick="toggleFav('${b.n}')">${isFav ? '★' : '☆'}</span>
-                        ${b.n}
-                    </div>
-                    <div>
-                        <input type="text" class="v-in" data-name="${b.n}" value="${sv}" placeholder="분/초" 
-                            oninput="previewSpawn(this)"
-                            onblur="clearPreview(this)"
-                            onkeydown="if(event.key==='Enter') handleEnterNav(this, Array.from(document.querySelectorAll('.v-in')).indexOf(this))">
-                    </div>
-                    <div class="zen-time-display">
-                        <div id="${zenId(b.n)}">${zenTxt}</div>
-                        <div id="${prevId(b.n)}" class="prev-time uppercase"></div>
-                    </div>
-                    <button class="p-btn active" style="height:30px; font-size:11px;" onclick="setTimer('${b.n}', ${b.r*60}, '자동')">Killed</button>
-                    <button class="p-btn" style="height:30px; width:30px; padding:0; color:var(--danger); background:#fff;" onclick="delTimer('${b.n}')">×</button>
-                </div>`;
-            });
-            h += `</div></div>`;
+                <button onclick="setTimer('${b.n}', ${b.r*60}, '자동')" class="bg-blue-900 text-white text-[10px] py-1 rounded-md font-bold hover:bg-black transition">KILL</button>
+                <button onclick="delTimer('${b.n}')" class="text-red-400 font-bold hover:text-red-600 transition text-lg">×</button>
+            </div>`;
         });
-        c.innerHTML = h; applyFilters();
-    }
+        html += `</div></div>`;
+    });
+    cont.innerHTML = html;
+}
 
-    /* Live Preview */
-    function previewSpawn(el) {
-        const name = el.dataset.name;
-        const sec = parseSmart(el.value);
-        const box = document.getElementById(prevId(name));
-        if (sec > 0) {
-            const time = new Date(Date.now() + sec * 1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
-            box.innerText = `Soon ${time}`;
-        } else box.innerText = "";
-    }
-    function clearPreview(el) { document.getElementById(prevId(el.dataset.name)).innerText = ""; }
-    function previewCalc(val) {
-        const sec = parseSmart(val);
-        document.getElementById('zc-preview').innerText = sec > 0 ? new Date(Date.now() + sec*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}) : "--:--:--";
-    }
+/* [Utility] 공통 기능 */
+function save() { localStorage.setItem(`v32_data_${st.profile}`, JSON.stringify({ timers: st.timers, pins: st.pins, fold: st.foldState })); syncTxt(); }
+function switchProfile(p) { st.profile = p; const d = JSON.parse(localStorage.getItem(`v32_data_${p}`)) || {}; st.timers = d.timers || []; st.pins = d.pins || []; st.foldState = d.fold || {}; migrate(); renderSched(); addLog(`Profile ${p} Loaded.`); }
+function togglePwr() { st.on = !st.on; document.getElementById('pwr').style.color = st.on ? '#16a34a' : '#94a3b8'; if(!st.on) window.speechSynthesis.cancel(); }
+function previewSpawn(el) { const s = parseSmart(el.value); const box = document.getElementById(`prev-${safeKey(el.dataset.name)}`); box.innerText = s > 0 ? `Soon ${new Date(Date.now() + s*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false})}` : ""; }
+function formatTimer(ms) { if(ms<0) return "00:00:00"; const s=Math.floor(ms/1000); const h=Math.floor(s/3600); const m=Math.floor((s%3600)/60); const rs=s%60; return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${rs.toString().padStart(2,'0')}`; }
+function parseSmart(v) { const p = v.split(' ').filter(x=>x!=='').map(Number); return p.length >= 2 ? p[0]*60 + p[1] : (p[0]||0)*60; }
+function formatSimple(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`; }
+function tab(id, el) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+function addLog(m) { const b = document.getElementById('logs'); const d = document.createElement('div'); d.innerHTML = `<span class="text-gray-500 font-bold">[${new Date().toLocaleTimeString()}]</span> ${m}`; b.appendChild(d); }
+function togglePin(n) { const i = st.pins.indexOf(n); if(i>-1) st.pins.splice(i,1); else st.pins.push(n); save(); renderSched(); }
+function delTimer(n) { st.timers = st.timers.filter(x => x.n !== n); save(); renderSched(); }
+function confirmClear() { if(confirm("초기화하시겠습니까?")) { st.timers = []; save(); renderSched(); } }
+function btl(type) { const now = Date.now(); if(type==='start') st.battle.s=now; else if(type==='kill') st.battle.s=null; addLog(`Battle ${type}.`); }
+function testAlert() { triggerAlert("테스트", "알림 정상 작동."); }
+async function togglePIP() { const v = document.getElementById('pip-video'); if (document.pictureInPictureElement) await document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); await v.play(); await v.requestPictureInPicture(); } }
 
-    function togglePin(n) {
-        const i = st.pins.indexOf(n);
-        if(i > -1) st.pins.splice(i, 1); else st.pins.push(n);
-        localStorage.setItem(`v29_${st.profile}_pins`, JSON.stringify(st.pins));
-        renderSched();
-    }
-
-    /* Logic Overrides */
-    function setTimer(n, s, raw) {
-        pushUndo(`${n} update`);
-        const t = Date.now() + (s * 1000);
-        const now = Date.now();
-        const entry = { n, t, m5: false, m1: false, lastD: Math.floor((t - now) / 1000) };
-        st.timers = st.timers.filter(x => x.n !== n);
-        st.timers.push(entry);
-        st.recent = [n, ...st.recent.filter(x => x !== n)].slice(0, 5);
-        if (raw !== "자동") localStorage.setItem(`v29_${st.profile}_in_${n}`, raw);
-        saveStore(); renderSched(); renderFavs(); addLog(`${n} mission set`);
-    }
-
-    function parseSmart(s) {
-        if (!s) return 0;
-        s = String(s).trim();
-        const parts = s.split(/[:\s]+/).filter(Boolean).map(Number);
-        if (parts.length === 2) return parts[0] * 60 + parts[1];
-        if (parts.length === 1 && !isNaN(parts[0])) return parts[0] * 60;
-        return 0;
-    }
-
-    function confirmClear() { if(confirm("CLEAR 를 입력하면 전체 초기화됩니다.")) { pushUndo("Full Clear"); st.timers = []; saveStore(); renderSched(); } }
-    function saveStore() {
-        localStorage.setItem(`v29_${st.profile}_timers`, JSON.stringify(st.timers));
-        localStorage.setItem(`v29_${st.profile}_recent`, JSON.stringify(st.recent));
-        localStorage.setItem(`v29_${st.profile}_fold`, JSON.stringify(st.foldState));
-        localStorage.setItem(`v29_${st.profile}_pins`, JSON.stringify(st.pins));
-        syncTxt();
-    }
-
-    /* Keep existing UI functions */
-    function toggleFold(w) { st.foldState[w] = !st.foldState[w]; saveStore(); renderSched(); }
-    function toggleAllFolds(s) { bosses.forEach(g => st.foldState[g.w] = s); saveStore(); renderSched(); }
-    function handleSearch(v) { st.searchTerm = v.toLowerCase(); applyFilters(); }
-    function applyFilters() {
-        const activeOnly = document.getElementById('active-only').checked; const now = Date.now();
-        document.querySelectorAll('.world-section').forEach(sec => {
-            let visible = 0; sec.querySelectorAll('.boss-row').forEach(row => {
-                const name = row.dataset.name.toLowerCase(); const timer = st.timers.find(t => t.n === row.dataset.name);
-                const show = name.includes(st.searchTerm) && (!activeOnly || (timer && timer.t > now));
-                row.style.display = show ? 'grid' : 'none'; if(show) visible++;
-            });
-            sec.style.display = visible > 0 ? 'block' : 'none';
-        });
-    }
-    function delTimer(n) { pushUndo(`${n} deleted`); st.timers = st.timers.filter(t => t.n !== n); saveStore(); renderSched(); }
-    function clearWorldTimers(w) { if(confirm(`${w} Clear?`)) { const list = bosses.find(g => g.w === w).b.map(b => b.n); st.timers = st.timers.filter(t => !list.includes(t.n)); saveStore(); renderSched(); } }
-    function applyShift(dir) { const mins = parseInt(document.getElementById('shift-min').value) || 0; if(mins <= 0) return; pushUndo(`Shift ${mins}m`); const now = Date.now(); st.timers = st.timers.map(t => { if (t.t > now) t.t += mins * 60000 * dir; return t; }); saveStore(); renderSched(); }
-    function tab(id, el) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); if(el) el.classList.add('active'); if(id==='set-txt') syncTxt(); }
-    function addLog(m) { const box = document.getElementById('logs'); const div = document.createElement('div'); div.innerHTML = `<span style="color:#718096; font-weight:700;">[${new Date().toLocaleTimeString()}]</span> ${m}`; box.appendChild(div); }
-    function syncTxt() { let txt = `B-OPS PROFILE ${st.profile} SYNC\n`; st.timers.sort((a,b)=>a.t-b.t).forEach(tm => { txt += `${new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} ${tm.n}\n`; }); document.getElementById('txt-ed').value = txt; }
-    function saveText() { const lines = document.getElementById('txt-ed').value.split('\n'); const nt = []; lines.forEach(l => { const m = l.match(/(\d{2}:\d{2})\s+(.+)/); if(m) nt.push({ n: m[2].trim(), t: new Date(new Date().setHours(m[1].split(':')[0], m[1].split(':')[1], 0, 0)).getTime(), m5:false, m1:false, lastD: 9999 }); }); st.timers = nt; saveStore(); renderSched(); tab('dash', document.querySelectorAll('.nav-item')[0]); }
-    function togglePwr() { st.on = !st.on; document.getElementById('pwr').style.color = st.on ? 'var(--success)' : '#ccc'; document.body.classList.toggle('system-off', !st.on); if(!st.on) window.speechSynthesis.cancel(); addLog(`System ${st.on?'ON':'OFF'}`); }
-    function findBoss(n) { let r = null; bosses.forEach(g => g.b.forEach(b => { if(b.n===n) r=b; })); return r; }
-    function formatTimer(ms) { if(ms<0) return "00:00:00"; const h=Math.floor(ms/3600000), m=Math.floor((ms%3600000)/60000), s=Math.floor((ms%60000)/1000); return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
-    function formatSimple(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${(Math.floor(s%60)).toString().padStart(2,'0')}`; }
-    function testAlert() { triggerAlert("테스트", "알림 테스트"); }
-    async function toggleWakeLock() { if(!('wakeLock' in navigator)) return alert("Not supported"); if(st.wakeLock){ await st.wakeLock.release(); st.wakeLock=null; document.getElementById('wl-btn').innerText="🛡 화면 유지 OFF"; } else { requestWakeLock(false); } }
-    async function requestWakeLock(silent) { try { st.wakeLock = await navigator.wakeLock.request('screen'); document.getElementById('wl-btn').innerText="🛡 화면 유지 ON"; } catch(e){} }
-    function renderFavs() { const p = document.getElementById('fav-panel'); let h = ''; st.favs.forEach(n => h += `<div class="chip is-fav" onclick="quickKill('${n}')">⭐ ${n}</div>`); st.recent.forEach(n => { if(!st.favs.includes(n)) h += `<div class="chip" onclick="quickKill('${n}')">${n}</div>`; }); p.innerHTML = h; }
-    function quickKill(name) { const n = name || document.getElementById('quick-sel').value; const b = findBoss(n); if(b) setTimer(n, b.r * 60, "자동"); }
-    function copyKakao(mode) {
-        const now = Date.now(); const list = mode === 'top3' ? st.timers.filter(t => t.t > now).sort((a,b)=>a.t-b.t).slice(0,3) : [...st.timers].sort((a,b)=>a.t-b.t);
-        if(!list.length) return alert("No active timers");
-        const dH = `[${new Date().toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric', weekday: 'short' })} 오딘 보스 젠]`;
-        let txt = mode==='top3' ? dH+'\n' : `${new Date().getMonth()+1}.${new Date().getDate()}\n`;
-        list.forEach((t,i) => {
-            const zT = new Date(t.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
-            if(mode==='top3') txt += `${i+1}) ${zT} ${t.n} (${BOSS_WORLD_MAP[t.n]||"-"}) - 남은 ${formatTimer(t.t-now).substring(3)}\n`;
-            else txt += `${zT} ${t.n}\n`;
-        });
-        navigator.clipboard.writeText(txt.trim()).then(()=>alert("복사 완료"));
-    }
-    function drawPIP(list) {
-        const ctx = document.getElementById('pip-canvas').getContext('2d');
-        ctx.fillStyle="#fff"; ctx.fillRect(0,0,240,135);
-        ctx.fillStyle="#1a237e"; ctx.fillRect(0,0,240,35);
-        ctx.fillStyle="#fff"; ctx.font="bold 13px Arial"; ctx.fillText("B-OPS PiP", 15, 23);
-        if(list.length>0){
-            const pinSet = new Set(st.pins); const n=list[0], d=n.t-Date.now();
-            ctx.fillStyle="#1a237e"; ctx.font="bold 20px 'Inter'"; ctx.textAlign="center"; ctx.fillText((pinSet.has(n.n)?'📌 ':'')+n.n, 120, 75);
-            ctx.fillStyle="#000"; ctx.font="bold 32px 'JetBrains Mono'"; ctx.fillText(formatTimer(d).substring(3), 120, 115);
-        }
-    }
-    async function togglePIP() { const v = document.getElementById('pip-video'); if (document.pictureInPictureElement) await document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); await v.play(); await v.requestPictureInPicture(); } }
-    function openBackup() { const data = { timers: st.timers, favs: st.favs, folds: st.foldState, pins: st.pins }; prompt("Backup (Copy JSON):", JSON.stringify(data)); }
-    function handleKeys(e) { if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; if(e.key==='/'){e.preventDefault(); document.getElementById('search-boss').focus();} if(e.ctrlKey && e.key==='z'){e.preventDefault(); executeUndo();} if(e.key>='1'&&e.key<='5'){const items=document.querySelectorAll('.nav-item'); if(items[e.key-1]) items[e.key-1].click();} }
-
-    init();
+window.onload = () => { switchProfile('A'); setInterval(loop, 1000); };
 </script>
 </body>
 </html>

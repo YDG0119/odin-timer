@@ -21,21 +21,13 @@
         .pane { display: none; width: 100%; max-width: 720px; animation: fadeIn 0.15s ease; }
         .pane.active { display: block; }
         .card { background: #fff; border-radius: 12px; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        
-        /* 타이머 가변 색상 */
         .timer-big { font-family: 'JetBrains Mono'; font-size: 52px; font-weight: 800; color: var(--primary); margin: 10px 0; letter-spacing: -2px; }
-        .timer-10m { color: #f59e0b !important; } /* 주황 */
-        .timer-5m { color: #ef4444 !important; }  /* 빨강 */
-        .timer-1m { color: #b91c1c !important; animation: blink 1s infinite; } /* 진한빨강+깜빡임 */
+        .timer-10m { color: #f59e0b !important; }
+        .timer-5m { color: #ef4444 !important; }
+        .timer-1m { color: #b91c1c !important; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        
         .boss-row { display: grid; grid-template-columns: 35px 105px 1fr 100px 75px 35px; align-items: center; padding: 10px 15px; border-bottom: 1px solid #f1f3f5; gap: 8px; }
-        .v-in { height: 32px; width: 100%; border-radius: 6px; border: 1px solid #ced4da; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 12px; }
-        .v-in::placeholder { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 10px; color: #94a3b8; }
-        .v-in:focus { border-color: var(--primary); outline: none; background: #f0f4ff; }
-        
-        .zen-time-display { font-family: 'JetBrains Mono'; font-weight: 700; text-align: right; color: #475569; }
-        .prev-time { font-size: 10px; color: var(--warning); font-weight: 700; height: 12px; text-align: right; }
+        .v-in { height: 32px; width: 100%; border-radius: 6px; border: 1px solid #ced4da; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 13px; }
         .log-box { font-family: 'JetBrains Mono'; font-size: 11px; height: 250px; overflow-y: auto; display: flex; flex-direction: column-reverse; background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; }
         .p-btn { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 800; font-size: 11px; transition: 0.2s; }
         .p-btn.active { background: var(--primary); color: #fff; }
@@ -45,7 +37,7 @@
 <body onkeydown="handleKeys(event)">
 
 <nav>
-    <div class="nav-brand italic text-center text-blue-900 font-black">B-OPS V32.2 HD</div>
+    <div class="nav-brand italic text-center text-blue-900 font-black uppercase">B-OPS V32.2 HD</div>
     <div class="nav-item active" onclick="tab('dash', this)">🏠 Dashboard</div>
     <div class="nav-item" onclick="tab('sched', this)">📅 Boss Schedule</div>
     <div class="nav-item" onclick="tab('calc', this)">🖩 계산기 (Calculator)</div>
@@ -68,7 +60,7 @@
     <div class="content">
         <div id="dash" class="pane active">
             <div id="hero-card" class="card text-center py-8">
-                <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Next Boss Target</div>
+                <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Next Boss Mission</div>
                 <div id="d-name" class="text-3xl font-black mt-2 leading-none">대기 중</div>
                 <div id="d-timer" class="timer-big">00:00:00</div>
                 <div id="d-meta" class="text-sm text-gray-500 font-bold font-mono">-</div>
@@ -83,7 +75,7 @@
 
         <div id="sched" class="pane">
             <div class="card flex gap-3 items-center bg-gray-50 border-none shadow-none mb-4">
-                <input type="text" id="search-boss" placeholder="보스명 필터..." class="border rounded-md px-3 py-1 text-sm flex-1" oninput="handleSearch(this.value)">
+                <input type="text" id="search-boss" placeholder="보스 필터..." class="border rounded-md px-3 py-1 text-sm flex-1" oninput="handleSearch(this.value)">
                 <label class="text-xs font-bold flex gap-1 items-center"><input type="checkbox" id="active-only" onchange="applyFilters()"> 활성만</label>
                 <button class="p-btn border bg-white text-red-500" onclick="confirmClear()">CLEAR ALL</button>
             </div>
@@ -93,33 +85,35 @@
         <div id="calc" class="pane">
             <div class="grid grid-cols-2 gap-4">
                 <div class="card shadow-md">
-                    <h3 class="font-black mb-6 text-center text-lg">젠 계산기</h3>
-                    <div class="grid grid-cols-2 gap-2 mb-6 text-center">
-                        <div class="bg-gray-50 p-4 border rounded-xl"><small class="text-gray-400 font-black">남은 시간</small><div id="zc-remain" class="text-2xl font-black text-gray-500 font-mono">--:--</div></div>
-                        <div class="bg-blue-50 p-4 border border-blue-100 rounded-xl"><small class="text-blue-400 font-black">젠 시각</small><div id="zc-preview" class="text-2xl font-black text-red-500 font-mono">--:--:--</div></div>
+                    <h3 class="font-black mb-6 text-center text-lg italic underline decoration-blue-900 underline-offset-8">젠 계산기</h3>
+                    <div class="grid grid-cols-2 gap-2 mb-6 text-center font-mono">
+                        <div class="bg-gray-50 p-4 border rounded-xl"><small class="text-gray-400 font-black">남은 시간</small><div id="zc-remain" class="text-2xl font-black text-gray-500">--:--</div></div>
+                        <div class="bg-blue-50 p-4 border border-blue-100 rounded-xl"><small class="text-blue-400 font-black">젠 시각</small><div id="zc-preview" class="text-2xl font-black text-red-500">--:--:--</div></div>
                     </div>
-                    <select id="zc-sel" class="w-full h-11 border rounded-lg mb-4 font-bold px-3 bg-gray-50"></select>
+                    <select id="zc-sel" class="w-full h-11 border rounded-lg mb-4 font-bold px-3 bg-gray-50 outline-none focus:border-blue-900"></select>
                     <input type="text" id="zc-in" class="w-full h-14 text-center font-mono text-3xl border-2 border-blue-900 rounded-xl mb-4 bg-blue-50/50" placeholder="예: 1230, 8 44" oninput="updateZenPreview(this.value)">
-                    <button class="p-btn active w-full h-14 text-sm font-black" onclick="applyZenCalc()">보스 시간 업데이트</button>
+                    <button class="p-btn active w-full h-14 text-sm font-black uppercase tracking-widest" onclick="applyZenCalc()">보스 시간 업데이트</button>
                 </div>
+
                 <div class="card shadow-md">
-                    <h3 class="font-black mb-6 text-center text-lg">광 계산기</h3>
-                    <div class="grid grid-cols-2 gap-2 mb-10 text-center">
-                        <div class="bg-gray-50 p-6 rounded-xl border"><small class="font-black text-gray-400">경과 시간</small><div id="b-elap" class="text-3xl font-black mt-2 text-slate-700 font-mono">00:00</div></div>
-                        <div class="bg-red-50 p-6 rounded-xl border border-red-100"><small class="font-black text-red-500">잡힘 예상</small><div id="b-timer" class="text-3xl font-black mt-2 text-red-600 font-mono">--:--</div></div>
+                    <h3 class="font-black mb-6 text-center text-lg italic underline decoration-red-700 underline-offset-8">광 계산기</h3>
+                    <div class="grid grid-cols-2 gap-2 mb-10 text-center font-mono">
+                        <div class="bg-gray-50 p-6 rounded-xl border"><small class="font-black text-gray-400 uppercase">전투 진행</small><div id="b-elap" class="text-3xl font-black mt-2 text-slate-700">00:00</div></div>
+                        <div class="bg-red-50 p-6 rounded-xl border border-red-100"><small class="font-black text-red-500 uppercase">예상 잡힘</small><div id="b-timer" class="text-3xl font-black mt-2 text-red-600">--:--</div></div>
                     </div>
                     <div class="grid grid-cols-3 gap-3">
-                        <button class="p-btn bg-slate-700 text-white h-14 font-black" onclick="btl('start')">시작</button>
-                        <button class="p-btn bg-orange-500 text-white h-14 font-black" onclick="btl('kwang')">광</button>
-                        <button class="p-btn active h-14 font-black" onclick="btl('kill')">잡힘</button>
+                        <button class="p-btn bg-slate-700 text-white h-14 font-black transition hover:bg-slate-900" onclick="btl('start')">시작</button>
+                        <button class="p-btn bg-orange-500 text-white h-14 font-black transition hover:bg-orange-600" onclick="btl('kwang')">광</button>
+                        <button class="p-btn active h-14 font-black transition hover:bg-black" onclick="btl('kill')">잡힘</button>
                     </div>
+                    <p class="text-[10px] text-gray-400 mt-6 text-center">* 시작 후 광폭화 진입 시 '광' 버튼을 누르세요.</p>
                 </div>
             </div>
         </div>
 
         <div id="set-txt" class="pane">
             <div class="card">
-                <div class="flex justify-between items-center mb-4"><h3 class="font-black">Text Editor</h3><button class="p-btn active" onclick="saveText()">저장 후 적용</button></div>
+                <div class="flex justify-between items-center mb-4"><h3 class="font-black">Manual Text Editor</h3><button class="p-btn active" onclick="saveText()">저장 후 적용</button></div>
                 <textarea id="txt-ed" class="w-full h-[520px] border p-6 font-mono text-sm rounded-2xl resize-none bg-gray-50 shadow-inner"></textarea>
             </div>
         </div>
@@ -130,7 +124,7 @@
 <video id="pip-video" autoplay muted playsinline style="display:none;"></video>
 
 <script>
-/* [데이터] 정렬 완료 (요툰~던전) */
+/* [1] 맵/보스 정렬 (요툰~던전 순서 고정) */
 const bosses = [
     { w: "요툰하임", c: "#3f51b5", b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"야른", r:240}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"티르", r:1440}] },
     { w: "니다벨리르", c: "#43a047", b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}] },
@@ -145,21 +139,13 @@ const bosses = [
 const BOSS_WORLD_MAP = {}; bosses.forEach(g => g.b.forEach(b => BOSS_WORLD_MAP[b.n] = g.w));
 let st = { on: true, profile: 'A', timers: [], pins: [], battle: { s: null, k: null, est: 0 }, foldState: {}, timeOffsetMs: 0, _keyCache: {} };
 
-/* [핵심] 지능형 파싱 */
+/* [핵심] 지능형 시간 파싱 */
 function parseSmart(s) {
     if (!s) return 0; s = String(s).trim();
     let m = s.match(/(\d+)\s*일\s*(\d+)\s*시간\s*(\d+)\s*분\s*(\d+)\s*초?/);
     if (m) return (+m[1])*86400 + (+m[2])*3600 + (+m[3])*60 + (+m[4]);
     m = s.match(/(\d+)\s*일\s*(\d+)\s*시간\s*(\d+)\s*분/);
     if (m) return (+m[1])*86400 + (+m[2])*3600 + (+m[3])*60;
-    m = s.match(/(\d+)\s*시간\s*(\d+)\s*분\s*(\d+)\s*초?/);
-    if (m) return (+m[1])*3600 + (+m[2])*60 + (+m[3]);
-    m = s.match(/(\d+)\s*시간\s*(\d+)\s*분/);
-    if (m) return (+m[1])*3600 + (+m[2])*60;
-    m = s.match(/(\d+)\s*분\s*(\d+)\s*초?/);
-    if (m) return (+m[1])*60 + (+m[2]);
-    m = s.match(/(\d+)\s*분/); if (m) return (+m[1])*60;
-
     const cleaned = s.replace(/[^\d:\s]/g, ' ').trim();
     const p = cleaned.split(/[:\s]+/).filter(Boolean).map(Number);
     if (p.length === 3) return p[0]*3600 + p[1]*60 + p[2];
@@ -185,7 +171,7 @@ function drawPIP(list) {
     const canvas = document.getElementById('pip-canvas'); const ctx = canvas.getContext('2d');
     ctx.fillStyle = "#0f172a"; ctx.fillRect(0, 0, 600, 340);
     ctx.fillStyle = "#1e293b"; ctx.fillRect(0, 0, 600, 80);
-    ctx.fillStyle = "#94a3b8"; ctx.font = "bold 24px Inter"; ctx.fillText("B-OPS COMMANDER HD", 40, 50);
+    ctx.fillStyle = "#94a3b8"; ctx.font = "bold 26px Inter"; ctx.fillText("B-OPS COMMANDER HD", 40, 50);
     if (list.length > 0) {
         const next = list[0]; const rem = next.t - (Date.now() + st.timeOffsetMs);
         let color = "#ffffff";
@@ -197,10 +183,28 @@ function drawPIP(list) {
     }
 }
 
-/* [오디오/로직] */
+/* [핵심] DOM 캐싱 및 광 계산기 로직 정상화 */
 let __audioCtx = null;
-const __dom = { dName: null, dTimer: null, dMeta: null, top3: null, bElap: null };
-function cacheDom() { if(!__dom.dName) { __dom.dName = document.getElementById('d-name'); __dom.dTimer = document.getElementById('d-timer'); __dom.dMeta = document.getElementById('d-meta'); __dom.top3 = document.getElementById('top3-list'); __dom.bElap = document.getElementById('b-elap'); } }
+const __dom = { dName: null, dTimer: null, dMeta: null, top3: null, bElap: null, bTimer: null };
+function cacheDom() { 
+    if(!__dom.dName) { 
+        __dom.dName = document.getElementById('d-name'); __dom.dTimer = document.getElementById('d-timer'); 
+        __dom.dMeta = document.getElementById('d-meta'); __dom.top3 = document.getElementById('top3-list'); 
+        __dom.bElap = document.getElementById('b-elap'); __dom.bTimer = document.getElementById('b-timer');
+    } 
+}
+
+function btl(type) {
+    const now = Date.now();
+    if(type==='start') { st.battle.s=now; st.battle.k=null; st.battle.est=0; addLog("Battle Started."); } 
+    else if(type==='kwang') { 
+        if(!st.battle.s) return; 
+        st.battle.k = now; 
+        st.battle.est = Math.floor(((now - st.battle.s) / 1000) * 0.51); 
+        addLog("Berserk Triggered."); 
+    } 
+    else if(type==='kill') { st.battle.s = null; st.battle.k = null; addLog("Target Neutralized."); }
+}
 
 function triggerAlert(name, msg) {
     window.speechSynthesis.cancel();
@@ -215,11 +219,11 @@ function triggerAlert(name, msg) {
     } catch(e){}
 }
 
-/* [정밀 루프] */
+/* [루프] 색상 가변 및 광 계산기 실시간 출력 */
 function loop() {
     if (!st.on) return; cacheDom();
     const now = Date.now() + st.timeOffsetMs;
-    st.timers = st.timers.filter(t => (now - t.t) < 600000);
+    st.timers = (st.timers || []).filter(t => (now - t.t) < 600000);
 
     for (const tm of st.timers) {
         const d = Math.floor((tm.t - now) / 1000);
@@ -232,8 +236,7 @@ function loop() {
         if (el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
     }
 
-    const list = [...st.timers].sort((a,b) => a.t - b.t);
-    const upcoming = list.filter(t => t.t > now);
+    const upcoming = [...st.timers].sort((a,b) => a.t - b.t).filter(t => t.t > now);
     const next = upcoming[0];
 
     if (next) {
@@ -249,15 +252,22 @@ function loop() {
     }
 
     __dom.top3.innerHTML = upcoming.slice(0,3).map((t, i) => `
-        <div class="flex justify-between border-b border-gray-100 py-2 items-center">
-            <span class="font-bold">${i+1}. ${t.n}</span>
-            <span class="font-mono font-black text-blue-900 text-sm">${formatTimer(t.t - now).substring(3)}</span>
-        </div>`).join('') || "예정 없음";
+        <div class="flex justify-between border-b border-gray-100 py-2 items-center"><span class="font-bold">${i+1}. ${t.n}</span><span class="font-mono font-black text-blue-900 text-sm">${formatTimer(t.t-now).substring(3)}</span></div>`).join('') || "예정 없음";
+    
+    // 광 계산기 출력 로직 복구
+    if (st.battle.s && !st.battle.k) {
+        __dom.bElap.innerText = formatSimple((Date.now() - st.battle.s) / 1000);
+        __dom.bTimer.innerText = "--:--";
+    } else if (st.battle.k) {
+        const rem = st.battle.est - Math.floor((Date.now() - st.battle.k) / 1000);
+        __dom.bTimer.innerText = (rem >= 0 ? "" : "+") + formatSimple(Math.abs(rem));
+    } else {
+        __dom.bElap.innerText = "00:00"; __dom.bTimer.innerText = "--:--";
+    }
     
     drawPIP(upcoming);
 }
 
-/* [입력 및 포커스] */
 function setTimer(n, s, raw) {
     const t = Date.now() + st.timeOffsetMs + (s * 1000);
     st.timers = st.timers.filter(x => x.n !== n);
@@ -276,39 +286,19 @@ function handleEnterNav(el) {
 }
 
 function previewSpawn(el) {
-    const s = parseSmart(el.value);
-    const box = document.getElementById(`prev-${safeKey(el.dataset.name)}`);
-    if (s > 0) {
-        const time = new Date(Date.now() + st.timeOffsetMs + s * 1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
-        box.innerText = `예상 젠 ${time}`;
-    } else box.innerText = "";
+    const s = parseSmart(el.value); const box = document.getElementById(`prev-${safeKey(el.dataset.name)}`);
+    box.innerText = s > 0 ? `예상 젠 ${new Date(Date.now() + st.timeOffsetMs + s*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})}` : "";
 }
 
 function renderSched() {
     const cont = document.getElementById('sched-cont'); let html = '';
     const timerMap = new Map(st.timers.map(t => [t.n, t]));
     bosses.forEach(g => {
-        html += `<div class="world-section mb-3 border rounded-xl overflow-hidden shadow-sm">
-            <div class="bg-gray-100 p-3 font-black text-[10px] flex justify-between cursor-pointer" onclick="toggleFold('${g.w}')"><span>${g.w.toUpperCase()}</span></div>
-            <div class="world-content">`;
+        html += `<div class="world-section mb-3 border rounded-xl overflow-hidden shadow-sm"><div class="bg-gray-100 p-3 font-black text-[10px] flex justify-between cursor-pointer" onclick="toggleFold('${g.w}')"><span>${g.w.toUpperCase()}</span></div><div class="world-content">`;
         g.b.forEach(b => {
             const tm = timerMap.get(b.n);
             const zenTxt = tm ? new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}) : '--:--';
-            /* 플레이스홀더 UI 가이드 적용 */
-            html += `<div class="boss-row">
-                <button onclick="togglePin('${b.n}')" class="text-lg">📍</button>
-                <b class="text-sm truncate">${b.n}</b>
-                <input type="text" data-name="${b.n}" class="v-in" 
-                    placeholder="예: 1일 2시간, 1230, 8 44" 
-                    oninput="previewSpawn(this)"
-                    onkeydown="if(event.key==='Enter') handleEnterNav(this)">
-                <div class="zen-time-display">
-                    <div id="zen-${safeKey(b.n)}">${zenTxt}</div>
-                    <div id="prev-${safeKey(b.n)}" class="prev-time"></div>
-                </div>
-                <button onclick="setTimer('${b.n}', ${b.r*60}, '자동')" class="bg-blue-900 text-white text-[10px] py-1 rounded font-bold hover:bg-black transition">KILLED</button>
-                <button onclick="delTimer('${b.n}')" class="text-red-400 font-bold text-lg">×</button>
-            </div>`;
+            html += `<div class="boss-row"><button onclick="togglePin('${b.n}')" class="text-lg">📍</button><b class="text-sm truncate">${b.n}</b><input type="text" data-name="${b.n}" class="v-in" placeholder="예: 1230, 8 44" oninput="previewSpawn(this)" onkeydown="if(event.key==='Enter') handleEnterNav(this)"><div class="zen-time-display"><div id="zen-${safeKey(b.n)}">${zenTxt}</div><div id="prev-${safeKey(b.n)}" class="prev-time"></div></div><button onclick="setTimer('${b.n}', ${b.r*60}, '자동')" class="bg-blue-900 text-white text-[10px] py-1 rounded font-bold hover:bg-black transition">KILLED</button><button onclick="delTimer('${b.n}')" class="text-red-400 font-bold text-lg">×</button></div>`;
         });
         html += `</div></div>`;
     });
@@ -322,21 +312,20 @@ function renderSched_Partial() {
     });
 }
 
-/* [기능 보조] */
+/* [Utility] */
 function save() { localStorage.setItem(`v32_data_${st.profile}`, JSON.stringify({ timers: st.timers, pins: st.pins, fold: st.foldState })); }
 function switchProfile(p) { st.profile = p; const d = JSON.parse(localStorage.getItem(`v32_data_${p}`)) || {}; st.timers = d.timers || []; st.pins = d.pins || []; st.foldState = d.fold || {}; renderSched(); }
 function togglePwr() { st.on = !st.on; document.getElementById('pwr').style.color = st.on ? '#16a34a' : '#94a3b8'; if(!st.on) window.speechSynthesis.cancel(); }
 function formatTimer(ms) { if(ms<0) return "00:00:00"; const s=Math.floor(ms/1000); const h=Math.floor(s/3600); const m=Math.floor((s%3600)/60); const rs=s%60; return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${rs.toString().padStart(2,'0')}`; }
 function formatSimple(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`; }
 function tab(id, el) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); if(el) el.classList.add('active'); }
-function addLog(m) { const b = document.getElementById('logs'); const d = document.createElement('div'); d.innerHTML = `<span class="text-gray-500 font-bold font-mono">[${new Date().toLocaleTimeString()}]</span> ${m}`; b.appendChild(d); }
+function addLog(m) { const b = document.getElementById('logs'); const d = document.createElement('div'); d.innerHTML = `<span class="text-gray-500 font-bold">[${new Date().toLocaleTimeString()}]</span> ${m}`; b.appendChild(d); }
 function togglePin(n) { const i = st.pins.indexOf(n); if(i>-1) st.pins.splice(i,1); else st.pins.push(n); save(); renderSched(); }
 function delTimer(n) { st.timers = st.timers.filter(x => x.n !== n); save(); renderSched(); }
 function confirmClear() { if(confirm("초기화하시겠습니까?")) { st.timers = []; save(); renderSched(); } }
 function toggleFold(w) { st.foldState[w] = !st.foldState[w]; save(); renderSched(); }
 function handleSearch(v) { const stm = v.toLowerCase(); document.querySelectorAll('.boss-row').forEach(row => { const n = row.querySelector('b').innerText.toLowerCase(); row.style.display = n.includes(stm) ? 'grid' : 'none'; }); }
-function btl(type) { const now = Date.now(); if(type==='start') { st.battle.s=now; st.battle.k=null; } else if(type==='kwang') { if(!st.battle.s) return; st.battle.k=now; st.battle.est=Math.floor(((now-st.battle.s)/1000)*0.51); } else if(type==='kill') st.battle.s=null; addLog(`Battle ${type}.`); }
-function testAlert() { triggerAlert("테스트", "정상 작동."); }
+function testAlert() { triggerAlert("테스트", "정상입니다."); }
 async function togglePIP() { const v = document.getElementById('pip-video'); if (document.pictureInPictureElement) await document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); await v.play(); await v.requestPictureInPicture(); } }
 function handleKeys(e) { if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; if(e.key==='/'){e.preventDefault(); document.getElementById('search-boss').focus();} }
 function updateZenPreview(v) { const s = parseSmart(v); document.getElementById('zc-remain').innerText = s > 0 ? formatSimple(s) : "--:--"; document.getElementById('zc-preview').innerText = s > 0 ? new Date(Date.now() + st.timeOffsetMs + s*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}) : "--:--:--"; }

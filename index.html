@@ -3,144 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOSS OPS CENTER V32.28 HD FINAL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <title>BOSS OPS CENTER V32.30 HD FINAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --primary: #1a237e; --primary-light: #e8eaf6; --border: #dee2e6; --danger: #ef4444; --warning: #f59e0b; --urgent: #b91c1c; }
+        :root { --primary: #1a237e; --border: #dee2e6; --danger: #ef4444; --warning: #f59e0b; --urgent: #b91c1c; }
         body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background: #f4f5f7; margin: 0; display: flex; height: 100vh; overflow: hidden; font-size: 13px; }
-        body.system-off .content { filter: grayscale(1) brightness(0.9); pointer-events: none; }
-        header, nav { pointer-events: auto !important; }
-        nav { width: 220px; background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 15px 0; z-index: 1000; flex-shrink: 0; }
+        nav { width: 220px; background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 15px 0; z-index: 1000; }
         .nav-brand { padding: 0 25px 20px; font-weight: 900; font-size: 16px; color: var(--primary); border-bottom: 1px solid #f1f3f5; margin-bottom: 15px; }
-        .nav-item { display: flex; align-items: center; padding: 12px 25px; cursor: pointer; color: #6c757d; transition: 0.2s; gap: 12px; font-weight: 700; }
-        .nav-item.active { background: var(--primary-light); color: var(--primary); border-left: 4px solid var(--primary); }
+        .nav-item { padding: 12px 25px; cursor: pointer; color: #6c757d; font-weight: 700; transition: 0.2s; }
+        .nav-item.active { background: #e8eaf6; color: var(--primary); border-left: 4px solid var(--primary); }
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        header { height: 60px; background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; flex-shrink: 0; }
+        header { height: 60px; background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
         .content { flex: 1; padding: 20px; overflow-y: auto; display: flex; justify-content: center; }
-        .pane { display: none; width: 100%; max-width: 800px; animation: fadeIn 0.1s ease; }
+        .pane { display: none; width: 100%; max-width: 820px; animation: fadeIn 0.1s ease; }
         .pane.active { display: block; }
         .card { background: #fff; border-radius: 12px; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative; }
-        
-        .timer-big { font-family: 'JetBrains Mono'; font-size: 52px; font-weight: 800; color: var(--primary); margin: 10px 0; letter-spacing: -2px; }
+        .timer-big { font-family: 'JetBrains Mono'; font-size: 52px; font-weight: 800; color: var(--primary); letter-spacing: -2px; }
         .t-warn { color: var(--warning) !important; } .t-danger { color: var(--danger) !important; } .t-urgent { color: var(--urgent) !important; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-        .v-in { height: 34px; width: 100%; border-radius: 6px; border: 1px solid #ced4da; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 13px; }
+        .v-in { height: 34px; border-radius: 6px; border: 1px solid #ced4da; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; }
         .v-in::placeholder { font-family: 'Noto Sans KR'; font-weight: 500; font-size: 11px; color: #adb5bd; }
-        .p-btn { padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 800; font-size: 11px; transition: 0.2s; }
-        .p-btn.active { background: var(--primary); color: #fff; }
-        .guide-box { background: #fff; border-top: 4px solid var(--primary); padding: 20px; border-radius: 12px; margin-top: 5px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-
-        /* 출석체크 UI 디자인 */
-        .attn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .world-btn { padding: 15px; border-radius: 10px; border: 2px solid #e2e8f0; text-align: center; cursor: pointer; transition: 0.2s; font-weight: 900; }
-        .world-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
-        .member-chip { display: inline-flex; align-items: center; background: #f1f5f9; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; border: 1px solid transparent; }
-        .member-chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
+        .guide-box { background: #fff; border-top: 4px solid var(--primary); padding: 20px; border-radius: 12px; }
+        .x-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .x-table th { background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px; font-weight: 900; }
+        .x-table td { border: 1px solid #cbd5e1; padding: 6px; text-align: center; }
+        .row-warn { background: #fee2e2 !important; color: #b91c1c; }
+        .member-chip { cursor: pointer; padding: 5px 12px; border-radius: 20px; background: #f1f5f9; border: 1px solid #e2e8f0; font-weight: 700; }
+        .member-chip.selected { background: var(--primary); color: #fff; }
     </style>
 </head>
-<body onkeydown="handleKeys(event)">
+<body>
 
 <nav>
-    <div class="nav-brand italic text-center text-blue-900 font-black uppercase tracking-tighter">B-OPS V32.28 HD</div>
+    <div class="nav-brand italic">B-OPS V32.30 HD</div>
     <div class="nav-item active" onclick="tab('dash', this)">🏠 Dashboard</div>
     <div class="nav-item" onclick="tab('sched', this)">📅 Boss Schedule</div>
     <div class="nav-item" onclick="tab('calc', this)">🖩 Calculator</div>
-    <div class="nav-item" onclick="tab('guild', this)">👥 Guild Admin</div> </nav>
+    <div class="nav-item" onclick="tab('guild', this)">👥 Guild Admin</div>
+</nav>
 
 <main>
     <header>
-        <div class="flex gap-2 bg-gray-100 p-1 rounded-lg">
-            <button class="p-btn active" data-p="A" onclick="switchProfile('A')">PROFILE A</button>
-            <button class="p-btn" data-p="B" onclick="switchProfile('B')">PROFILE B</button>
+        <div class="flex gap-2">
+            <button class="px-3 py-1 bg-blue-900 text-white rounded font-bold text-[10px]" onclick="switchProfile('A')">PROFILE A</button>
+            <button class="px-3 py-1 bg-gray-200 rounded font-bold text-[10px]" onclick="switchProfile('B')">PROFILE B</button>
         </div>
-        <div id="pwr" class="cursor-pointer text-2xl text-green-600 font-bold" onclick="togglePwr()">⏻</div>
+        <div id="pwr" class="text-green-500 font-black cursor-pointer" onclick="togglePwr()">● SYSTEM ON</div>
     </header>
 
     <div class="content">
         <div id="dash" class="pane active">
-            <div class="bg-blue-900 p-5 rounded-2xl border border-blue-800 shadow-lg mb-6">
-                <div class="flex flex-col gap-3">
-                    <div class="flex justify-between items-center text-white font-black text-[10px] uppercase tracking-widest">
-                        <span>Group Sync Command</span>
-                        <div id="pin-badge-list" class="flex flex-wrap gap-1"></div>
-                    </div>
-                    <div class="flex gap-2">
-                        <input type="text" id="group-kill-time" class="flex-1 h-12 rounded-xl text-center font-mono text-2xl outline-none shadow-inner" placeholder="예: 1000(시분), 10 00(분초)">
-                        <button onclick="killPinnedGroupWithTime()" class="bg-orange-500 text-white font-black px-5 py-2 rounded-xl shadow-md hover:bg-orange-600 text-xs transition active:scale-95 leading-tight">📌 지정 시각<br>일괄 KILLED</button>
-                    </div>
+            <div class="bg-blue-900 p-5 rounded-2xl shadow-lg mb-6">
+                <div class="flex justify-between items-center text-white font-black text-[10px] mb-3">
+                    <span>GROUP SYNC COMMAND</span>
+                    <div id="pin-badge-list" class="flex gap-1"></div>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="group-kill-time" class="flex-1 h-12 rounded-xl text-center font-mono text-2xl" placeholder="예: 1000(시분), 10 00(분초)">
+                    <button onclick="killPinnedGroupWithTime()" class="bg-orange-500 text-white font-black px-6 rounded-xl text-xs transition active:scale-95">📌 일괄 KILLED</button>
                 </div>
             </div>
             
-            <div id="hero-card" class="card text-center py-6 shadow-xl border-blue-50">
-                <button onclick="togglePIP()" class="absolute top-4 right-4 text-gray-300 hover:text-blue-900 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></button>
-                <div id="d-name" class="text-3xl font-black text-blue-800 italic">대기 중</div>
-                <div id="d-timer" class="timer-big font-mono">00:00:00</div>
-                <div id="top3-list" class="mt-6 text-left bg-gray-50 p-4 rounded-xl space-y-2 font-mono text-[13px]"></div>
+            <div id="hero-card" class="card text-center py-8 shadow-xl border-blue-50">
+                <button onclick="togglePIP()" class="absolute top-4 right-4 text-gray-300 hover:text-blue-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                </button>
+                <div id="d-name" class="text-3xl font-black text-blue-900 italic mb-1">대기 중</div>
+                <div id="d-timer" class="timer-big font-mono mb-4">00:00:00</div>
+                <div id="top3-list" class="text-left bg-gray-50 p-4 rounded-xl space-y-2 font-mono text-[13px]"></div>
             </div>
 
-            <div class="guide-box">
-                <h4 class="font-black text-blue-900 text-sm mb-4 flex items-center gap-2">
-                    <span class="bg-blue-900 text-white px-1.5 py-0.5 rounded italic font-mono">i</span> 시간 입력 마스터 가이드
-                </h4>
-                <div class="grid grid-cols-2 gap-6 text-[12px] leading-relaxed">
-                    <div class="border-r pr-4 font-bold">
-                        <p class="text-gray-800 mb-2 underline decoration-blue-200 underline-offset-4">1. 시분 입력 (붙여쓰기)</p>
-                        <p class="text-blue-700">0230 ➔ 2시간 30분</p>
-                    </div>
-                    <div class="font-bold">
-                        <p class="text-gray-800 mb-2 underline decoration-orange-200 underline-offset-4">2. 분초 입력 (띄어쓰기)</p>
-                        <p class="text-orange-600">02 30 ➔ 2분 30초</p>
-                    </div>
+            <div class="guide-box shadow-sm">
+                <h4 class="font-black text-blue-900 text-sm mb-4 italic">🕒 시간 입력 마스터 가이드</h4>
+                <div class="grid grid-cols-2 gap-6 text-[12px] font-bold">
+                    <div class="border-r pr-4"><p class="text-gray-800 mb-1 underline">1. 시분 (붙여쓰기)</p><p class="text-blue-700">0230 ➔ 2시간 30분</p></div>
+                    <div><p class="text-gray-800 mb-1 underline">2. 분초 (띄어쓰기)</p><p class="text-orange-600">02 30 ➔ 2분 30초</p></div>
                 </div>
             </div>
         </div>
 
         <div id="guild" class="pane">
-            <div class="card shadow-md">
-                <div class="flex justify-between items-center mb-6 border-b pb-4">
-                    <h3 class="font-black text-xl text-blue-900 italic">🛡️ 길드 주간 출석부 (무/아/니)</h3>
-                    <button onclick="resetGuildData()" class="p-btn bg-red-500 text-white">주간 데이터 초기화</button>
-                </div>
-                
-                <div class="bg-slate-50 p-5 rounded-xl mb-8 border border-slate-200">
-                    <p class="font-black text-xs text-slate-400 uppercase mb-3 tracking-widest">Quick Raid Entry</p>
-                    <div class="attn-grid">
-                        <div class="world-btn" id="btn-muspel" onclick="selectWorld('muspel')">무스펠</div>
-                        <div class="world-btn" id="btn-asas" onclick="selectWorld('asas')">아스가르드</div>
-                        <div class="world-btn" id="btn-nifl" onclick="selectWorld('nifl')">니플하임</div>
-                    </div>
-                    <div id="selection-pool" class="flex flex-wrap gap-2 mb-4"></div>
-                    <button onclick="recordRaid()" class="w-full p-btn bg-blue-900 text-white h-12 text-sm shadow-lg">선택한 인원 참여 기록하기</button>
-                </div>
-
-                <div class="mb-6">
-                    <div class="flex gap-2 mb-4">
-                        <input type="text" id="guild-name-in" class="v-in flex-1 text-left px-4" placeholder="신규 길드원 이름">
-                        <button onclick="addMember()" class="p-btn active px-8">추가</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm border-collapse">
-                            <thead>
-                                <tr class="bg-slate-100 font-black text-slate-500">
-                                    <th class="p-3 border">길드원</th>
-                                    <th class="p-3 border">무스펠</th><th class="p-3 border">아스</th><th class="p-3 border">니플</th>
-                                    <th class="p-3 border bg-blue-50 text-blue-900">주간 출석률</th>
-                                    <th class="p-3 border">삭제</th>
-                                </tr>
-                            </thead>
-                            <tbody id="guild-body" class="text-center font-bold"></tbody>
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-7 card h-[78vh] flex flex-col">
+                    <h3 class="font-black text-lg mb-4">📊 길드 통계 (Excel Style)</h3>
+                    <div class="overflow-auto border rounded-lg flex-1">
+                        <table class="x-table">
+                            <thead><tr><th>캐릭명</th><th>전투력</th><th>누적점수</th><th>누적%</th><th>최근%</th><th>삭제</th></tr></thead>
+                            <tbody id="guild-stats-body"></tbody>
                         </table>
                     </div>
+                    <div class="mt-4 flex gap-2">
+                        <input type="text" id="new-name" class="v-in w-32" placeholder="캐릭명">
+                        <input type="number" id="new-cp" class="v-in w-32" placeholder="전투력">
+                        <button onclick="addMember()" class="bg-blue-900 text-white px-4 rounded font-black text-xs">추가</button>
+                    </div>
+                </div>
+                <div class="col-span-5 card h-[78vh] flex flex-col">
+                    <h3 class="font-black text-lg text-blue-900 italic mb-4">🛡️ 레이드 참여 기록</h3>
+                    <select id="boss-weight" class="v-in w-full mb-4">
+                        <option value="1">1점: 2~5챕 모든 보스</option>
+                        <option value="2">2점: 6챕, 10층, 이둔, 거점</option>
+                        <option value="3">3점: 7챕, 축절대자, 최하층, 지옥</option>
+                        <option value="5">5점: 공성전</option>
+                    </select>
+                    <div id="entry-pool" class="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-xl border border-dashed border-slate-300 overflow-y-auto flex-1"></div>
+                    <button onclick="submitRaidRecord()" class="w-full bg-blue-900 text-white py-4 rounded-xl font-black text-lg shadow-xl mt-4">기록 확정</button>
                 </div>
             </div>
         </div>
 
-        <div id="sched" class="pane"><div id="sched-cont"></div></div>
+        <div id="sched" class="pane">
+            <div class="flex justify-between mb-4">
+                <input type="text" id="search-boss" placeholder="보스 필터..." class="border rounded-lg px-4 py-2 text-sm flex-1 mr-2" oninput="handleSearch(this.value)">
+                <select id="view-mode-sel" class="border rounded-lg px-3 text-xs font-bold" onchange="st.viewMode = this.value; renderSched();">
+                    <option value="main">본섭</option><option value="all">본섭+침공</option>
+                </select>
+            </div>
+            <div id="sched-cont"></div>
+        </div>
+
         <div id="calc" class="pane">
             <div class="grid grid-cols-2 gap-4">
-                <div class="card shadow-md border-blue-50 text-center"><h3 class="font-black mb-4 border-b">젠 정밀 보정</h3><div id="zc-remain" class="text-2xl font-black mb-2">--:--</div><select id="zc-sel" class="v-in mb-2"></select><input type="text" id="zc-in" class="v-in text-2xl h-12 mb-4" placeholder="시분 또는 분 초" oninput="updateZenPreview(this.value)"><button onclick="applyZenCalc()" class="p-btn active w-full h-12">업데이트</button></div>
-                <div class="card shadow-md border-red-50 text-center"><h3 class="font-black mb-4 border-b">광 계산기</h3><div id="b-elap" class="text-2xl font-black mb-4">00:00</div><div class="grid grid-cols-3 gap-2"><button class="p-btn bg-slate-700 text-white" onclick="btl('start')">시작</button><button class="p-btn bg-orange-500 text-white" onclick="btl('kwang')">광</button><button class="p-btn bg-slate-900 text-white" onclick="btl('kill')">잡힘</button></div></div>
+                <div class="card text-center"><h3 class="font-black mb-4 border-b pb-2">젠 정밀 보정</h3><div id="zc-remain" class="text-2xl font-black mb-4">--:--</div><select id="zc-sel" class="v-in w-full mb-4"></select><input type="text" id="zc-in" class="v-in w-full text-3xl h-16 mb-4" placeholder="시분 또는 분 초" oninput="updateZenPreview(this.value)"><button onclick="applyZenCalc()" class="w-full bg-blue-900 text-white py-4 rounded-xl font-black">업데이트</button></div>
+                <div class="card text-center"><h3 class="font-black mb-4 border-b pb-2 text-red-600">광 계산기</h3><div id="b-elap" class="text-3xl font-black mb-6">00:00</div><div class="grid grid-cols-3 gap-3"><button class="p-btn bg-slate-700 text-white h-14" onclick="btl('start')">시작</button><button class="p-btn bg-orange-500 text-white h-14" onclick="btl('kwang')">광</button><button class="p-btn bg-slate-900 text-white h-14" onclick="btl('kill')">잡힘</button></div></div>
             </div>
         </div>
     </div>
@@ -150,6 +136,7 @@
 <video id="pip-video" autoplay muted playsinline style="display:none;"></video>
 
 <script>
+/* [데이터] 전 지역 보스 리스트 */
 const bosses = [
     { w: "요툰", i: false, b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야른", r:240}, {n:"티르", r:1440}] },
     { w: "니다", i: false, b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}] },
@@ -158,80 +145,20 @@ const bosses = [
     { w: "아스", i: false, b: [{n:"발리", r:120}, {n:"노트", r:480}, {n:"샤무크", r:120}, {n:"스칼드메르", r:120}, {n:"그로아", r:1440}, {n:"미미르", r:240}] },
     { w: "니플", i: false, b: [{n:"히로킨", r:1440}, {n:"호드", r:1440}, {n:"헤이드", r:1440}, {n:"프레이", r:1440}, {n:"이미르", r:1440}] },
     { w: "바나", i: false, b: [{n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}] },
-    { w: "던전", i: false, b: [{n:"4층", r:480}, {n:"7층", r:480}, {n:"10층", r:480}, {n:"최하층굴베", r:480}, {n:"최하층강글", r:480}, {n:"최하층스네르", r:480}] }
+    { w: "던전", i: false, b: [{n:"4층", r:480}, {n:"7층", r:480}, {n:"10층", r:480}, {n:"최하층굴베", r:480}, {n:"최하층강글", r:480}, {n:"최하층스네르", r:480}] },
+    { w: "침공 요툰", i: true, b: [{n:"침공 파르바", r:120}, {n:"침공 셀로비아", r:720}, {n:"침공 흐니르", r:720}, {n:"침공 페티", r:720}, {n:"침공 바우티", r:120}, {n:"침공 니드호그", r:1440}, {n:"침공 야른", r:240}, {n:"침공 티르", r:1440}] },
+    { w: "침공 니다", i: true, b: [{n:"침공 라이노르", r:720}, {n:"침공 비요른", r:720}, {n:"침공 헤르모드", r:240}, {n:"침공 스칼라니르", r:120}, {n:"침공 브륀힐드", r:720}] },
+    { w: "침공 알브", i: true, b: [{n:"침공 스바르트", r:240}, {n:"침공 두라스로르", r:480}, {n:"침공 모네가름", r:120}, {n:"침공 드라우그", r:240}, {n:"침공 굴베이그", r:480}] },
+    { w: "침공 무스펠", i: true, b: [{n:"침공 메기르", r:120}, {n:"침공 신마라", r:720}, {n:"침공 헤르가름", r:120}, {n:"침공 탕그리스니르", r:240}, {n:"침공 엘드룬", r:720}] },
+    { w: "침공 아스", i: true, b: [{n:"침공 발리", r:120}, {n:"침공 노트", r:480}, {n:"침공 샤무크", r:120}, {n:"침공 스칼드메르", r:120}, {n:"침공 그로아", r:1440}, {n:"침공 미미르", r:240}] },
+    { w: "침공 니플", i: true, b: [{n:"침공 히로킨", r:1440}, {n:"침공 호드", r:1440}, {n:"침공 헤이드", r:1440}, {n:"침공 프레이", r:1440}, {n:"침공 이미르", r:1440}] },
+    { w: "침공 바나", i: true, b: [{n:"침공 엘디르", r:1440}, {n:"침공 안나르엘디르", r:1440}, {n:"침공 스쿨드", r:1440}, {n:"침공 스카디", r:1440}, {n:"침공 에기르", r:1440}] }
 ];
 
 const BOSS_RESPAWN_MAP = {}; bosses.forEach(g => g.b.forEach(b => BOSS_RESPAWN_MAP[b.n] = b.r));
-let st = { on: true, profile: 'A', timers: [], pins: [], autoRotate: true, viewMode: 'main', battle: { s: null, k: null, est: 0 }, 
-           guild: [], guildRaids: { muspel: 0, asas: 0, nifl: 0 }, curWorld: null, curAttenders: [], timeOffsetMs: 0, _keyCache: {} };
+let st = { timers: [], pins: [], autoRotate: true, viewMode: 'main', battle: { s: null, k: null, est: 0 }, guild: [], guildPointsPossible: 0, selectedNames: [], profile: 'A', _keyCache: {} };
 
-/* [핵심] 길드 출석 관리 로직 */
-function addMember() {
-    const name = document.getElementById('guild-name-in').value.trim();
-    if(!name) return;
-    st.guild.push({ n: name, muspel: 0, asas: 0, nifl: 0 });
-    document.getElementById('guild-name-in').value = '';
-    save(); renderGuild();
-}
-
-function selectWorld(w) {
-    st.curWorld = w;
-    document.querySelectorAll('.world-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(`btn-${w}`).classList.add('active');
-    renderPool();
-}
-
-function renderPool() {
-    const pool = document.getElementById('selection-pool');
-    pool.innerHTML = st.guild.map(m => `
-        <div class="member-chip ${st.curAttenders.includes(m.n)?'selected':''}" onclick="togglePool('${m.n}')">${m.n}</div>
-    `).join('');
-}
-
-function togglePool(name) {
-    const i = st.curAttenders.indexOf(name);
-    if(i > -1) st.curAttenders.splice(i, 1); else st.curAttenders.push(name);
-    renderPool();
-}
-
-function recordRaid() {
-    if(!st.curWorld) return alert("월드를 먼저 선택하세요 (무/아/니)");
-    if(!st.curAttenders.length) return alert("참여 인원을 선택하세요.");
-    
-    st.guildRaids[st.curWorld]++; // 전체 레이드 횟수 증가
-    st.guild.forEach(m => {
-        if(st.curAttenders.includes(m.n)) m[st.curWorld]++; // 참여 인원 횟수 증가
-    });
-    
-    st.curAttenders = []; // 초기화
-    save(); renderGuild(); renderPool();
-    alert(`${st.curWorld} 레이드 기록 완료!`);
-}
-
-function renderGuild() {
-    const body = document.getElementById('guild-body');
-    const totalHeld = st.guildRaids.muspel + st.guildRaids.asas + st.guildRaids.nifl;
-    
-    body.innerHTML = st.guild.map((m, i) => {
-        const myTotal = m.muspel + m.asas + m.nifl;
-        const rate = totalHeld === 0 ? 0 : Math.round((myTotal / totalHeld) * 100);
-        return `
-            <tr>
-                <td class="p-3 border">${m.n}</td>
-                <td class="p-3 border text-slate-400">${m.muspel}회</td>
-                <td class="p-3 border text-slate-400">${m.asas}회</td>
-                <td class="p-3 border text-slate-400">${m.nifl}회</td>
-                <td class="p-3 border bg-blue-50 text-blue-800 text-lg font-black">${rate}%</td>
-                <td class="p-3 border"><button onclick="delMember(${i})" class="text-red-400">×</button></td>
-            </tr>
-        `;
-    }).join('') || '<tr><td colspan="6" class="p-10 text-gray-400">길드원을 추가하세요.</td></tr>';
-}
-
-function resetGuildData() { if(confirm("이번 주 레이드 기록을 모두 초기화합니까?")) { st.guildRaids = {muspel:0, asas:0, nifl:0}; st.guild.forEach(m => {m.muspel=0; m.asas=0; m.nifl=0;}); save(); renderGuild(); } }
-function delMember(i) { if(confirm("삭제합니까?")) { st.guild.splice(i, 1); save(); renderGuild(); renderPool(); } }
-
-/* [기존 지능형 엔진 및 루프] */
+/* [핵심] 하이브리드 파싱 엔진 */
 function parseSmart(s) {
     if (!s) return 0; s = String(s).trim(); let total = 0;
     if (s.match(/[일시분초]/)) {
@@ -245,12 +172,9 @@ function parseSmart(s) {
     return v * 60;
 }
 
-const __dom = { dName:null, dTimer:null, top3:null, bElap:null, bTimer:null };
-function cacheDom() { if(!__dom.dName) { __dom.dName=document.getElementById('d-name'); __dom.dTimer=document.getElementById('d-timer'); __dom.top3=document.getElementById('top3-list'); __dom.bElap=document.getElementById('b-elap'); __dom.bTimer=document.getElementById('b-timer'); } }
-
+/* [UI/Loop] */
 function loop() {
-    if (!st.on) return; cacheDom();
-    const now = Date.now() + st.timeOffsetMs;
+    const now = Date.now();
     for (const tm of st.timers) {
         if (st.autoRotate && now > tm.t) { tm.t += (BOSS_RESPAWN_MAP[tm.n] || 120) * 60 * 1000; tm.lastD = 9999; }
         const zenEl = document.getElementById(`zen-${safeKey(tm.n)}`);
@@ -259,58 +183,68 @@ function loop() {
     const upcoming = [...st.timers].sort((a,b) => a.t - b.t).filter(t => t.t > now);
     const next = upcoming[0];
     if (next) { 
-        const rem = next.t - now; __dom.dName.innerText = next.n; __dom.dTimer.innerText = formatTimerFull(rem);
-        __dom.dTimer.className = "timer-display " + (rem <= 60000 ? "t-urgent" : rem <= 300000 ? "t-danger" : rem <= 600000 ? "t-warn" : "");
+        const rem = next.t - now; document.getElementById('d-name').innerText = next.n; document.getElementById('d-timer').innerText = formatTimerFull(rem);
+        document.getElementById('d-timer').className = "timer-big font-mono " + (rem <= 60000 ? "t-urgent" : rem <= 300000 ? "t-danger" : rem <= 600000 ? "t-warn" : "");
     }
-    __dom.top3.innerHTML = upcoming.slice(0,3).map((t, i) => `<div class="flex justify-between items-center border-b pb-1 font-bold"><span>${i+1}. ${t.n}</span><span class="text-blue-900 font-black">${formatTimerFull(t.t-now)}</span></div>`).join('') || "예정 없음";
-    if (st.battle.s && !st.battle.k) __dom.bElap.innerText = formatSimple((Date.now()-st.battle.s)/1000);
-    else if (st.battle.k) { const rem = st.battle.est - Math.floor((Date.now()-st.battle.k)/1000); __dom.bTimer.innerText = (rem>=0?"":"+")+formatSimple(Math.abs(rem)); }
+    document.getElementById('top3-list').innerHTML = upcoming.slice(0,3).map((t, i) => `<div class="flex justify-between font-bold"><span>${i+1}. ${t.n}</span><span class="text-blue-900">${formatTimerFull(t.t-now)}</span></div>`).join('') || "예정 없음";
+    
+    if (st.battle.s && !st.battle.k) document.getElementById('b-elap').innerText = formatSimple((now-st.battle.s)/1000);
+    else if (st.battle.k) { const rem = st.battle.est - Math.floor((now-st.battle.k)/1000); document.getElementById('b-timer').innerText = (rem>=0?"":"+")+formatSimple(Math.abs(rem)); }
     drawPIP(upcoming);
 }
 
-/* [PiP 엔진] */
-function drawPIP(list) {
-    const canvas = document.getElementById('pip-canvas'); const ctx = canvas.getContext('2d');
-    ctx.clearRect(0,0,800,450); ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,800,450);
-    if(list.length>0){const n=list[0]; const rem=n.t-(Date.now()+st.timeOffsetMs); ctx.textAlign="center"; ctx.fillStyle="#1e3a8a"; ctx.font="900 80px 'Noto Sans KR'"; ctx.fillText(n.n,400,130); let c="#444"; if(rem<=60000) c="#b91c1c"; else if(rem<=300000) c="#ef4444"; else if(rem<=600000) c="#f59e0b"; ctx.fillStyle=c; ctx.font="800 160px 'JetBrains Mono'"; ctx.fillText(formatTimerFull(rem),400,320);}
+/* [길드 관리] */
+function addMember() { const n = document.getElementById('new-name').value.trim(); const cp = parseInt(document.getElementById('new-cp').value) || 0; if(!n) return; st.guild.push({ n, cp, rec: [] }); document.getElementById('new-name').value = ''; document.getElementById('new-cp').value = ''; save(); renderGuildAll(); }
+function submitRaidRecord() {
+    if(!st.selectedNames.length) return; const weight = parseInt(document.getElementById('boss-weight').value);
+    st.guildPointsPossible += weight;
+    st.guild.forEach(m => m.rec.push(st.selectedNames.includes(m.n) ? weight : 0));
+    st.selectedNames = []; save(); renderGuildAll(); alert("기록 완료");
 }
-async function togglePIP() { const v=document.getElementById('pip-video'); const c=document.getElementById('pip-canvas'); if(document.pictureInPictureElement) await document.exitPictureInPicture(); else { try{v.srcObject=c.captureStream(30); await v.play(); await v.requestPictureInPicture();}catch(e){} } }
+function renderGuildAll() {
+    const body = document.getElementById('guild-stats-body');
+    body.innerHTML = st.guild.map((m, i) => {
+        const myTotal = m.rec.reduce((a,b)=>a+b, 0);
+        const cumRate = st.guildPointsPossible === 0 ? 0 : Math.round((myTotal / st.guildPointsPossible) * 100);
+        const recent = m.rec.slice(-10); const recentRate = recent.length === 0 ? 0 : Math.round((recent.reduce((a,b)=>a+b,0) / (recent.length * 3)) * 100);
+        return `<tr class="${cumRate < 50 ? 'row-warn' : ''}"><td>${m.n}</td><td>${m.cp.toLocaleString()}</td><td>${myTotal}점</td><td class="font-black">${cumRate}%</td><td>${recentRate}%</td><td><button onclick="delMember(${i})">×</button></td></tr>`;
+    }).join('');
+    document.getElementById('entry-pool').innerHTML = st.guild.map(m => `<div class="member-chip ${st.selectedNames.includes(m.n)?'selected':''}" onclick="toggleEntry('${m.n}')">${m.n}</div>`).join('');
+}
 
-/* [기타 필수 유틸리티] */
+/* [PiP/Utility] */
+function drawPIP(list) {
+    const canvas = document.getElementById('pip-canvas'); const ctx = canvas.getContext('2d'); ctx.clearRect(0,0,800,450); ctx.fillStyle="#fff"; ctx.fillRect(0,0,800,450);
+    if(list.length>0){const n=list[0], rem=n.t-Date.now(); ctx.textAlign="center"; ctx.fillStyle="#1e3a8a"; ctx.font="900 80px 'Noto Sans KR'"; ctx.fillText(n.n,400,130); let c="#444"; if(rem<=60000) c="#b91c1c"; else if(rem<=300000) c="#ef4444"; else if(rem<=600000) c="#f59e0b"; ctx.fillStyle=c; ctx.font="800 160px 'JetBrains Mono'"; ctx.fillText(formatTimerFull(rem),400,320);}
+}
+async function togglePIP() { const v=document.getElementById('pip-video'), c=document.getElementById('pip-canvas'); if(document.pictureInPictureElement) await document.exitPictureInPicture(); else { try{v.srcObject=c.captureStream(30); await v.play(); await v.requestPictureInPicture();}catch(e){} } }
 function formatTimerFull(ms) { if (ms < 0) return "00:00:00"; const s = Math.floor(ms / 1000); return `${Math.floor(s/3600).toString().padStart(2,'0')}:${Math.floor((s%3600)/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
-function formatSimple(s) { if(s<0) return "00:00"; return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`; }
+function formatSimple(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`; }
 function safeKey(n) { if (!st._keyCache[n]) st._keyCache[n] = "b" + fnv1a32(String(n)).toString(36); return st._keyCache[n]; }
 function fnv1a32(str) { let h = 0x811c9dc5; for (let i=0; i<str.length; i++) { h ^= str.charCodeAt(i); h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0; } return h >>> 0; }
-function save() { localStorage.setItem(`v32_data_${st.profile}`, JSON.stringify({ timers: st.timers, pins: st.pins, auto: st.autoRotate, guild: st.guild, raids: st.guildRaids })); }
-function switchProfile(p) { st.profile = p; const d = JSON.parse(localStorage.getItem(`v32_data_${p}`)) || {}; st.timers = d.timers || []; st.pins = d.pins || []; st.autoRotate = d.auto !== undefined ? d.auto : true; st.guild = d.guild || []; st.guildRaids = d.raids || {muspel:0, asas:0, nifl:0}; renderSched(); renderGuild(); renderPool(); }
-function tab(id, el) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); if (id === 'calc') updateZenSelect(); if (id === 'guild') { renderGuild(); renderPool(); } }
+function save() { localStorage.setItem(`v32_ultimate_data`, JSON.stringify(st)); }
+function tab(id, el) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); if(id==='guild') renderGuildAll(); }
+function switchProfile(p) { st.profile = p; renderSched(); }
+function killPinnedGroupWithTime() { const raw = document.getElementById('group-kill-time').value.trim(); if(!st.pins.length || !raw) return; const val = parseInt(raw.replace(/[^0-9]/g, '')); let hh = Math.floor(val/100), mm = val%100, killD = new Date(); killD.setHours(hh, mm, 0, 0); if (killD.getTime() > Date.now() + 3600000) killD.setDate(killD.getDate()-1); st.pins.forEach(name => setTimer(name, (killD.getTime() + (BOSS_RESPAWN_MAP[name]||120)*60*1000 - Date.now())/1000)); document.getElementById('group-kill-time').value = ""; }
+function setTimer(n, s) { const t = Date.now() + (s * 1000); st.timers = st.timers.filter(x => x.n !== n); st.timers.push({ n, t, lastD: s + 1 }); save(); }
 function renderSched() {
-    const cont = document.getElementById('sched-cont'); let html = ''; const timerMap = new Map(st.timers.map(t => [t.n, t]));
-    bosses.forEach(g => {
-        html += `<div class="card mb-3"><div class="font-black text-xs text-slate-400 mb-3 uppercase tracking-widest">${g.w}</div><div class="space-y-1">`;
-        g.b.forEach(b => {
-            const tm = timerMap.get(b.n); const zenTxt = tm ? new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}) : '--:--';
-            html += `<div class="boss-row"><button onclick="togglePin('${b.n}')" class="text-lg">${st.pins.includes(b.n)?'📌':'📍'}</button><b class="text-sm truncate">${b.n}</b><input type="text" data-name="${b.n}" class="v-in" placeholder="시분 또는 분 초" onkeydown="if(event.key==='Enter') handleEnterNav(this)"><div id="zen-${safeKey(b.n)}" class="font-mono font-bold text-slate-600">${zenTxt}</div><button onclick="setTimer('${b.n}', ${b.r*60}, 'Kill')" class="bg-blue-900 text-white text-[10px] py-1 rounded">Kill</button><button onclick="delTimer('${b.n}')" class="text-red-400 font-bold">×</button></div>`;
-        });
-        html += `</div></div>`;
+    const cont = document.getElementById('sched-cont'); let html = ''; const filter = st.viewMode === 'main' ? bosses.filter(g => !g.i) : bosses;
+    filter.forEach(g => {
+        html += `<div class="card mb-3"><div class="font-black text-xs text-slate-400 mb-3 uppercase tracking-widest">${g.w}</div>`;
+        g.b.forEach(b => { const tm = st.timers.find(t=>t.n===b.n); html += `<div class="boss-row"><button onclick="togglePin('${b.n}')">${st.pins.includes(b.n)?'📌':'📍'}</button><b class="truncate">${b.n}</b><input type="text" data-name="${b.n}" class="v-in w-24" placeholder="시분 또는 분초" onkeydown="if(event.key==='Enter') handleEnterNav(this)"><div id="zen-${safeKey(b.n)}" class="font-mono font-bold text-slate-600">${tm?new Date(tm.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false}):'--:--'}</div><button onclick="setTimer('${b.n}', ${b.r*60})" class="bg-blue-900 text-white text-[10px] py-1 rounded">Kill</button></div>`; });
+        html += `</div>`;
     });
     cont.innerHTML = html;
 }
-function updateZenSelect() { const zSel = document.getElementById('zc-sel'); if(!zSel) return; const active = [...st.timers].filter(t => t.t > Date.now()).sort((a, b) => a.t - b.t); let h = '<option value="">보정 보스 선택</option>'; active.forEach(tm => h += `<option value="${tm.n}">[${formatTimerFull(tm.t-Date.now())}] ${tm.n}</option>`); zSel.innerHTML = h; }
-function setTimer(n, s, raw) { const t = Date.now() + st.timeOffsetMs + (s * 1000); st.timers = st.timers.filter(x => x.n !== n); st.timers.push({ n, t, lastD: s + 1, m10: false, m5: false, m1: false }); save(); }
-function killPinnedGroupWithTime() { const rawTime = document.getElementById('group-kill-time').value.trim(); if (!st.pins.length || !rawTime) return; const val = parseInt(rawTime.replace(/[^0-9]/g, '')); let hh = Math.floor(val/100), mm = val%100; let killDate = new Date(); killDate.setHours(hh, mm, 0, 0); if (killDate.getTime() > Date.now() + 3600000) killDate.setDate(killDate.getDate() - 1); st.pins.forEach(name => { const targetZenTs = killDate.getTime() + ((BOSS_RESPAWN_MAP[name] || 120) * 60 * 1000); setTimer(name, (targetZenTs - Date.now())/1000, ""); }); document.getElementById('group-kill-time').value = ""; }
+function togglePin(n) { const i = st.pins.indexOf(n); if(i>-1) st.pins.splice(i,1); else st.pins.push(n); renderSched(); }
+function toggleEntry(name) { const i = st.selectedNames.indexOf(name); if(i > -1) st.selectedNames.splice(i, 1); else st.selectedNames.push(name); renderGuildAll(); }
 function btl(type) { const now = Date.now(); if(type==='start') { st.battle.s=now; st.battle.k=null; } else if(type==='kwang') { if(!st.battle.s) return; st.battle.k=now; st.battle.est=Math.floor(((now-st.battle.s)/1000)*0.51); } else if(type==='kill') { st.battle.s=null; st.battle.k=null; } }
-function togglePwr() { st.on = !st.on; document.getElementById('pwr').style.color = st.on ? '#22c55e' : '#94a3b8'; document.body.classList.toggle('system-off', !st.on); }
-function togglePin(n) { const i = st.pins.indexOf(n); if(i>-1) st.pins.splice(i,1); else st.pins.push(n); save(); renderSched(); }
-function updateZenPreview(v) { const s = parseSmart(v); document.getElementById('zc-remain').innerText = s > 0 ? formatSimple(s) : "--:--"; document.getElementById('zc-preview').innerText = s > 0 ? new Date(Date.now() + s*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}) : "--:--:--"; }
-function applyZenCalc() { const s = parseSmart(document.getElementById('zc-in').value); if (s <= 0) return; setTimer(document.getElementById('zc-sel').value, s, ""); document.getElementById('zc-in').value = ""; tab('dash', document.querySelector('.nav-item')); }
-function delTimer(n) { st.timers = st.timers.filter(x => x.n !== n); save(); renderSched(); }
 function handleSearch(v) { const s = v.toLowerCase(); document.querySelectorAll('.boss-row').forEach(r => r.style.display = r.querySelector('b').innerText.toLowerCase().includes(s) ? 'grid' : 'none'); }
-function handleEnterNav(el) { const s = parseSmart(el.value); if (s > 0) setTimer(el.dataset.name, s, el.value); const inputs = Array.from(document.querySelectorAll('.v-in')); const idx = inputs.indexOf(el); for (let i = idx + 1; i < inputs.length; i++) { if (inputs[i].offsetParent !== null) { inputs[i].focus(); inputs[i].select(); break; } } }
-function handleKeys(e) { if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; if(e.key==='/'){e.preventDefault(); document.getElementById('search-boss').focus();} }
-function copyKakao(mode) { const now = Date.now(); let list = [...st.timers].sort((a, b) => a.t - b.t); if (!list.length) return; const d = new Date(); const mm = String(d.getMonth()+1).padStart(2,'0'); const dd = String(d.getDate()).padStart(2,'0'); let txt = `${mm}.${dd}\n`; list.forEach(t => txt += `${new Date(t.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} ${t.n}\n`); navigator.clipboard.writeText(txt.trim()).then(() => alert("복사됨")); }
-
-window.onload = () => { switchProfile('A'); setInterval(loop, 1000); };
+function handleEnterNav(el) { const s = parseSmart(el.value); if (s > 0) setTimer(el.dataset.name, s); }
+function togglePwr() { alert("감시 시작"); }
+function delMember(i) { st.guild.splice(i,1); save(); renderGuildAll(); }
+function resetGuildData() { st.guild.forEach(m=>m.rec=[]); st.guildPointsPossible=0; save(); renderGuildAll(); }
+window.onload = () => { const d = JSON.parse(localStorage.getItem('v32_ultimate_data')); if(d) st = {...st, ...d}; renderSched(); setInterval(loop, 1000); };
 </script>
 </body>
 </html>

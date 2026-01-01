@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOSS OPS CENTER V32.18 HD FINAL</title>
+    <title>BOSS OPS CENTER V32.19 HD FINAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -24,16 +24,22 @@
         .timer-big { font-family: 'JetBrains Mono'; font-size: 52px; font-weight: 800; color: var(--primary); margin: 10px 0; letter-spacing: -2px; }
         .timer-10m { color: #f59e0b !important; } .timer-5m { color: #ef4444 !important; } .timer-1m { color: #b91c1c !important; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-        .boss-row { display: grid; grid-template-columns: 35px 115px 1fr 100px 75px 35px; align-items: center; padding: 8px 15px; border-bottom: 1px solid #f1f3f5; gap: 8px; }
-        .v-in { height: 30px; width: 100%; border-radius: 6px; border: 1px solid #ced4da; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; }
+        .boss-row { display: grid; grid-template-columns: 35px 125px 1fr 100px 75px 35px; align-items: center; padding: 8px 15px; border-bottom: 1px solid #f1f3f5; gap: 8px; }
+        .v-in { height: 32px; width: 100%; border-radius: 6px; border: 1px solid #ced4da; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; }
+        
+        /* 텍스트 사이즈 축소 패치 */
+        .v-in::placeholder { font-family: 'Inter'; font-weight: 400; font-size: 9px; color: #94a3b8; letter-spacing: -0.5px; }
+        
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
         .modal-content { background: #fff; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; border-radius: 20px; padding: 30px; }
+        .p-btn { padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 800; font-size: 11px; transition: 0.2s; }
+        .p-btn.active { background: var(--primary); color: #fff; }
     </style>
 </head>
 <body onkeydown="handleKeys(event)">
 
 <nav>
-    <div class="nav-brand italic text-center text-blue-900 font-black uppercase tracking-tighter">B-OPS V32.18 HD</div>
+    <div class="nav-brand italic text-center text-blue-900 font-black uppercase tracking-tighter">B-OPS V32.19 HD</div>
     <div class="nav-item active" onclick="tab('dash', this)">🏠 Dashboard</div>
     <div class="nav-item" onclick="tab('sched', this)">📅 Boss Schedule</div>
     <div class="nav-item" onclick="tab('calc', this)">🖩 계산기 (Calculator)</div>
@@ -47,9 +53,9 @@
             <button class="p-btn" data-p="B" onclick="switchProfile('B')">PROFILE B</button>
         </div>
         <div class="flex items-center gap-4">
-            <label class="flex items-center gap-2 cursor-pointer bg-green-50 px-3 py-1 rounded-full border border-green-200">
+            <label class="flex items-center gap-2 cursor-pointer bg-green-50 px-3 py-1 rounded-full border border-green-200 shadow-sm">
                 <input type="checkbox" id="auto-rotate-mode" checked class="w-4 h-4 accent-green-600" onchange="st.autoRotate = this.checked; save();">
-                <span class="text-[10px] font-black text-green-700">AUTO ROTATE</span>
+                <span class="text-[10px] font-black text-green-700">AUTO ROTATE ON</span>
             </label>
             <div id="pwr" class="cursor-pointer text-2xl text-green-600 font-bold" onclick="togglePwr()">⏻</div>
         </div>
@@ -84,7 +90,7 @@
                     <option value="main">오딘 (본섭)</option>
                     <option value="all">오딘 (본섭, 침공)</option>
                 </select>
-                <button onclick="openBulkModal()" class="p-btn bg-slate-700 text-white px-4 py-2 uppercase">커스텀 보스 관리</button>
+                <button onclick="openBulkModal()" class="p-btn bg-slate-700 text-white px-4 py-2 uppercase shadow-sm">커스텀 보스 관리</button>
             </div>
             <div id="sched-cont"></div>
         </div>
@@ -97,20 +103,21 @@
                         <div class="bg-gray-50 p-4 border rounded-xl"><small class="text-gray-400 font-black">REMAIN</small><div id="zc-remain" class="text-2xl font-black">--:--</div></div>
                         <div class="bg-blue-50 p-4 border border-blue-100 rounded-xl"><small class="text-blue-400 font-black">SPAWN</small><div id="zc-preview" class="text-2xl font-black text-red-500">--:--:--</div></div>
                     </div>
-                    <select id="zc-sel" class="w-full h-11 border rounded-lg mb-4 font-bold px-3 bg-gray-50"></select>
-                    <input type="text" id="zc-in" class="w-full h-14 text-center font-mono text-3xl border-2 border-blue-900 rounded-xl mb-4 bg-blue-50" placeholder="예: 0230(2시간30분), 2 30(2분30초)" oninput="updateZenPreview(this.value)">
-                    <button class="p-btn active w-full h-14 text-sm font-black" onclick="applyZenCalc('single')">업데이트</button>
+                    <select id="zc-sel" class="w-full h-11 border rounded-lg mb-4 font-bold px-3 bg-gray-50 outline-none"></select>
+                    <input type="text" id="zc-in" class="w-full h-14 text-center font-mono text-3xl border-2 border-blue-900 rounded-xl mb-4 bg-blue-50" placeholder="예: 0230(2시30분), 02 30(2분30초)" oninput="updateZenPreview(this.value)">
+                    <button class="p-btn active w-full h-14 text-sm font-black shadow-md" onclick="applyZenCalc('single')">보스 시간 업데이트</button>
                 </div>
+                
                 <div class="card shadow-md">
-                    <h3 class="font-black mb-6 text-center text-lg italic border-b pb-2 text-red-700">교전 계산기</h3>
+                    <h3 class="font-black mb-6 text-center text-lg italic border-b pb-2 text-red-700">광 계산기</h3>
                     <div class="grid grid-cols-2 gap-2 mb-10 text-center font-mono">
-                        <div class="bg-gray-50 p-6 border rounded-xl"><small class="font-black text-gray-400 uppercase">Elapsed</small><div id="b-elap" class="text-3xl font-black">00:00</div></div>
-                        <div class="bg-red-50 p-6 rounded-xl border border-red-100"><small class="font-black text-red-500 uppercase">Predict</small><div id="b-timer" class="text-3xl font-black text-red-600">--:--</div></div>
+                        <div class="bg-gray-50 p-6 border rounded-xl"><small class="font-black text-gray-400 uppercase tracking-tighter">Elapsed</small><div id="b-elap" class="text-3xl font-black text-slate-700">00:00</div></div>
+                        <div class="bg-red-50 p-6 rounded-xl border border-red-100"><small class="font-black text-red-500 uppercase tracking-tighter">Predict</small><div id="b-timer" class="text-3xl font-black text-red-600">--:--</div></div>
                     </div>
                     <div class="grid grid-cols-3 gap-3">
-                        <button class="p-btn bg-slate-700 text-white h-14" onclick="btl('start')">시작</button>
-                        <button class="p-btn bg-orange-500 text-white h-14" onclick="btl('kwang')">광</button>
-                        <button class="p-btn active h-14" onclick="btl('kill')">잡힘</button>
+                        <button class="p-btn bg-slate-700 text-white h-14 font-black transition active:scale-95 shadow-md" onclick="btl('start')">시작</button>
+                        <button class="p-btn bg-orange-500 text-white h-14 font-black transition active:scale-95 shadow-md" onclick="btl('kwang')">광</button>
+                        <button class="p-btn bg-slate-800 text-white h-14 font-black transition active:scale-95 shadow-lg border border-slate-700" onclick="btl('kill')">잡힘</button>
                     </div>
                 </div>
             </div>
@@ -118,12 +125,12 @@
     </div>
 </main>
 
-<div id="bulk-modal" class="modal"><div class="modal-content shadow-2xl"><div id="bulk-inner"></div><div class="mt-8 flex justify-end gap-3"><button onclick="closeBulkModal()" class="p-btn bg-gray-100 px-8 py-3">취소</button><button onclick="applyBulkUpdate()" class="p-btn bg-blue-900 text-white px-10 py-3 font-black">업데이트</button></div></div></div>
+<div id="bulk-modal" class="modal"><div class="modal-content shadow-2xl"><div id="bulk-inner"></div><div class="mt-8 flex justify-end gap-3"><button onclick="closeBulkModal()" class="p-btn bg-gray-100 px-8 py-3">취소</button><button onclick="applyBulkUpdate()" class="p-btn bg-blue-900 text-white px-10 py-3 font-black">전체 업데이트</button></div></div></div>
 <canvas id="pip-canvas" width="600" height="340" style="display:none;"></canvas>
 <video id="pip-video" autoplay muted playsinline style="display:none;"></video>
 
 <script>
-/* [데이터] 도균님 요청 순서 및 명칭 100% 동기화 */
+/* [데이터] 15개 맵 전 지역 완벽 구성 */
 const bosses = [
     { w: "요툰", i: false, b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야른", r:240}, {n:"티르", r:1440}] },
     { w: "니다", i: false, b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}] },
@@ -134,7 +141,7 @@ const bosses = [
     { w: "바나", i: false, b: [{n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}] },
     { w: "던전", i: false, b: [{n:"4층", r:480}, {n:"7층", r:480}, {n:"10층", r:480}, {n:"최하층굴베", r:480}, {n:"최하층강글", r:480}, {n:"최하층스네르", r:480}] },
     { w: "침공 요툰", i: true, b: [{n:"침공 파르바", r:120}, {n:"침공 셀로비아", r:720}, {n:"침공 흐니르", r:720}, {n:"침공 페티", r:720}, {n:"침공 바우티", r:120}, {n:"침공 니드호그", r:1440}, {n:"침공 야른", r:240}, {n:"침공 티르", r:1440}] },
-    { w: "침공 니다", i: true, b: [{n:"침공 라이노르", r:720}, {n:"침공 비요른", r:720}, {n:"침공 헤르모드", r:240}, {n:"침공 스칼라니르", r:120}, {n:"침공 브륀힐드", r:720}, {n:"침공 라타토스크", r:240}, {n:"침공 수드리", r:720}, {n:"침공 토르", r:1440}] },
+    { w: "침공 니다", i: true, b: [{n:"침공 라이노르", r:720}, {n:"침공 비요른", r:720}, {n:"침공 헤르모드", r:240}, {n:"침공 스칼라니르", r:120}, {n:"침공 브륀힐드", r:720}] },
     { w: "침공 알브", i: true, b: [{n:"침공 스바르트", r:240}, {n:"침공 두라스로르", r:480}, {n:"침공 모네가름", r:120}, {n:"침공 드라우그", r:240}, {n:"침공 굴베이그", r:480}] },
     { w: "침공 무스펠", i: true, b: [{n:"침공 메기르", r:120}, {n:"침공 신마라", r:720}, {n:"침공 헤르가름", r:120}, {n:"침공 탕그리스니르", r:240}, {n:"침공 엘드룬", r:720}] },
     { w: "침공 아스", i: true, b: [{n:"침공 발리", r:120}, {n:"침공 노트", r:480}, {n:"침공 샤무크", r:120}, {n:"침공 스칼드메르", r:120}, {n:"침공 그로아", r:1440}, {n:"침공 미미르", r:240}] },
@@ -145,38 +152,24 @@ const bosses = [
 const BOSS_RESPAWN_MAP = {}; bosses.forEach(g => g.b.forEach(b => BOSS_RESPAWN_MAP[b.n] = b.r));
 let st = { on: true, profile: 'A', timers: [], pins: [], autoRotate: true, viewMode: 'main', battle: { s: null, k: null, est: 0 }, foldState: {}, timeOffsetMs: 0, _keyCache: {} };
 
-/* [핵심] 하이브리드 파싱 엔진 (도균님 제안 반영) */
+/* [핵심] 하이브리드 파싱 엔진 */
 function parseSmart(s) {
-    if (!s) return 0;
-    s = String(s).trim();
-    let total = 0;
-    
-    // (1) 한글 단위 포함 여부 (2일 23시간)
+    if (!s) return 0; s = String(s).trim(); let total = 0;
     if (s.match(/[일시분초]/)) {
-        const d = s.match(/(\d+)일/); const h = s.match(/(\d+)시간|(\d+)시/); 
-        const m = s.match(/(\d+)분/); const sc = s.match(/(\d+)초/);
-        if (d) total += parseInt(d[1]) * 86400;
-        if (h) total += parseInt(h[1] || h[2]) * 3600;
-        if (m) total += parseInt(m[1]) * 60;
-        if (sc) total += parseInt(sc[1]);
-        return total;
+        const d = s.match(/(\d+)일/); const h = s.match(/(\d+)시간|(\d+)시/); const m = s.match(/(\d+)분/); const sc = s.match(/(\d+)초/);
+        if (d) total += parseInt(d[1]) * 86400; if (h) total += parseInt(h[1] || h[2]) * 3600; if (m) total += parseInt(m[1]) * 60; if (sc) total += parseInt(sc[1]); return total;
     }
-
-    // (2) 공백 구분 (02 30 -> 2분 30초)
     if (s.includes(' ')) {
         const p = s.split(/\s+/).map(Number);
         if (p.length === 2) return p[0]*60 + p[1]; // MM SS
         if (p.length === 3) return p[0]*3600 + p[1]*60 + p[2]; // HH MM SS
     }
-
-    // (3) 연속 숫자 (0230 -> 2시간 30분)
     const v = parseInt(s.replace(/[^0-9]/g, ''));
     if (v >= 100 && v < 10000) return Math.floor(v/100)*3600 + (v%100)*60; // HH MM
-    if (v >= 10000) return Math.floor(v/10000)*3600 + Math.floor((v%10000)/100)*60 + (v%100); // HH MM SS
-    return v * 60; // 1~2자리는 분 단위
+    if (v >= 10000) return Math.floor(v/10000)*3600 + Math.floor((v%10000)/100)*60 + (v%100);
+    return v * 60;
 }
 
-/* [UI/Loop] */
 const __dom = { dName:null, dTimer:null, top3:null, bElap:null, bTimer:null };
 function cacheDom() { if(!__dom.dName) { __dom.dName=document.getElementById('d-name'); __dom.dTimer=document.getElementById('d-timer'); __dom.top3=document.getElementById('top3-list'); __dom.bElap=document.getElementById('b-elap'); __dom.bTimer=document.getElementById('b-timer'); } }
 
@@ -185,17 +178,16 @@ function loop() {
     const now = Date.now() + st.timeOffsetMs;
     for (const tm of st.timers) {
         if (st.autoRotate && now > tm.t) { tm.t += (BOSS_RESPAWN_MAP[tm.n] || 120) * 60 * 1000; tm.lastD = 9999; tm.m10 = tm.m5 = tm.m1 = false; }
-        const d = Math.floor((tm.t - now) / 1000);
         const zenEl = document.getElementById(`zen-${safeKey(tm.n)}`);
         if (zenEl) zenEl.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
     }
     const upcoming = [...st.timers].sort((a,b) => a.t - b.t).filter(t => t.t > now);
     const next = upcoming[0];
-    if (next) { __dom.dName.innerText = next.n; __dom.dTimer.innerText = formatTimerFull(next.t - now); }
+    if (next) { __dom.dName.innerText = next.n; __dom.dTimer.innerText = formatTimerFull(next.t - now); __dom.dTimer.className = "timer-big font-mono " + ( (next.t-now) <= 60000 ? "timer-1m" : (next.t-now) <= 300000 ? "timer-5m" : (next.t-now) <= 600000 ? "timer-10m" : "" ); }
     else { __dom.dName.innerText = "대기 중"; __dom.dTimer.innerText = "00:00:00"; }
-    __dom.top3.innerHTML = upcoming.slice(0,3).map((t, i) => `<div class="flex justify-between items-center border-b pb-1"><b>${i+1}. ${t.n}</b><span class="text-blue-900">${formatTimerFull(t.t-now)}</span></div>`).join('') || "예정 없음";
+    __dom.top3.innerHTML = upcoming.slice(0,3).map((t, i) => `<div class="flex justify-between items-center border-b pb-1 font-bold"><b>${i+1}. ${t.n}</b><span class="text-blue-900">${formatTimerFull(t.t-now)}</span></div>`).join('') || "예정 없음";
     if (st.battle.s && !st.battle.k) __dom.bElap.innerText = formatSimple((Date.now()-st.battle.s)/1000);
-    else if (st.battle.k) { const rem = st.battle.est - Math.floor((Date.now()-st.battle.k)/1000); __dom.bTimer.innerText = (rem>=0?"":"+")+formatSimple(Math.abs(rem)); }
+    else if (st.battle.k) __dom.bTimer.innerText = (st.battle.est-Math.floor((Date.now()-st.battle.k)/1000)>=0?"":"+")+formatSimple(Math.abs(st.battle.est-Math.floor((Date.now()-st.battle.k)/1000)));
     drawPIP(upcoming);
 }
 
@@ -213,42 +205,42 @@ function renderSched() {
     cont.innerHTML = html; updatePinBadges();
 }
 
-/* [기능 보조] */
-function setTimer(n, s, raw) { const t = Date.now() + st.timeOffsetMs + (s * 1000); st.timers = st.timers.filter(x => x.n !== n); st.timers.push({ n, t, lastD: s + 1, m10: false, m5: false, m1: false }); save(); renderSched_Partial(); updateZenSelect(); }
-function openBulkModal() {
-    const inner = document.getElementById('bulk-inner'); let html = `<h2 class="text-2xl font-black mb-6 italic uppercase">Boss Bulk Edit</h2><table class="w-full text-left"><thead><tr class="bg-gray-50 text-[10px] uppercase border-b"><th class="p-3">보스명</th><th class="p-3">남은시간</th></tr></thead><tbody>`;
-    const bossList = st.viewMode === 'main' ? bosses.filter(g => !g.i) : bosses;
-    bossList.forEach(g => g.b.forEach(b => html += `<tr><td class="p-3 border-b font-bold">${b.n}</td><td class="p-3 border-b"><input type="text" class="bulk-in v-in w-40" data-name="${b.n}" placeholder="0230"></td></tr>`));
-    inner.innerHTML = html + `</tbody></table>`; document.getElementById('bulk-modal').style.display = 'flex';
-}
-function applyBulkUpdate() { document.querySelectorAll('.bulk-in').forEach(el => { const s = parseSmart(el.value); if (s > 0) setTimer(el.dataset.name, s, el.value); }); closeBulkModal(); }
-function closeBulkModal() { document.getElementById('bulk-modal').style.display = 'none'; }
-function formatTimerFull(ms) { if (ms < 0) return "00:00:00"; const s = Math.floor(ms / 1000); return `${Math.floor(s/3600).toString().padStart(2,'0')}:${Math.floor((s%3600)/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
-function formatSimple(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`; }
+/* [기타 유틸리티] */
 function safeKey(n) { if (!st._keyCache[n]) st._keyCache[n] = "b" + fnv1a32(String(n)).toString(36); return st._keyCache[n]; }
 function fnv1a32(str) { let h = 0x811c9dc5; for (let i=0; i<str.length; i++) { h ^= str.charCodeAt(i); h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0; } return h >>> 0; }
+function setTimer(n, s, raw) { const t = Date.now() + st.timeOffsetMs + (s * 1000); st.timers = st.timers.filter(x => x.n !== n); st.timers.push({ n, t, lastD: s + 1, m10: false, m5: false, m1: false }); save(); updateZenSelect(); }
+function formatTimerFull(ms) { if (ms < 0) return "00:00:00"; const s = Math.floor(ms / 1000); return `${Math.floor(s/3600).toString().padStart(2,'0')}:${Math.floor((s%3600)/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
+function formatSimple(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`; }
 function save() { localStorage.setItem(`v32_data_${st.profile}`, JSON.stringify({ timers: st.timers, pins: st.pins, auto: st.autoRotate, view: st.viewMode })); }
 function switchProfile(p) { st.profile = p; const d = JSON.parse(localStorage.getItem(`v32_data_${p}`)) || {}; st.timers = d.timers || []; st.pins = d.pins || []; st.autoRotate = d.auto !== undefined ? d.auto : true; st.viewMode = d.view || 'main'; renderSched(); document.getElementById('auto-rotate-mode').checked = st.autoRotate; }
 function tab(id, el) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); if (id === 'calc') updateZenSelect(); }
-function killPinnedGroupWithTime() { const rawTime = document.getElementById('group-kill-time').value.trim(); if (!st.pins.length || !rawTime) return; const val = parseInt(rawTime.replace(/[^0-9]/g, '')); let hh = Math.floor(val/100), mm = val%100; let killDate = new Date(); killDate.setHours(hh, mm, 0, 0); if (killDate.getTime() > Date.now() + 3600000) killDate.setDate(killDate.getDate() - 1); st.pins.forEach(name => { const targetZenTs = killDate.getTime() + ((BOSS_RESPAWN_MAP[name] || 120) * 60 * 1000); setTimer(name, (targetZenTs - Date.now())/1000, ""); }); document.getElementById('group-kill-time').value = ""; }
-window.onload = () => { switchProfile('A'); setInterval(loop, 1000); };
-function togglePwr() { st.on = !st.on; document.getElementById('pwr').style.color = st.on ? '#16a34a' : '#94a3b8'; document.body.classList.toggle('system-off', !st.on); }
-function togglePin(n) { const i = st.pins.indexOf(n); if(i>-1) st.pins.splice(i,1); else st.pins.push(n); save(); renderSched(); updatePinBadges(); }
-function updatePinBadges() { const box = document.getElementById('pin-badge-list'); if (box) box.innerHTML = st.pins.map(name => `<span class="bg-blue-800 text-white text-[9px] px-2 py-0.5 rounded font-bold">${name}</span>`).join(''); }
-function clearAllPins() { st.pins = []; save(); renderSched(); updatePinBadges(); }
 function updateZenSelect() { const zSel = document.getElementById('zc-sel'); if(!zSel) return; const active = [...st.timers].filter(t => t.t > Date.now()).sort((a, b) => a.t - b.t); let h = '<option value="">보정 보스 선택 (임박순)</option>'; active.forEach(tm => h += `<option value="${tm.n}">[${formatTimerFull(tm.t-Date.now())}] ${tm.n}</option>`); zSel.innerHTML = h; }
-function renderSched_Partial() { st.timers.forEach(tm => { const el = document.getElementById(`zen-${safeKey(tm.n)}`); if (el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}); }); }
+function openBulkModal() {
+    const inner = document.getElementById('bulk-inner'); let html = `<h2 class="text-xl font-black mb-6 italic uppercase">Boss Bulk Edit</h2><div class="overflow-y-auto max-h-[50vh] border rounded-xl"><table class="w-full text-left border-collapse"><thead><tr class="bg-gray-50 text-[9px] uppercase border-b"><th class="p-3">Boss</th><th class="p-3">Time Remain</th></tr></thead><tbody>`;
+    const bossList = st.viewMode === 'main' ? bosses.filter(g => !g.i) : bosses;
+    bossList.forEach(g => g.b.forEach(b => html += `<tr><td class="p-2 border-b font-bold text-gray-700">${b.n}</td><td class="p-2 border-b"><input type="text" class="bulk-in v-in w-full shadow-inner" data-name="${b.n}" placeholder="예: 0230"></td></tr>`));
+    inner.innerHTML = html + `</tbody></table></div>`; document.getElementById('bulk-modal').style.display = 'flex';
+}
+function applyBulkUpdate() { document.querySelectorAll('.bulk-in').forEach(el => { const s = parseSmart(el.value); if (s > 0) setTimer(el.dataset.name, s, el.value); }); closeBulkModal(); }
+function closeBulkModal() { document.getElementById('bulk-modal').style.display = 'none'; }
+function killPinnedGroupWithTime() { const rawTime = document.getElementById('group-kill-time').value.trim(); if (!st.pins.length || !rawTime) return; const val = parseInt(rawTime.replace(/[^0-9]/g, '')); let hh = Math.floor(val/100), mm = val%100; let killDate = new Date(); killDate.setHours(hh, mm, 0, 0); if (killDate.getTime() > Date.now() + 3600000) killDate.setDate(killDate.getDate() - 1); st.pins.forEach(name => { const targetZenTs = killDate.getTime() + ((BOSS_RESPAWN_MAP[name] || 120) * 60 * 1000); setTimer(name, (targetZenTs - Date.now())/1000, ""); }); document.getElementById('group-kill-time').value = ""; }
+function updatePinBadges() { const box = document.getElementById('pin-badge-list'); if (box) box.innerHTML = st.pins.map(name => `<span class="bg-blue-800 text-white text-[9px] px-2 py-0.5 rounded font-bold">${name}</span>`).join(''); }
+function togglePin(n) { const i = st.pins.indexOf(n); if(i>-1) st.pins.splice(i,1); else st.pins.push(n); save(); renderSched(); updatePinBadges(); }
+function clearAllPins() { st.pins = []; save(); renderSched(); }
 function btl(type) { const now = Date.now(); if(type==='start') { st.battle.s=now; st.battle.k=null; } else if(type==='kwang') { if(!st.battle.s) return; st.battle.k=now; st.battle.est=Math.floor(((now-st.battle.s)/1000)*0.51); } else if(type==='kill') { st.battle.s=null; st.battle.k=null; } }
-function drawPIP(list) { const canvas = document.getElementById('pip-canvas'); const ctx = canvas.getContext('2d'); ctx.fillStyle = "#0f172a"; ctx.fillRect(0, 0, 600, 340); ctx.fillStyle = "#1e293b"; ctx.fillRect(0, 0, 600, 80); if (list.length > 0) { const next = list[0]; const rem = next.t - Date.now(); ctx.textAlign = "center"; ctx.fillStyle = "#ffffff"; ctx.font = "900 48px 'Noto Sans KR'"; ctx.fillText(next.n, 300, 155); ctx.font = "800 100px 'JetBrains Mono'"; ctx.fillText(formatTimerFull(rem), 300, 270); } }
+function drawPIP(list) { const canvas = document.getElementById('pip-canvas'); const ctx = canvas.getContext('2d'); ctx.fillStyle = "#0f172a"; ctx.fillRect(0, 0, 600, 340); if (list.length > 0) { const next = list[0]; const rem = next.t - Date.now(); ctx.textAlign = "center"; ctx.fillStyle = "#ffffff"; ctx.font = "900 48px 'Noto Sans KR'"; ctx.fillText(next.n, 300, 155); ctx.font = "800 100px 'JetBrains Mono'"; ctx.fillText(formatTimerFull(rem), 300, 270); } }
 async function togglePIP() { const v = document.getElementById('pip-video'); if (document.pictureInPictureElement) await document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); await v.play(); await v.requestPictureInPicture(); } }
 function delTimer(n) { st.timers = st.timers.filter(x => x.n !== n); save(); renderSched(); }
 function confirmClear() { if(confirm("초기화합니까?")) { st.timers = []; save(); renderSched(); } }
 function handleSearch(v) { const s = v.toLowerCase(); document.querySelectorAll('.boss-row').forEach(r => r.style.display = r.querySelector('b').innerText.toLowerCase().includes(s) ? 'grid' : 'none'); }
 function handleEnterNav(el) { const s = parseSmart(el.value); if (s > 0) setTimer(el.dataset.name, s, el.value); const inputs = Array.from(document.querySelectorAll('.v-in')); const idx = inputs.indexOf(el); for (let i = idx + 1; i < inputs.length; i++) { if (inputs[i].offsetParent !== null) { inputs[i].focus(); inputs[i].select(); break; } } }
 function applyZenCalc(mode) { const s = parseSmart(document.getElementById('zc-in').value); if (s <= 0) return; if (mode === 'single') setTimer(document.getElementById('zc-sel').value, s, ""); else st.pins.forEach(name => setTimer(name, s, "")); document.getElementById('zc-in').value = ""; tab('dash', document.querySelector('.nav-item')); }
-function addLog(m) { const b = document.getElementById('logs'); const d = document.createElement('div'); d.innerHTML = `<span class="text-gray-500 font-bold font-mono text-[10px]">[${new Date().toLocaleTimeString()}]</span> ${m}`; b.appendChild(d); }
+function addLog(m) { const b = document.getElementById('logs'); const d = document.createElement('div'); d.innerHTML = `<span class="text-gray-500 font-bold font-mono">[${new Date().toLocaleTimeString()}]</span> ${m}`; b.appendChild(d); }
 function toggleFold(w) { st.foldState[w] = !st.foldState[w]; save(); renderSched(); }
+function togglePwr() { st.on = !st.on; document.getElementById('pwr').style.color = st.on ? '#16a34a' : '#94a3b8'; document.body.classList.toggle('system-off', !st.on); }
 function copyKakao(mode) { const now = Date.now(); let list = [...st.timers].sort((a, b) => a.t - b.t); if (mode === 'top3') list = list.filter(t => t.t > now).slice(0, 3); if (!list.length) return; const d = new Date(); const mm = String(d.getMonth()+1).padStart(2,'0'); const dd = String(d.getDate()).padStart(2,'0'); let txt = `${mm}.${dd}\n`; list.forEach(t => txt += `${new Date(t.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} ${t.n}\n`); navigator.clipboard.writeText(txt.trim()).then(() => alert("복사됨")); }
+
+window.onload = () => { switchProfile('A'); setInterval(loop, 1000); };
 </script>
 </body>
 </html>

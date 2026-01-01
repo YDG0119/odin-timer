@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOSS OPS CENTER V32.35 HD FINAL</title>
+    <title>BOSS OPS CENTER V32.36 HD FINAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -16,30 +16,32 @@
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         header { height: 60px; background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
         .content { flex: 1; padding: 20px; overflow-y: auto; display: flex; justify-content: center; }
-        .pane { display: none; width: 100%; max-width: 940px; animation: fadeIn 0.1s ease; }
+        .pane { display: none; width: 100%; max-width: 960px; animation: fadeIn 0.1s ease; }
         .pane.active { display: block; }
         .card { background: #fff; border-radius: 12px; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative; }
         
-        /* [긴급수정] 스케줄 레이아웃 고정 */
-        .boss-row { display: grid; grid-template-columns: 30px 110px 100px 1fr 60px; align-items: center; padding: 10px 15px; border-bottom: 1px solid #f1f3f5; gap: 12px; min-width: 500px; }
-        .v-in { height: 34px; width: 100%; border-radius: 6px; border: 1px solid #ced4da; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 13px; }
-        .v-in::placeholder { font-family: 'Noto Sans KR'; font-weight: 500; font-size: 10px; color: #adb5bd; }
+        /* [긴급수리] 스케줄 및 계산기 레이아웃 고정 */
+        .boss-row { display: grid; grid-template-columns: 35px 120px 110px 1fr 65px; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f1f3f5; gap: 15px; }
+        .v-in { height: 36px; width: 100%; border-radius: 6px; border: 1px solid #ced4da; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 14px; background: #fff; }
+        .v-in::placeholder { font-family: 'Noto Sans KR'; font-weight: 500; font-size: 11px; color: #adb5bd; }
         
         .timer-big { font-family: 'JetBrains Mono'; font-size: 52px; font-weight: 800; color: var(--primary); letter-spacing: -2px; }
         .t-urgent { color: var(--urgent) !important; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        
         .x-table { width: 100%; border-collapse: collapse; font-size: 11px; }
         .x-table th { background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px; font-weight: 900; }
         .x-table td { border: 1px solid #cbd5e1; padding: 8px; text-align: center; }
         .history-tag { display: inline-block; padding: 1px 4px; border-radius: 3px; background: #f1f5f9; color: #475569; font-size: 9px; margin: 1px; font-weight: 800; border: 1px solid #e2e8f0; }
-        .member-chip { cursor: pointer; padding: 5px 12px; border-radius: 8px; background: #f1f5f9; border: 1px solid #e2e8f0; font-weight: 700; font-size: 11px; margin: 2px; }
+        .member-chip { cursor: pointer; padding: 6px 12px; border-radius: 8px; background: #f1f5f9; border: 1px solid #e2e8f0; font-weight: 700; font-size: 11px; margin: 2px; }
         .member-chip.selected { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .guide-box { background: #fff; border-top: 4px solid var(--primary); padding: 20px; border-radius: 12px; }
     </style>
 </head>
 <body onkeydown="handleKeys(event)">
 
 <nav>
-    <div class="nav-brand italic">B-OPS V32.35 HD</div>
+    <div class="nav-brand italic">B-OPS V32.36 HD</div>
     <div class="nav-item active" onclick="tab('dash', this)">🏠 Dashboard</div>
     <div class="nav-item" onclick="tab('sched', this)">📅 Boss Schedule</div>
     <div class="nav-item" onclick="tab('calc', this)">🖩 Calculator</div>
@@ -56,26 +58,26 @@
         <div id="dash" class="pane active">
             <div class="bg-blue-900 p-5 rounded-2xl shadow-lg mb-4">
                 <input type="text" id="group-kill-time" class="w-full h-12 rounded-xl text-center font-mono text-2xl mb-2 outline-none" placeholder="예: 1000(시분), 10 00(분초)">
-                <button onclick="killPinnedGroupWithTime()" class="w-full bg-orange-500 text-white font-black py-2 rounded-xl text-xs transition active:scale-95">📌 지정 시각 일괄 KILLED</button>
+                <button onclick="killPinnedGroupWithTime()" class="w-full bg-orange-500 text-white font-black py-2 rounded-xl text-xs transition active:scale-95 shadow-md">📌 지정 시각 일괄 KILLED</button>
             </div>
             <div id="hero-card" class="card text-center py-8">
                 <button onclick="togglePIP()" class="absolute top-4 right-4 text-gray-300 hover:text-blue-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></button>
-                <div id="d-name" class="text-3xl font-black text-blue-900 mb-1">대기 중</div>
+                <div id="d-name" class="text-3xl font-black text-blue-900 italic mb-1">대기 중</div>
                 <div id="d-timer" class="timer-big font-mono mb-4">00:00:00</div>
                 <div id="top3-list" class="text-left bg-gray-50 p-4 rounded-xl space-y-2 font-mono text-[13px]"></div>
             </div>
-            <div class="guide-box shadow-sm border border-slate-100">
+            <div class="guide-box shadow-sm">
                 <h4 class="font-black text-blue-900 text-sm mb-4 italic">🕒 시간 입력 마스터 가이드</h4>
-                <div class="grid grid-cols-2 gap-6 text-[11px] font-bold">
-                    <div class="border-r pr-4"><p class="text-blue-900 mb-1 underline">1. 시분 (붙여쓰기)</p><p class="text-slate-600">0230 ➔ 2시간 30분</p></div>
-                    <div><p class="text-orange-900 mb-1 underline">2. 분초 (띄어쓰기)</p><p class="text-slate-600">02 30 ➔ 2분 30초</p></div>
+                <div class="grid grid-cols-2 gap-6 text-[12px] font-bold">
+                    <div class="border-r pr-4"><p class="text-gray-800 mb-1 underline decoration-blue-200">1. 시분 (붙여쓰기)</p><p class="text-blue-700">0230 ➔ 2시간 30분</p></div>
+                    <div><p class="text-gray-800 mb-1 underline decoration-orange-200">2. 분초 (띄어쓰기)</p><p class="text-orange-600">02 30 ➔ 2분 30초</p></div>
                 </div>
             </div>
         </div>
 
         <div id="guild" class="pane">
             <div class="grid grid-cols-12 gap-5">
-                <div class="col-span-8 card h-[80vh] flex flex-col">
+                <div class="col-span-8 card h-[82vh] flex flex-col">
                     <h3 class="font-black text-lg text-slate-800 italic mb-4">📊 길드 참여 타임라인 (Excel Mode)</h3>
                     <div class="overflow-auto border rounded-xl flex-1 bg-white">
                         <table class="x-table">
@@ -88,18 +90,18 @@
                         <button onclick="addMember()" class="bg-blue-900 text-white px-6 rounded font-black text-xs">추가</button>
                     </div>
                 </div>
-                <div class="col-span-4 card h-[80vh] flex flex-col">
+                <div class="col-span-4 card h-[82vh] flex flex-col">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-black text-lg text-blue-900 italic">🛡️ 레이드 기록기</h3>
                         <button onclick="undoLastRaid()" class="text-[10px] font-black text-red-500 hover:underline">↩ 취소</button>
                     </div>
                     <div class="mb-4">
-                        <label class="text-[10px] font-black text-slate-400">1. 지역 선택 (가중치 적용)</label>
+                        <label class="text-[10px] font-black text-slate-400">1. 지역 선택 (점수 자동)</label>
                         <select id="raid-region" class="v-in w-full mt-1 bg-blue-50 border-blue-200" onchange="updateRaidBossList()">
                             <option value="muspel">무스펠 (1점)</option>
                             <option value="asas">아스가르드 (2점)</option>
                             <option value="nifl">니플하임 (3점)</option>
-                        </select>
+                            <option value="absolute">절대자 (3점)</option> </select>
                     </div>
                     <div class="mb-4">
                         <label class="text-[10px] font-black text-slate-400">2. 보스명 선택</label>
@@ -114,29 +116,40 @@
         <div id="sched" class="pane">
             <div class="flex justify-between mb-4 gap-2">
                 <input type="text" id="search-boss" placeholder="보스 필터..." class="border rounded-lg px-4 py-2 text-sm flex-1 outline-none">
-                <select id="view-mode-sel" class="border rounded-lg px-3 text-xs font-bold" onchange="st.viewMode = this.value; renderSched();">
+                <select id="view-mode-sel" class="border rounded-lg px-3 text-xs font-bold bg-white" onchange="st.viewMode = this.value; renderSched();">
                     <option value="main">본섭</option><option value="all">본섭+침공</option>
                 </select>
-                <button onclick="openBulkModal()" class="bg-slate-700 text-white px-4 rounded-lg font-black text-[10px] uppercase shadow-sm">커스텀 관리</button>
             </div>
-            <div id="sched-cont" class="bg-white rounded-xl shadow-sm overflow-hidden"></div>
+            <div id="sched-cont" class="bg-white rounded-xl shadow-sm overflow-hidden border border-slate-200"></div>
         </div>
 
         <div id="calc" class="pane">
             <div class="grid grid-cols-2 gap-4">
-                <div class="card text-center"><h3 class="font-black mb-4 border-b pb-2">젠 정밀 보정</h3><div id="zc-remain" class="text-2xl font-black mb-4">--:--</div><select id="zc-sel" class="v-in w-full mb-4"></select><input type="text" id="zc-in" class="v-in w-full text-3xl h-16 mb-4" placeholder="시분 또는 분 초" oninput="updateZenPreview(this.value)"><button onclick="applyZenCalc()" class="w-full bg-blue-900 text-white py-4 rounded-xl font-black">업데이트</button></div>
-                <div class="card text-center"><h3 class="font-black mb-4 border-b pb-2 text-red-600">광 계산기</h3><div id="b-elap" class="text-3xl font-black mb-6 text-slate-700">00:00</div><div class="grid grid-cols-3 gap-3"><button class="p-btn bg-slate-700 text-white h-14" onclick="btl('start')">시작</button><button class="p-btn bg-orange-500 text-white h-14" onclick="btl('kwang')">광</button><button class="p-btn bg-slate-900 text-white h-14" onclick="btl('kill')">잡힘</button></div></div>
+                <div class="card text-center flex flex-col justify-center">
+                    <h3 class="font-black mb-6 border-b pb-2">젠 정밀 보정</h3>
+                    <div id="zc-remain" class="text-4xl font-black mb-6 text-slate-400">--:--</div>
+                    <select id="zc-sel" class="v-in w-full mb-4"></select>
+                    <input type="text" id="zc-in" class="v-in w-full text-3xl h-16 mb-6" placeholder="시분 또는 분 초 입력" oninput="updateZenPreview(this.value)">
+                    <button onclick="applyZenCalc()" class="w-full bg-blue-900 text-white py-5 rounded-2xl font-black text-xl shadow-lg">보스 시간 업데이트</button>
+                </div>
+                <div class="card text-center flex flex-col justify-center">
+                    <h3 class="font-black mb-6 border-b pb-2 text-red-600">광 계산기</h3>
+                    <div id="b-elap" class="text-4xl font-black mb-10 text-slate-700">00:00</div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button class="p-btn bg-slate-700 text-white h-16 text-lg" onclick="btl('start')">시작</button>
+                        <button class="p-btn bg-orange-500 text-white h-16 text-lg" onclick="btl('kwang')">광</button>
+                        <button class="p-btn bg-slate-900 text-white h-16 text-lg shadow-xl" onclick="btl('kill')">잡힘</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </main>
 
-<div id="bulk-modal" class="modal fixed inset-0 bg-black/50 z-[2000] hidden items-center justify-center"><div class="bg-white p-8 rounded-2xl w-[90%] max-w-2xl max-h-[85vh] overflow-y-auto"><div id="bulk-inner"></div><div class="mt-8 flex justify-end gap-3"><button onclick="closeBulkModal()" class="p-btn bg-gray-100 px-8 py-3">취소</button><button onclick="applyBulkUpdate()" class="p-btn bg-blue-900 text-white px-10 py-3 font-black">전체 업데이트</button></div></div></div>
 <canvas id="pip-canvas" width="800" height="450" style="display:none;"></canvas>
 <video id="pip-video" autoplay muted playsinline style="display:none;"></video>
 
 <script>
-/* [데이터] 15개 맵 전체 보스 데이터 */
 const bosses = [
     { w: "요툰", i: false, b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야른", r:240}, {n:"티르", r:1440}] },
     { w: "니다", i: false, b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}] },
@@ -147,23 +160,23 @@ const bosses = [
     { w: "바나", i: false, b: [{n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}] },
     { w: "던전", i: false, b: [{n:"4층", r:480}, {n:"7층", r:480}, {n:"10층", r:480}, {n:"최하층굴베", r:480}, {n:"최하층강글", r:480}, {n:"최하층스네르", r:480}] },
     { w: "침공 요툰", i: true, b: [{n:"침공 파르바", r:120}, {n:"침공 셀로비아", r:720}, {n:"침공 흐니르", r:720}, {n:"침공 페티", r:720}, {n:"침공 바우티", r:120}, {n:"침공 니드호그", r:1440}, {n:"침공 야른", r:240}, {n:"침공 티르", r:1440}] },
-    { w: "침공 니다", i: true, b: [{n:"침공 라이노르", r:720}, {n:"침공 비요른", r:720}, {n:"침공 헤르모드", r:240}, {n:"침공 스칼라니르", r:120}, {n:"침공 브륀힐드", r:720}] },
-    { w: "침공 알브", i: true, b: [{n:"침공 스바르트", r:240}, {n:"침공 두라스로르", r:480}, {n:"침공 모네가름", r:120}, {n:"침공 드라우그", r:240}, {n:"침공 굴베이그", r:480}] },
+    { w: "침공 니다", i: true, b: [{n:"침공 라이노르", r:720}, {n:"침공 비요른", r:720}, {n:"침공 헤르모드", r:240}, {n:"침공 스칼라니르", r:120}, {n:"침공 브륀힐드", r:720}, {n:"침공 라타토스크", r:240}, {n:"침공 수드리", r:720}, {n:"침공 토르", r:1440}] },
+    { w: "침공 알브", i: true, b: [{n:"침공 스바르트", r:240}, {n:"침공 두라스로르", r:480}, {n:"침공 모네가름", r:120}, {n:"침공 드라우그", r:240}, {n:"침공 굴베이그", r:480}, {n:"침공 오딘", r:1440}] },
     { w: "침공 무스펠", i: true, b: [{n:"침공 메기르", r:120}, {n:"침공 신마라", r:720}, {n:"침공 헤르가름", r:120}, {n:"침공 탕그리스니르", r:240}, {n:"침공 엘드룬", r:720}] },
     { w: "침공 아스", i: true, b: [{n:"침공 발리", r:120}, {n:"침공 노트", r:480}, {n:"침공 샤무크", r:120}, {n:"침공 스칼드메르", r:120}, {n:"침공 그로아", r:1440}, {n:"침공 미미르", r:240}] },
-    { w: "침공 니플", i: true, b: [{n:"침공 히로킨", r:1440}, {n:"침공 호드", r:1440}, {n:"침공 헤이드", r:1440}, {n:"침공 프레이", r:1440}, {n:"침공 이미르", r:1440}] },
+    { w: "침공 니플", i: true, b: [{n:"침공 히로킨", r:1440}, {n:"호드", r:1440}, {n:"헤이드", r:1440}, {n:"프레이", r:1440}, {n:"이미르", r:1440}] },
     { w: "침공 바나", i: true, b: [{n:"침공 엘디르", r:1440}, {n:"침공 안나르엘디르", r:1440}, {n:"침공 스쿨드", r:1440}, {n:"침공 스카디", r:1440}, {n:"침공 에기르", r:1440}] }
 ];
 
 const BOSS_RESPAWN_MAP = {}; bosses.forEach(g => g.b.forEach(b => BOSS_RESPAWN_MAP[b.n] = b.r));
-let st = { timers: [], pins: [], autoRotate: true, viewMode: 'main', battle: { s: null, k: null, est: 0 }, 
-           guild: [], guildPointsPossible: 0, raidHistory: [], selectedNames: [], profile: 'A', _keyCache: {} };
+let st = { timers: [], pins: [], autoRotate: true, viewMode: 'main', battle: { s: null, k: null, est: 0 }, guild: [], guildPointsPossible: 0, raidHistory: [], selectedNames: [], profile: 'A', _keyCache: {} };
 
-/* [핵심] 길드 참여도 개편 로직 */
+/* [핵심] 길드 참여도 개편 (절대자 통합) */
 const regionBosses = {
     muspel: ["메기르", "신마라", "헤르가름", "탕그리스니르", "엘드룬", "우로보로스", "수르트"],
     asas: ["발리", "노트", "샤무크", "스칼드메르", "그로아", "미미르"],
-    nifl: ["히로킨", "호드", "헤이드", "프레이", "이미르"]
+    nifl: ["히로킨", "호드", "헤이드", "프레이", "이미르"],
+    absolute: ["티르", "토르", "오딘"]
 };
 
 function updateRaidBossList() {
@@ -173,12 +186,10 @@ function updateRaidBossList() {
 }
 
 function submitRaidRecord() {
-    if(!st.selectedNames.length) return alert("참여 인원을 선택하세요.");
+    if(!st.selectedNames.length) return alert("인원을 선택하세요.");
     const reg = document.getElementById('raid-region').value;
     const boss = document.getElementById('raid-boss-select').value;
-    // 가중치 적용: 무스펠(1), 아스(2), 니플(3)
     const weight = reg === 'muspel' ? 1 : (reg === 'asas' ? 2 : 3);
-    
     st.guildPointsPossible += weight;
     st.raidHistory.push({ boss, weight });
     st.guild.forEach(m => {
@@ -186,7 +197,7 @@ function submitRaidRecord() {
         m.rec.push(part ? weight : 0);
         if(part) m.bLog.push(boss);
     });
-    st.selectedNames = []; save(); renderGuildAll(); alert(`${boss} 참여 기록 완료!`);
+    st.selectedNames = []; save(); renderGuildAll();
 }
 
 function undoLastRaid() {
@@ -211,23 +222,23 @@ function renderSched() {
     const cont = document.getElementById('sched-cont'); let html = '';
     const filter = st.viewMode === 'main' ? bosses.filter(g => !g.i) : bosses;
     filter.forEach(g => {
-        html += `<div class="bg-gray-50 px-4 py-2 font-black text-slate-400 border-b uppercase text-[10px] tracking-widest">${g.w}</div>`;
+        html += `<div class="bg-gray-100 px-4 py-2 font-black text-slate-500 border-b uppercase text-[10px] tracking-widest">${g.w}</div>`;
         g.b.forEach(b => {
             const tm = st.timers.find(t=>t.n===b.n);
             const zenTxt = tm ? new Date(tm.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false}) : '--:--';
             html += `<div class="boss-row">
-                <button onclick="togglePin('${b.n}')" class="text-lg">${st.pins.includes(b.n)?'📌':'📍'}</button>
-                <b class="truncate text-slate-700">${b.n}</b>
-                <input type="text" data-name="${b.n}" class="v-in" placeholder="시분/분초" onkeydown="if(event.key==='Enter') handleEnterNav(this)">
+                <button onclick="togglePin('${b.n}')">${st.pins.includes(b.n)?'📌':'📍'}</button>
+                <b class="truncate text-slate-800 font-bold">${b.n}</b>
+                <input type="text" data-name="${b.n}" class="v-in w-24" placeholder="시분/분초" onkeydown="if(event.key==='Enter') handleEnterNav(this)">
                 <div id="zen-${safeKey(b.n)}" class="font-mono font-bold text-slate-500 text-center">${zenTxt}</div>
-                <button onclick="setTimer('${b.n}', ${b.r*60})" class="bg-blue-900 text-white text-[10px] py-1 rounded font-bold">Kill</button>
+                <button onclick="setTimer('${b.n}', ${b.r*60})" class="bg-blue-900 text-white text-[10px] py-1 rounded font-bold shadow-sm">Kill</button>
             </div>`;
         });
     });
     cont.innerHTML = html;
 }
 
-/* [기능 보조] 하이브리드 파싱 및 루프 */
+/* [시스템 엔진] 하이브리드 파싱 및 루프 */
 function parseSmart(s) {
     if (!s) return 0; s = String(s).trim(); let total = 0;
     if (s.match(/[일시분초]/)) {
@@ -247,16 +258,19 @@ function loop() {
     const upcoming = [...st.timers].sort((a,b) => a.t - b.t).filter(t => t.t > now);
     const next = upcoming[0];
     if (next) { const rem = next.t - now; document.getElementById('d-name').innerText = next.n; document.getElementById('d-timer').innerText = formatTimerFull(rem); document.getElementById('d-timer').className = "timer-big font-mono " + (rem <= 60000 ? "t-urgent" : ""); }
-    document.getElementById('top3-list').innerHTML = upcoming.slice(0,3).map((t, i) => `<div class="flex justify-between border-b pb-1 font-bold"><span>${i+1}. ${t.n}</span><span class="text-blue-900">${formatTimerFull(t.t-now)}</span></div>`).join('') || "예정 없음";
+    document.getElementById('top3-list').innerHTML = upcoming.slice(0,3).map((t, i) => `<div class="flex justify-between border-b pb-1"><span>${i+1}. ${t.n}</span><span class="text-blue-900 font-bold">${formatTimerFull(t.t-now)}</span></div>`).join('') || "예정 없음";
+    if (st.battle.s && !st.battle.k) document.getElementById('b-elap').innerText = formatSimple((now-st.battle.s)/1000);
+    else if (st.battle.k) { const rem = st.battle.est - Math.floor((now-st.battle.k)/1000); document.getElementById('b-timer').innerText = (rem>=0?"":"+")+formatSimple(Math.abs(rem)); }
     drawPIP(upcoming);
 }
 
-/* [기타 유틸리티] */
-function save() { localStorage.setItem(`v32_ultimate_v4`, JSON.stringify(st)); }
+/* [공통 로직] */
+function save() { localStorage.setItem(`v32_ultimate_v5`, JSON.stringify(st)); }
 function tab(id, el) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); if(id==='guild') { renderGuildAll(); updateRaidBossList(); } }
 function drawPIP(list) { const canvas = document.getElementById('pip-canvas'); const ctx = canvas.getContext('2d'); ctx.clearRect(0,0,800,450); ctx.fillStyle="#fff"; ctx.fillRect(0,0,800,450); if(list.length>0){const n=list[0], rem=n.t-Date.now(); ctx.textAlign="center"; ctx.fillStyle="#1e3a8a"; ctx.font="900 80px 'Noto Sans KR'"; ctx.fillText(n.n,400,130); let c="#444"; if(rem<=60000) c="#b91c1c"; else if(rem<=300000) c="#ef4444"; else if(rem<=600000) c="#f59e0b"; ctx.fillStyle=c; ctx.font="800 160px 'JetBrains Mono'"; ctx.fillText(formatTimerFull(rem),400,320);} }
 async function togglePIP() { const v=document.getElementById('pip-video'), c=document.getElementById('pip-canvas'); if(document.pictureInPictureElement) await document.exitPictureInPicture(); else { try{v.srcObject=c.captureStream(30); await v.play(); await v.requestPictureInPicture();}catch(e){} } }
 function formatTimerFull(ms) { if (ms < 0) return "00:00:00"; const s = Math.floor(ms / 1000); return `${Math.floor(s/3600).toString().padStart(2,'0')}:${Math.floor((s%3600)/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
+function formatSimple(s) { if(s<0) return "00:00"; return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`; }
 function safeKey(n) { if (!st._keyCache[n]) st._keyCache[n] = "b" + fnv1a32(String(n)).toString(36); return st._keyCache[n]; }
 function fnv1a32(str) { let h = 0x811c9dc5; for (let i=0; i<str.length; i++) { h ^= str.charCodeAt(i); h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0; } return h >>> 0; }
 function addMember() { const n = document.getElementById('new-member-name').value.trim(); if(!n) return; st.guild.push({ n, rec: [], bLog: [] }); document.getElementById('new-member-name').value = ''; save(); renderGuildAll(); }
@@ -269,10 +283,10 @@ function togglePin(n) { const i = st.pins.indexOf(n); if(i>-1) st.pins.splice(i,
 function btl(type) { const now = Date.now(); if(type==='start') { st.battle.s=now; st.battle.k=null; } else if(type==='kwang') { if(!st.battle.s) return; st.battle.k=now; st.battle.est=Math.floor(((now-st.battle.s)/1000)*0.51); } else if(type==='kill') { st.battle.s=null; st.battle.k=null; } }
 function handleSearch(v) { const s = v.toLowerCase(); document.querySelectorAll('.boss-row').forEach(r => r.style.display = r.querySelector('b').innerText.toLowerCase().includes(s) ? 'grid' : 'none'); }
 function handleEnterNav(el) { const s = parseSmart(el.value); if (s > 0) setTimer(el.dataset.name, s); }
-function togglePwr() { alert("감시 시작"); }
+function togglePwr() { st.on = !st.on; document.getElementById('pwr').style.color = st.on ? '#22c55e' : '#94a3b8'; }
 function updateZenPreview(v) { const s = parseSmart(v); document.getElementById('zc-remain').innerText = s > 0 ? formatTimerFull(s*1000).substring(3) : "--:--"; }
 function applyZenCalc() { const s = parseSmart(document.getElementById('zc-in').value); if (s <= 0) return; setTimer(document.getElementById('zc-sel').value, s); document.getElementById('zc-in').value = ""; tab('dash', document.querySelector('.nav-item')); }
-window.onload = () => { const d = JSON.parse(localStorage.getItem(`v32_ultimate_v4`)); if(d) st = {...st, ...d}; renderSched(); setInterval(loop, 1000); };
+window.onload = () => { const d = JSON.parse(localStorage.getItem(`v32_ultimate_v5`)); if(d) st = {...st, ...d}; renderSched(); setInterval(loop, 1000); };
 </script>
 </body>
 </html>

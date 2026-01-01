@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOSS OPS CENTER V32.8 HD FINAL</title>
+    <title>BOSS OPS CENTER V32.9 HD FINAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -30,9 +30,8 @@
         .v-in { height: 32px; width: 100%; border-radius: 6px; border: 1px solid #ced4da; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 13px; }
         .v-in::placeholder { font-family: 'Inter'; font-weight: 400; font-size: 10px; color: #94a3b8; }
         .zen-time-display { font-family: 'JetBrains Mono'; font-weight: 700; text-align: right; color: #475569; }
-        .prev-time { font-size: 10px; color: var(--warning); font-weight: 700; height: 12px; text-align: right; }
         .log-box { font-family: 'JetBrains Mono'; font-size: 11px; height: 180px; overflow-y: auto; display: flex; flex-direction: column-reverse; background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; }
-        .p-btn { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 800; font-size: 11px; transition: 0.2s; }
+        .p-btn { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 800; font-size: 11px; }
         .p-btn.active { background: var(--primary); color: #fff; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } }
     </style>
@@ -40,7 +39,7 @@
 <body onkeydown="handleKeys(event)">
 
 <nav>
-    <div class="nav-brand italic text-center text-blue-900 font-black uppercase tracking-tighter">B-OPS V32.8 HD</div>
+    <div class="nav-brand italic text-center text-blue-900 font-black uppercase tracking-tighter">B-OPS V32.9 HD</div>
     <div class="nav-item active" onclick="tab('dash', this)">🏠 Dashboard</div>
     <div class="nav-item" onclick="tab('sched', this)">📅 Boss Schedule</div>
     <div class="nav-item" onclick="tab('calc', this)">🖩 계산기 (Calculator)</div>
@@ -62,15 +61,28 @@
 
     <div class="content">
         <div id="dash" class="pane active">
-            <div class="flex justify-between items-center mb-4 bg-orange-50 p-3 rounded-xl border border-orange-100">
-                <span class="text-orange-700 font-black text-xs uppercase tracking-tighter">Hybrid Group:</span>
-                <button onclick="killPinnedGroup()" class="p-btn bg-orange-600 text-white px-6 py-2 shadow-md hover:bg-orange-700">📌 고정 그룹 일괄 KILLED</button>
+            <div class="bg-blue-900 p-4 rounded-2xl border border-blue-800 shadow-lg mb-6">
+                <div class="flex flex-col gap-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-white font-black text-xs uppercase tracking-widest flex items-center gap-2">
+                            <span class="animate-pulse">●</span> Pinned Group Ops
+                        </span>
+                        <span class="text-blue-300 text-[10px]">📍 고정된 보스: <span id="pin-count" class="text-white font-bold">0</span>마리</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="group-kill-time" class="flex-1 h-12 rounded-xl text-center font-mono text-2xl border-none outline-none shadow-inner" placeholder="처치 시각 (예: 1000)">
+                        <button onclick="killPinnedGroupWithTime()" class="bg-orange-500 text-white font-black px-6 py-2 rounded-xl shadow-md hover:bg-orange-600 transition active:scale-95 leading-tight text-xs">
+                            📌 지정 시각<br>일괄 KILLED
+                        </button>
+                    </div>
+                    <p class="text-blue-300 text-[9px] text-center">* 입력한 시각에 처치한 것으로 간주하여 리젠 시간을 계산합니다.</p>
+                </div>
             </div>
 
             <div id="hero-card" class="card text-center py-8">
-                <div id="d-name" class="text-3xl font-black mt-2 leading-none text-blue-900">대기 중</div>
+                <div id="d-name" class="text-3xl font-black mt-2 leading-none text-blue-900 italic">대기 중</div>
                 <div id="d-timer" class="timer-big">00:00:00</div>
-                <div id="d-meta" class="text-sm text-gray-500 font-bold font-mono">-</div>
+                <div id="d-meta" class="text-sm text-gray-400 font-bold font-mono">-</div>
                 <div id="top3-list" class="mt-8 text-left bg-gray-50 p-5 rounded-2xl border border-gray-100 space-y-2 font-mono text-sm"></div>
             </div>
             <div class="card"><div id="logs" class="log-box"></div></div>
@@ -103,8 +115,8 @@
                 <div class="card shadow-md">
                     <h3 class="font-black mb-6 text-center text-lg italic border-b pb-2 text-red-700">광 계산기</h3>
                     <div class="grid grid-cols-2 gap-2 mb-10 text-center font-mono">
-                        <div class="bg-gray-50 p-6 border rounded-xl"><small class="font-black text-gray-400">전투 진행</small><div id="b-elap" class="text-3xl font-black mt-2 text-slate-700">00:00</div></div>
-                        <div class="bg-red-50 p-6 border rounded-xl border-red-100"><small class="font-black text-red-500">예상 잡힘</small><div id="b-timer" class="text-3xl font-black mt-2 text-red-600">--:--</div></div>
+                        <div class="bg-gray-50 p-6 rounded-xl border"><small class="font-black text-gray-400 uppercase">전투 진행</small><div id="b-elap" class="text-3xl font-black mt-2 text-slate-700">00:00</div></div>
+                        <div class="bg-red-50 p-6 rounded-xl border border-red-100"><small class="font-black text-red-500 uppercase">예상 잡힘</small><div id="b-timer" class="text-3xl font-black mt-2 text-red-600">--:--</div></div>
                     </div>
                     <div class="grid grid-cols-3 gap-3">
                         <button class="p-btn bg-slate-700 text-white h-14 font-black" onclick="btl('start')">시작</button>
@@ -117,7 +129,7 @@
 
         <div id="set-txt" class="pane">
             <div class="card shadow-md">
-                <textarea id="txt-ed" class="w-full h-[520px] border p-6 font-mono text-sm rounded-2xl resize-none bg-gray-50"></textarea>
+                <textarea id="txt-ed" class="w-full h-[520px] border p-6 font-mono text-sm rounded-2xl resize-none bg-gray-50 border-gray-200 outline-none"></textarea>
             </div>
         </div>
     </div>
@@ -127,7 +139,7 @@
 <video id="pip-video" autoplay muted playsinline style="display:none;"></video>
 
 <script>
-/* [데이터] 도균님 요청 보스 명칭 및 월드별 순서 100% 반영 */
+/* [데이터] 도균님 요청 순서 및 명칭 완전 고정 */
 const bosses = [
     { w: "요툰하임", b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야른", r:240}, {n:"티르", r:1440}] },
     { w: "니다벨리르", b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}] },
@@ -144,31 +156,71 @@ const BOSS_RESPAWN_MAP = {}; bosses.forEach(g => g.b.forEach(b => BOSS_RESPAWN_M
 
 let st = { on: true, profile: 'A', timers: [], pins: [], battle: { s: null, k: null, est: 0 }, foldState: {}, timeOffsetMs: 0, _keyCache: {} };
 
-/* [핵심] hhmm (시분) 우선 파싱 */
+/* [핵심] 지정 시각 일괄 처치 로직 */
+function killPinnedGroupWithTime() {
+    const rawTime = document.getElementById('group-kill-time').value.trim();
+    if (!st.pins.length) return alert("핀(📍)으로 보스들을 먼저 선택하세요.");
+    if (!rawTime) return alert("처치 시각을 입력하세요 (예: 1000).");
+
+    const killSecs = parseSmart(rawTime);
+    if (killSecs === 0 && rawTime !== "0") return alert("시간 형식이 올바르지 않습니다.");
+
+    // 입력받은 시각(HHMM 등)을 오늘 날짜의 타임스탬프로 변환
+    const now = new Date();
+    let killDate = new Date();
+    
+    // hhmm 파싱 로직을 시각으로 해석 (v/100 -> 시, v%100 -> 분)
+    const val = parseInt(rawTime.replace(/[^0-9]/g, ''));
+    let hh = 0, mm = 0;
+    if (val >= 100) { hh = Math.floor(val/100); mm = val%100; } 
+    else { mm = val; }
+    
+    killDate.setHours(hh, mm, 0, 0);
+    
+    // 만약 설정한 시간이 현재보다 너무 미래라면 어제로 간주 (유동적 처리)
+    if (killDate.getTime() > Date.now() + 3600000) killDate.setDate(killDate.getDate() - 1);
+
+    const baseTs = killDate.getTime();
+
+    if (!confirm(`${st.pins.length}마리 보스를 [${killDate.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}] 처치로 일괄 등록합니까?`)) return;
+
+    st.pins.forEach(name => {
+        const respawnMin = BOSS_RESPAWN_MAP[name] || 120;
+        const targetZenTs = baseTs + (respawnMin * 60 * 1000);
+        
+        st.timers = st.timers.filter(x => x.n !== name);
+        st.timers.push({ n: name, t: targetZenTs, m10: false, m5: false, m1: false, lastD: 9999 });
+    });
+
+    save(); renderSched(); updateZenSelect();
+    addLog(`Group Killed at ${rawTime}: ${st.pins.join(', ')}`);
+    document.getElementById('group-kill-time').value = "";
+}
+
+/* [핵심] hhmm 우선 파싱 엔진 */
 function parseSmart(s) {
     if (!s) return 0; s = String(s).trim();
-    let m = s.match(/(\d+)\s*일\s*(\d+)\s*시간\s*(\d+)\s*분\s*(\d+)\s*초?/);
-    if (m) return (+m[1])*86400 + (+m[2])*3600 + (+m[3])*60 + (+m[4]);
     const cleaned = s.replace(/[^\d:\s]/g, ' ').trim();
     const p = cleaned.split(/[:\s]+/).filter(Boolean).map(Number);
-    if (p.length === 3) return p[0]*3600 + p[1]*60 + p[2];
-    if (p.length === 2) return p[0]*60 + p[1];
     if (p.length === 1) {
         const v = p[0];
         if (v >= 100 && v < 10000) return Math.floor(v/100)*3600 + (v%100)*60;
         if (v >= 10000) return Math.floor(v/10000)*3600 + Math.floor((v%10000)/100)*60 + (v%100);
         return v * 60;
     }
+    if (p.length === 2) return p[0]*60 + p[1];
+    if (p.length === 3) return p[0]*3600 + p[1]*60 + p[2];
     return 0;
 }
 
-const __dom = { dName:null, dTimer:null, dMeta:null, top3:null, bElap:null, bTimer:null };
-function cacheDom() { if(!__dom.dName) { __dom.dName=document.getElementById('d-name'); __dom.dTimer=document.getElementById('d-timer'); __dom.dMeta=document.getElementById('d-meta'); __dom.top3=document.getElementById('top3-list'); __dom.bElap=document.getElementById('b-elap'); __dom.bTimer=document.getElementById('b-timer'); } }
+const __dom = { dName:null, dTimer:null, dMeta:null, top3:null, bElap:null, bTimer:null, pCount:null };
+function cacheDom() { if(!__dom.dName) { __dom.dName=document.getElementById('d-name'); __dom.dTimer=document.getElementById('d-timer'); __dom.dMeta=document.getElementById('d-meta'); __dom.top3=document.getElementById('top3-list'); __dom.bElap=document.getElementById('b-elap'); __dom.bTimer=document.getElementById('b-timer'); __dom.pCount=document.getElementById('pin-count'); } }
 
 function loop() {
     if (!st.on) return; cacheDom();
     const now = Date.now() + st.timeOffsetMs;
     st.timers = (st.timers || []).filter(t => (now - t.t) < 600000);
+    if(__dom.pCount) __dom.pCount.innerText = st.pins.length;
 
     for (const tm of st.timers) {
         const d = Math.floor((tm.t - now) / 1000);
@@ -192,7 +244,7 @@ function loop() {
         else if (rem <= 600000) __dom.dTimer.classList.add('timer-10m');
     } else { __dom.dName.innerText = "대기 중"; __dom.dTimer.innerText = "00:00:00"; }
 
-    __dom.top3.innerHTML = upcoming.slice(0,3).map((t, i) => `<div class="flex justify-between border-b border-gray-100 py-2 items-center font-mono"><span>${i+1}. ${t.n}</span><span class="font-black text-blue-900">${formatTimer(t.t-now).substring(3)}</span></div>`).join('') || "예정 없음";
+    __dom.top3.innerHTML = upcoming.slice(0,3).map((t, i) => `<div class="flex justify-between border-b border-gray-100 py-2 items-center font-mono font-bold"><span>${i+1}. ${t.n}</span><span class="text-blue-900">${formatTimer(t.t-now).substring(3)}</span></div>`).join('') || "예정 없음";
     
     if (st.battle.s && !st.battle.k) __dom.bElap.innerText = formatSimple((Date.now()-st.battle.s)/1000);
     else if (st.battle.k) __dom.bTimer.innerText = (st.battle.est-Math.floor((Date.now()-st.battle.k)/1000)>=0?"":"+")+formatSimple(Math.abs(st.battle.est-Math.floor((Date.now()-st.battle.k)/1000)));
@@ -219,64 +271,49 @@ function drawPIP(list) {
     }
 }
 
-/* [하이브리드 조작] 그룹과 개별 보정 공존 */
-function killPinnedGroup() {
-    if (!st.pins.length) return alert("핀(📍)으로 보스들을 먼저 선택하세요.");
-    if (!confirm(`핀 고정된 ${st.pins.length}마리 보스를 일괄 KILLED 처리합니까?`)) return;
-    st.pins.forEach(name => setTimer(name, (BOSS_RESPAWN_MAP[name] || 120) * 60, "자동"));
-    addLog(`Group Killed: ${st.pins.join(', ')}`);
-}
-
-function applyZenCalc(mode) { 
-    const s = parseSmart(document.getElementById('zc-in').value); if (s <= 0) return alert("시간을 확인하세요."); 
-    if (mode === 'single') setTimer(document.getElementById('zc-sel').value, s, "");
-    else if (mode === 'group') {
-        if (!st.pins.length) return alert("핀(📍) 고정된 보스가 없습니다.");
-        st.pins.forEach(name => setTimer(name, s, ""));
-        addLog(`Group Adjusted: ${st.pins.join(', ')}`);
-    }
-    document.getElementById('zc-in').value = ""; updateZenPreview(""); tab('dash', document.querySelector('.nav-item'));
-}
-
-function setTimer(n, s, raw) { const t = Date.now() + st.timeOffsetMs + (s * 1000); st.timers = st.timers.filter(x => x.n !== n); st.timers.push({ n, t, m10: false, m5: false, m1: false, lastD: s + 1 }); save(); renderSched_Partial(); updateZenSelect(); }
-function handleEnterNav(el) { const s = parseSmart(el.value); if (s > 0) setTimer(el.dataset.name, s, el.value); const inputs = Array.from(document.querySelectorAll('.v-in')); const idx = inputs.indexOf(el); for (let i = idx + 1; i < inputs.length; i++) { if (inputs[i].offsetParent !== null) { inputs[i].focus(); inputs[i].select(); break; } } }
 function renderSched() {
     const cont = document.getElementById('sched-cont'); let html = ''; const timerMap = new Map(st.timers.map(t => [t.n, t]));
     bosses.forEach(g => {
         html += `<div class="world-section mb-3 border rounded-xl overflow-hidden shadow-sm"><div class="bg-gray-100 p-2 font-black text-[10px] flex justify-between cursor-pointer uppercase" onclick="toggleFold('${g.w}')"><span>${g.w}</span></div><div class="world-content">`;
         g.b.forEach(b => {
             const tm = timerMap.get(b.n); const zenTxt = tm ? new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}) : '--:--';
-            html += `<div class="boss-row"><button onclick="togglePin('${b.n}')" class="text-lg">${st.pins.includes(b.n)?'📌':'📍'}</button><b class="text-sm truncate">${b.n}</b><input type="text" data-name="${b.n}" class="v-in" placeholder="예: 0430, 8 44" onkeydown="if(event.key==='Enter') handleEnterNav(this)"><div class="zen-time-display"><div id="zen-${safeKey(b.n)}">${zenTxt}</div></div><button onclick="setTimer('${b.n}', ${b.r*60}, '자동')" class="bg-blue-900 text-white text-[10px] py-1 rounded font-bold transition hover:bg-black uppercase">Kill</button><button onclick="delTimer('${b.n}')" class="text-red-400 font-bold text-lg hover:text-red-600 transition">×</button></div>`;
+            html += `<div class="boss-row"><button onclick="togglePin('${b.n}')" class="text-lg">${st.pins.includes(b.n)?'📌':'📍'}</button><b class="text-sm truncate">${b.n}</b><input type="text" data-name="${b.n}" class="v-in" placeholder="예: 0430" onkeydown="if(event.key==='Enter') handleEnterNav(this)"><div class="zen-time-display"><div id="zen-${safeKey(b.n)}">${zenTxt}</div></div><button onclick="setTimer('${b.n}', ${b.r*60}, '자동')" class="bg-blue-900 text-white text-[10px] py-1 rounded font-bold transition hover:bg-black uppercase">Kill</button><button onclick="delTimer('${b.n}')" class="text-red-400 font-bold text-lg hover:text-red-600 transition">×</button></div>`;
         });
         html += `</div></div>`;
     });
     cont.innerHTML = html;
 }
 
-/* [Utility] */
+/* [Utility Functions] */
 function safeKey(n) { if (!st._keyCache[n]) st._keyCache[n] = "b" + fnv1a32(String(n)).toString(36); return st._keyCache[n]; }
 function fnv1a32(str) { let h = 0x811c9dc5; for (let i=0; i<str.length; i++) { h ^= str.charCodeAt(i); h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0; } return h >>> 0; }
+function setTimer(n, s, raw) { const t = Date.now() + st.timeOffsetMs + (s * 1000); st.timers = st.timers.filter(x => x.n !== n); st.timers.push({ n, t, m10: false, m5: false, m1: false, lastD: s + 1 }); save(); renderSched_Partial(); updateZenSelect(); }
 function renderSched_Partial() { st.timers.forEach(tm => { const el = document.getElementById(`zen-${safeKey(tm.n)}`); if (el) el.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}); }); }
-function updateZenSelect() { const zSel = document.getElementById('zc-sel'); const now = Date.now(); const active = [...st.timers].filter(t => t.t > now).sort((a, b) => a.t - b.t); let h = '<option value="">보스 선택 (임박순)</option>'; active.forEach(tm => h += `<option value="${tm.n}">[${formatTimer(tm.t-now).substring(3)}] ${tm.n}</option>`); const allNames = bosses.flatMap(g => g.b.map(b => b.n)); const timedSet = new Set(active.map(t => t.n)); allNames.forEach(n => { if(!timedSet.has(n)) h += `<option value="${n}">${n}</option>`; }); zSel.innerHTML = h; }
-function triggerAlert(n, m) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(`${n} ${m}입니다.`); u.lang = 'ko-KR'; window.speechSynthesis.speak(u); }
-function togglePwr() { st.on = !st.on; document.getElementById('pwr').style.color = st.on ? '#16a34a' : '#94a3b8'; document.body.classList.toggle('system-off', !st.on); if(!st.on) window.speechSynthesis.cancel(); }
 function save() { localStorage.setItem(`v32_data_${st.profile}`, JSON.stringify({ timers: st.timers, pins: st.pins, fold: st.foldState })); }
 function switchProfile(p) { st.profile = p; const d = JSON.parse(localStorage.getItem(`v32_data_${p}`)) || {}; st.timers = d.timers || []; st.pins = d.pins || []; st.foldState = d.fold || {}; renderSched(); }
 function tab(id, el) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); if (id === 'calc') updateZenSelect(); }
-function btl(type) { const now = Date.now(); if(type==='start') { st.battle.s=now; st.battle.k=null; addLog("전투 시작."); } else if(type==='kwang') { if(!st.battle.s) return; st.battle.k=now; st.battle.est=Math.floor(((now-st.battle.s)/1000)*0.51); addLog("광폭화 진입."); } else if(type==='kill') { st.battle.s=null; st.battle.k=null; addLog("대상 처치."); } }
-function updateZenPreview(v) { const s = parseSmart(v); document.getElementById('zc-remain').innerText = s > 0 ? formatSimple(s) : "--:--"; document.getElementById('zc-preview').innerText = s > 0 ? new Date(Date.now() + s*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}) : "--:--:--"; }
-async function togglePIP() { const v = document.getElementById('pip-video'); if (document.pictureInPictureElement) await document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); await v.play(); await v.requestPictureInPicture(); } }
+function btl(type) { const now = Date.now(); if(type==='start') { st.battle.s=now; st.battle.k=null; } else if(type==='kwang') { if(!st.battle.s) return; st.battle.k=now; st.battle.est=Math.floor(((now-st.battle.s)/1000)*0.51); } else if(type==='kill') st.battle.s=null; }
+function updateZenSelect() { const zSel = document.getElementById('zc-sel'); const now = Date.now(); const active = [...st.timers].filter(t => t.t > now).sort((a, b) => a.t - b.t); let h = '<option value="">보스 선택 (임박순)</option>'; active.forEach(tm => h += `<option value="${tm.n}">[${formatTimer(tm.t-now).substring(3)}] ${tm.n}</option>`); const allNames = bosses.flatMap(g => g.b.map(b => b.n)); const timedSet = new Set(active.map(t => t.n)); allNames.forEach(n => { if(!timedSet.has(n)) h += `<option value="${n}">${n}</option>`; }); zSel.innerHTML = h; }
 function formatTimer(ms) { if(ms<0) return "00:00:00"; const s=Math.floor(ms/1000); return `${Math.floor(s/3600).toString().padStart(2,'0')}:${Math.floor((s%3600)/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
 function formatSimple(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`; }
-function addLog(m) { const b = document.getElementById('logs'); const d = document.createElement('div'); d.innerHTML = `<span class="text-gray-500 font-bold font-mono">[${new Date().toLocaleTimeString()}]</span> ${m}`; b.appendChild(d); }
 function togglePin(n) { const i = st.pins.indexOf(n); if(i>-1) st.pins.splice(i,1); else st.pins.push(n); save(); renderSched(); }
-function delTimer(n) { st.timers = st.timers.filter(x => x.n !== n); save(); renderSched(); updateZenSelect(); }
+function delTimer(n) { st.timers = st.timers.filter(x => x.n !== n); save(); renderSched(); }
+function addLog(m) { const b = document.getElementById('logs'); const d = document.createElement('div'); d.innerHTML = `<span class="text-gray-500 font-bold font-mono text-[10px]">[${new Date().toLocaleTimeString()}]</span> ${m}`; b.appendChild(d); }
+function togglePwr() { st.on = !st.on; document.getElementById('pwr').style.color = st.on ? '#16a34a' : '#94a3b8'; }
+function triggerAlert(n, m) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(`${n} ${m}입니다.`); u.lang = 'ko-KR'; window.speechSynthesis.speak(u); }
+async function togglePIP() { const v = document.getElementById('pip-video'); if (document.pictureInPictureElement) await document.exitPictureInPicture(); else { v.srcObject = document.getElementById('pip-canvas').captureStream(); await v.play(); await v.requestPictureInPicture(); } }
+function updateZenPreview(v) { const s = parseSmart(v); document.getElementById('zc-remain').innerText = s > 0 ? formatSimple(s) : "--:--"; document.getElementById('zc-preview').innerText = s > 0 ? new Date(Date.now() + s*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}) : "--:--:----"; }
+function handleKeys(e) { if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; if(e.key==='/'){e.preventDefault(); document.getElementById('search-boss').focus();} }
+function applyZenCalc(mode) { 
+    const s = parseSmart(document.getElementById('zc-in').value); if (s <= 0) return alert("시간을 확인하세요."); 
+    if (mode === 'single') setTimer(document.getElementById('zc-sel').value, s, "");
+    else if (mode === 'group') st.pins.forEach(name => setTimer(name, s, ""));
+    document.getElementById('zc-in').value = ""; updateZenPreview(""); tab('dash', document.querySelector('.nav-item'));
+}
+function handleEnterNav(el) { const s = parseSmart(el.value); if (s > 0) setTimer(el.dataset.name, s, el.value); const inputs = Array.from(document.querySelectorAll('.v-in')); const idx = inputs.indexOf(el); for (let i = idx + 1; i < inputs.length; i++) { if (inputs[i].offsetParent !== null) { inputs[i].focus(); inputs[i].select(); break; } } }
 function confirmClear() { if(confirm("초기화하시겠습니까?")) { st.timers = []; save(); renderSched(); updateZenSelect(); } }
 function toggleFold(w) { st.foldState[w] = !st.foldState[w]; save(); renderSched(); }
 function handleSearch(v) { const stm = v.toLowerCase(); document.querySelectorAll('.boss-row').forEach(row => { const n = row.querySelector('b').innerText.toLowerCase(); row.style.display = n.includes(stm) ? 'grid' : 'none'; }); }
-function testAlert() { triggerAlert("테스트", "정상 작동."); }
-function handleKeys(e) { if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; if(e.key==='/'){e.preventDefault(); document.getElementById('search-boss').focus();} }
-function saveText() { const lines = document.getElementById('txt-ed').value.split('\n'); const nt = []; lines.forEach(l => { const m = l.match(/(\d{2}:\d{2})\s+(.+)/); if(m) nt.push({ n: m[2].trim(), t: new Date(new Date().setHours(m[1].split(':')[0], m[1].split(':')[1], 0, 0)).getTime(), m10:false, m5:false, m1:false, lastD: 9999 }); }); st.timers = nt; save(); renderSched(); }
 function copyKakao(mode) { const now = Date.now(); let list = [...st.timers].sort((a, b) => a.t - b.t); if (mode === 'top3') list = list.filter(t => t.t > now).slice(0, 3); if (!list.length) return alert("데이터 없음"); const d = new Date(); const mm = String(d.getMonth() + 1).padStart(2, '0'); const dd = String(d.getDate()).padStart(2, '0'); let txt = mode === 'top3' ? `[${mm}.${dd} TOP3]\n` : `${mm}.${dd}\n`; list.forEach(t => { txt += `${new Date(t.t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })} ${t.n}\n`; }); navigator.clipboard.writeText(txt.trim()).then(() => alert("복사 완료!")); }
 
 window.onload = () => { switchProfile('A'); setInterval(loop, 1000); };

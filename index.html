@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOSS OPS CENTER V32.15 HD FINAL</title>
+    <title>BOSS OPS CENTER V32.16 HD FINAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -22,16 +22,20 @@
         .pane.active { display: block; }
         .card { background: #fff; border-radius: 12px; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .timer-big { font-family: 'JetBrains Mono'; font-size: 52px; font-weight: 800; color: var(--primary); margin: 10px 0; letter-spacing: -2px; }
-        .boss-row { display: grid; grid-template-columns: 35px 115px 1fr 100px 75px 35px; align-items: center; padding: 8px 15px; border-bottom: 1px solid #f1f3f5; gap: 8px; }
+        .timer-10m { color: #f59e0b !important; }
+        .timer-5m { color: #ef4444 !important; }
+        .timer-1m { color: #b91c1c !important; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .boss-row { display: grid; grid-template-columns: 35px 125px 1fr 100px 75px 35px; align-items: center; padding: 8px 15px; border-bottom: 1px solid #f1f3f5; gap: 8px; }
         .v-in { height: 30px; width: 100%; border-radius: 6px; border: 1px solid #ced4da; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-content { background: #fff; width: 90%; max-width: 800px; max-height: 80vh; overflow-y: auto; border-radius: 20px; padding: 30px; position: relative; }
+        .modal-content { background: #fff; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; border-radius: 20px; padding: 30px; }
     </style>
 </head>
 <body onkeydown="handleKeys(event)">
 
 <nav>
-    <div class="nav-brand italic text-center text-blue-900 font-black uppercase">B-OPS V32.15 HD</div>
+    <div class="nav-brand italic text-center text-blue-900 font-black uppercase">B-OPS V32.16 HD</div>
     <div class="nav-item active" onclick="tab('dash', this)">🏠 Dashboard</div>
     <div class="nav-item" onclick="tab('sched', this)">📅 Boss Schedule</div>
     <div class="nav-item" onclick="tab('calc', this)">🖩 계산기 (Calculator)</div>
@@ -58,7 +62,7 @@
             <div class="bg-blue-900 p-5 rounded-2xl border border-blue-800 shadow-lg mb-6">
                 <div class="flex flex-col gap-3">
                     <div class="flex justify-between items-center text-white font-black text-[10px] uppercase tracking-widest">
-                        <span>Group Sync (Pinned)</span>
+                        <span>Group Mission Center</span>
                         <div id="pin-badge-list" class="flex flex-wrap gap-2"></div>
                     </div>
                     <div class="flex gap-2">
@@ -73,12 +77,11 @@
                 <div id="top3-list" class="mt-6 text-left bg-gray-50 p-4 rounded-xl space-y-2 font-mono text-[13px]"></div>
                 <div class="mt-4 flex justify-center gap-2"><button class="p-btn bg-gray-200 px-6 py-2" onclick="copyKakao('all')">📋 전체 카톡 복사</button></div>
             </div>
-            <div class="card"><div id="logs" class="log-box h-40 overflow-y-auto font-mono text-[10px] text-gray-500"></div></div>
         </div>
 
         <div id="sched" class="pane">
             <div class="flex justify-between items-center mb-4 gap-3">
-                <input type="text" id="search-boss" placeholder="필터..." class="border rounded-lg px-4 py-2 text-sm flex-1 outline-none" oninput="handleSearch(this.value)">
+                <input type="text" id="search-boss" placeholder="필터..." class="border rounded-lg px-4 py-2 text-sm flex-1" oninput="handleSearch(this.value)">
                 <select id="view-mode-sel" class="border rounded-lg px-3 py-2 text-xs font-bold bg-white" onchange="st.viewMode = this.value; save(); renderSched();">
                     <option value="main">오딘 (본섭)</option>
                     <option value="all">오딘 (본섭, 침공)</option>
@@ -91,7 +94,7 @@
         <div id="calc" class="pane">
             <div class="grid grid-cols-2 gap-4">
                 <div class="card shadow-md">
-                    <h3 class="font-black mb-6 text-center text-lg italic border-b pb-2">젠 정밀 보정</h3>
+                    <h3 class="font-black mb-6 text-center text-lg italic border-b pb-2">젠 정밀 보정 (임박순)</h3>
                     <div class="grid grid-cols-2 gap-2 mb-6 text-center font-mono">
                         <div class="bg-gray-50 p-4 border rounded-xl"><small class="text-gray-400 font-black">REMAIN</small><div id="zc-remain" class="text-2xl font-black">--:--</div></div>
                         <div class="bg-blue-50 p-4 border border-blue-100 rounded-xl"><small class="text-blue-400 font-black">SPAWN</small><div id="zc-preview" class="text-2xl font-black text-red-500">--:--:--</div></div>
@@ -103,7 +106,7 @@
                 <div class="card shadow-md">
                     <h3 class="font-black mb-6 text-center text-lg italic border-b pb-2 text-red-700">광폭화 타이머</h3>
                     <div class="grid grid-cols-2 gap-2 mb-10 text-center font-mono">
-                        <div class="bg-gray-50 p-6 border rounded-xl"><small class="font-black text-gray-400">Battle</small><div id="b-elap" class="text-3xl font-black">00:00</div></div>
+                        <div class="bg-gray-50 p-6 border rounded-xl"><small class="font-black text-gray-400">Elapsed</small><div id="b-elap" class="text-3xl font-black">00:00</div></div>
                         <div class="bg-red-50 p-6 rounded-xl border border-red-100"><small class="font-black text-red-500">Predict</small><div id="b-timer" class="text-3xl font-black text-red-600">--:--</div></div>
                     </div>
                     <div class="grid grid-cols-3 gap-3">
@@ -132,7 +135,7 @@
             </table>
         </div>
         <div class="mt-8 flex justify-end gap-3">
-            <button onclick="closeBulkModal()" class="p-btn bg-gray-100 text-gray-700 px-8 py-3 uppercase">취소</button>
+            <button onclick="closeBulkModal()" class="p-btn bg-gray-100 px-8 py-3 uppercase">취소</button>
             <button onclick="applyBulkUpdate()" class="p-btn bg-blue-900 text-white px-10 py-3 font-black uppercase">보스 시간 업데이트</button>
         </div>
     </div>
@@ -142,7 +145,7 @@
 <video id="pip-video" autoplay muted playsinline style="display:none;"></video>
 
 <script>
-/* [데이터] 본섭 + 침공 전체 리스트 */
+/* [데이터] 본섭 8개 월드 + 침공 7개 월드 전수 복구 */
 const bosses = [
     { w: "요툰", i: false, b: [{n:"파르바", r:120}, {n:"셀로비아", r:720}, {n:"흐니르", r:720}, {n:"페티", r:720}, {n:"바우티", r:120}, {n:"니드호그", r:1440}, {n:"야른", r:240}, {n:"티르", r:1440}] },
     { w: "니다", i: false, b: [{n:"라이노르", r:720}, {n:"비요른", r:720}, {n:"헤르모드", r:240}, {n:"스칼라니르", r:120}, {n:"브륀힐드", r:720}, {n:"라타토스크", r:240}, {n:"수드리", r:720}, {n:"토르", r:1440}] },
@@ -152,27 +155,26 @@ const bosses = [
     { w: "니플", i: false, b: [{n:"히로킨", r:1440}, {n:"호드", r:1440}, {n:"헤이드", r:1440}, {n:"프레이", r:1440}, {n:"이미르", r:1440}] },
     { w: "바나", i: false, b: [{n:"엘디르", r:1440}, {n:"안나르엘디르", r:1440}, {n:"스쿨드", r:1440}, {n:"스카디", r:1440}, {n:"에기르", r:1440}] },
     { w: "던전", i: false, b: [{n:"4층", r:480}, {n:"7층", r:480}, {n:"10층", r:480}, {n:"최하층굴베", r:480}, {n:"최하층강글", r:480}, {n:"최하층스네르", r:480}] },
-    /* 침공 (i: true) */
+    /* 침공 데이터 (Jotun ~ Vana 완벽 미러링) */
     { w: "침공 요툰", i: true, b: [{n:"침공 파르바", r:120}, {n:"침공 셀로비아", r:720}, {n:"침공 흐니르", r:720}, {n:"침공 페티", r:720}, {n:"침공 바우티", r:120}, {n:"침공 니드호그", r:1440}, {n:"침공 야른", r:240}, {n:"침공 티르", r:1440}] },
-    { w: "침공 니다", i: true, b: [{n:"침공 라이노르", r:720}, {n:"침공 비요른", r:720}, {n:"침공 헤르모드", r:240}, {n:"침공 스칼라니르", r:120}, {n:"침공 브륀힐드", r:720}] },
-    { w: "침공 알브", i: true, b: [{n:"침공 스바르트", r:240}, {n:"침공 두라스로르", r:480}, {n:"침공 모네가름", r:120}, {n:"침공 드라우그", r:240}, {n:"침공 굴베이그", r:480}] },
-    { w: "침공 무스펠", i: true, b: [{n:"침공 메기르", r:120}, {n:"침공 신마라", r:720}, {n:"침공 헤르가름", r:120}, {n:"침공 탕그리스니르", r:240}, {n:"침공 엘드룬", r:720}] }
+    { w: "침공 니다", i: true, b: [{n:"침공 라이노르", r:720}, {n:"침공 비요른", r:720}, {n:"침공 헤르모드", r:240}, {n:"침공 스칼라니르", r:120}, {n:"침공 브륀힐드", r:720}, {n:"침공 라타토스크", r:240}, {n:"침공 수드리", r:720}, {n:"침공 토르", r:1440}] },
+    { w: "침공 알브", i: true, b: [{n:"침공 스바르트", r:240}, {n:"침공 두라스로르", r:480}, {n:"침공 모네가름", r:120}, {n:"침공 드라우그", r:240}, {n:"침공 굴베이그", r:480}, {n:"침공 오딘", r:1440}] },
+    { w: "침공 무스펠", i: true, b: [{n:"침공 메기르", r:120}, {n:"침공 신마라", r:720}, {n:"침공 헤르가름", r:120}, {n:"침공 탕그리스니르", r:240}, {n:"침공 엘드룬", r:720}, {n:"침공 우로보로스", r:1440}, {n:"침공 수르트", r:1440}] },
+    { w: "침공 아스", i: true, b: [{n:"침공 발리", r:120}, {n:"침공 노트", r:480}, {n:"침공 샤무크", r:120}, {n:"침공 스칼드메르", r:120}, {n:"침공 그로아", r:1440}, {n:"침공 미미르", r:240}] },
+    { w: "침공 니플", i: true, b: [{n:"침공 히로킨", r:1440}, {n:"침공 호드", r:1440}, {n:"침공 헤이드", r:1440}, {n:"침공 프레이", r:1440}, {n:"침공 이미르", r:1440}] },
+    { w: "침공 바나", i: true, b: [{n:"침공 엘디르", r:1440}, {n:"침공 안나르엘디르", r:1440}, {n:"침공 스쿨드", r:1440}, {n:"침공 스카디", r:1440}, {n:"침공 에기르", r:1440}] }
 ];
 
 const BOSS_RESPAWN_MAP = {}; bosses.forEach(g => g.b.forEach(b => BOSS_RESPAWN_MAP[b.n] = b.r));
 let st = { on: true, profile: 'A', timers: [], pins: [], autoRotate: true, viewMode: 'main', battle: { s: null, k: null, est: 0 }, foldState: {}, timeOffsetMs: 0, _keyCache: {} };
 
-/* [핵심] 일괄 관리 모달 제어 */
+/* [핵심] 일괄 관리 모달 (본섭/침공 구분) */
 function openBulkModal() {
     const tableBody = document.getElementById('bulk-table-body');
     let html = '';
-    const bossList = st.viewMode === 'main' ? bosses.filter(g => !g.i) : bosses;
-    bossList.forEach(g => g.b.forEach(b => {
-        html += `<tr>
-            <td class="p-3 border-b font-bold text-gray-700">${b.n}</td>
-            <td class="p-3 border-b"><input type="text" class="bulk-in v-in w-32" data-name="${b.n}" placeholder="0430"></td>
-            <td class="p-3 border-b text-gray-400 text-[10px]">25자 내로 써주세요.</td>
-        </tr>`;
+    const filteredGroups = st.viewMode === 'main' ? bosses.filter(g => !g.i) : bosses;
+    filteredGroups.forEach(g => g.b.forEach(b => {
+        html += `<tr><td class="p-3 border-b font-bold text-gray-700">${b.n}</td><td class="p-3 border-b"><input type="text" class="bulk-in v-in w-32" data-name="${b.n}" placeholder="0430"></td><td class="p-3 border-b text-gray-400 text-[10px]">25자 내로 써주세요.</td></tr>`;
     }));
     tableBody.innerHTML = html;
     document.getElementById('bulk-modal').style.display = 'flex';
@@ -180,16 +182,13 @@ function openBulkModal() {
 
 function applyBulkUpdate() {
     const inputs = document.querySelectorAll('.bulk-in');
-    inputs.forEach(el => {
-        const s = parseSmart(el.value);
-        if (s > 0) setTimer(el.dataset.name, s, el.value);
-    });
+    inputs.forEach(el => { const s = parseSmart(el.value); if (s > 0) setTimer(el.dataset.name, s, el.value); });
     closeBulkModal();
 }
 
 function closeBulkModal() { document.getElementById('bulk-modal').style.display = 'none'; }
 
-/* [기능] hhmm 파싱, 루프, PiP 등 유지 */
+/* [기능] 파싱, 루프, PiP 등 필수 로직 */
 function parseSmart(s) {
     if (!s) return 0; s = String(s).trim();
     const p = s.replace(/[^\d:\s]/g, ' ').split(/[:\s]+/).filter(Boolean).map(Number);
@@ -209,8 +208,7 @@ function loop() {
     if (!st.on) return; cacheDom();
     const now = Date.now() + st.timeOffsetMs;
     for (const tm of st.timers) {
-        if (st.autoRotate && now > tm.t) { tm.t += (BOSS_RESPAWN_MAP[tm.n] || 120) * 60 * 1000; tm.lastD = 9999; addLog(`[AUTO] ${tm.n} 연장.`); }
-        const d = Math.floor((tm.t - now) / 1000);
+        if (st.autoRotate && now > tm.t) { tm.t += (BOSS_RESPAWN_MAP[tm.n] || 120) * 60 * 1000; tm.lastD = 9999; addLog(`[AUTO] ${tm.n} 로테이션.`); }
         const zenEl = document.getElementById(`zen-${safeKey(tm.n)}`);
         if (zenEl) zenEl.innerText = new Date(tm.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
     }
@@ -218,7 +216,7 @@ function loop() {
     const next = upcoming[0];
     if (next) { __dom.dName.innerText = next.n; __dom.dTimer.innerText = formatTimerFull(next.t - now); }
     else { __dom.dName.innerText = "대기 중"; __dom.dTimer.innerText = "00:00:00"; }
-    __dom.top3.innerHTML = upcoming.slice(0,3).map((t, i) => `<div class="flex justify-between items-center border-b pb-1"><b>${i+1}. ${t.n}</b><span class="text-blue-900">${formatTimerFull(t.t-now)}</span></div>`).join('') || "예정 없음";
+    __dom.top3.innerHTML = upcoming.slice(0,3).map((t, i) => `<div class="flex justify-between items-center border-b pb-1"><b>${i+1}. ${t.n}</b><span class="text-blue-900 font-black">${formatTimerFull(t.t-now)}</span></div>`).join('') || "예정 없음";
     if (st.battle.s && !st.battle.k) __dom.bElap.innerText = formatSimple((Date.now()-st.battle.s)/1000);
     else if (st.battle.k) __dom.bTimer.innerText = (st.battle.est-Math.floor((Date.now()-st.battle.k)/1000)>=0?"":"+")+formatSimple(Math.abs(st.battle.est-Math.floor((Date.now()-st.battle.k)/1000)));
     drawPIP(upcoming);
@@ -235,21 +233,20 @@ function renderSched() {
         });
         html += `</div></div>`;
     });
-    cont.innerHTML = html;
+    cont.innerHTML = html; updatePinBadges();
 }
 
 /* [Utility] */
 function safeKey(n) { if (!st._keyCache[n]) st._keyCache[n] = "b" + fnv1a32(String(n)).toString(36); return st._keyCache[n]; }
 function fnv1a32(str) { let h = 0x811c9dc5; for (let i=0; i<str.length; i++) { h ^= str.charCodeAt(i); h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0; } return h >>> 0; }
-function setTimer(n, s, raw) { const t = Date.now() + st.timeOffsetMs + (s * 1000); st.timers = st.timers.filter(x => x.n !== n); st.timers.push({ n, t, lastD: s + 1 }); save(); renderSched_Partial(); updateZenSelect(); }
 function formatTimerFull(ms) { if (ms < 0) return "00:00:00"; const s = Math.floor(ms / 1000); return `${Math.floor(s/3600).toString().padStart(2,'0')}:${Math.floor((s%3600)/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
 function formatSimple(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`; }
+function setTimer(n, s, raw) { const t = Date.now() + st.timeOffsetMs + (s * 1000); st.timers = st.timers.filter(x => x.n !== n); st.timers.push({ n, t, lastD: s + 1 }); save(); renderSched_Partial(); updateZenSelect(); }
 function save() { localStorage.setItem(`v32_data_${st.profile}`, JSON.stringify({ timers: st.timers, pins: st.pins, auto: st.autoRotate, view: st.viewMode })); }
 function switchProfile(p) { st.profile = p; const d = JSON.parse(localStorage.getItem(`v32_data_${p}`)) || {}; st.timers = d.timers || []; st.pins = d.pins || []; st.autoRotate = d.auto !== undefined ? d.auto : true; st.viewMode = d.view || 'main'; renderSched(); document.getElementById('auto-rotate-mode').checked = st.autoRotate; document.getElementById('view-mode-sel').value = st.viewMode; }
 function tab(id, el) { document.querySelectorAll('.pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); if (id === 'calc') updateZenSelect(); }
 function killPinnedGroupWithTime() { const rawTime = document.getElementById('group-kill-time').value.trim(); if (!st.pins.length || !rawTime) return; const val = parseInt(rawTime.replace(/[^0-9]/g, '')); let hh = Math.floor(val/100), mm = val%100; let killDate = new Date(); killDate.setHours(hh, mm, 0, 0); if (killDate.getTime() > Date.now() + 3600000) killDate.setDate(killDate.getDate() - 1); st.pins.forEach(name => { const targetZenTs = killDate.getTime() + ((BOSS_RESPAWN_MAP[name] || 120) * 60 * 1000); st.timers = st.timers.filter(x => x.n !== name); st.timers.push({ n: name, t: targetZenTs, lastD: 9999 }); }); save(); renderSched(); updateZenSelect(); document.getElementById('group-kill-time').value = ""; }
 window.onload = () => { switchProfile('A'); setInterval(loop, 1000); };
-/* (기타 핸들러 생략) */
 function togglePwr() { st.on = !st.on; document.getElementById('pwr').style.color = st.on ? '#16a34a' : '#94a3b8'; document.body.classList.toggle('system-off', !st.on); }
 function togglePin(n) { const i = st.pins.indexOf(n); if(i>-1) st.pins.splice(i,1); else st.pins.push(n); save(); renderSched(); updatePinBadges(); }
 function updatePinBadges() { const box = document.getElementById('pin-badge-list'); if (box) box.innerHTML = st.pins.map(name => `<span class="bg-blue-800 text-white text-[9px] px-2 py-0.5 rounded font-bold">${name}</span>`).join(''); }
@@ -264,6 +261,8 @@ function confirmClear() { if(confirm("초기화합니까?")) { st.timers = []; s
 function handleSearch(v) { const s = v.toLowerCase(); document.querySelectorAll('.boss-row').forEach(r => r.style.display = r.querySelector('b').innerText.toLowerCase().includes(s) ? 'grid' : 'none'); }
 function handleEnterNav(el) { const s = parseSmart(el.value); if (s > 0) setTimer(el.dataset.name, s, el.value); const inputs = Array.from(document.querySelectorAll('.v-in')); const idx = inputs.indexOf(el); for (let i = idx + 1; i < inputs.length; i++) { if (inputs[i].offsetParent !== null) { inputs[i].focus(); inputs[i].select(); break; } } }
 function applyZenCalc(mode) { const s = parseSmart(document.getElementById('zc-in').value); if (s <= 0) return; if (mode === 'single') setTimer(document.getElementById('zc-sel').value, s, ""); else st.pins.forEach(name => setTimer(name, s, "")); document.getElementById('zc-in').value = ""; tab('dash', document.querySelector('.nav-item')); }
+function addLog(m) { const b = document.getElementById('logs'); const d = document.createElement('div'); d.innerHTML = `<span class="text-gray-500 font-bold font-mono text-[10px]">[${new Date().toLocaleTimeString()}]</span> ${m}`; b.appendChild(d); }
+function copyKakao(mode) { const now = Date.now(); let list = [...st.timers].sort((a, b) => a.t - b.t); if (mode === 'top3') list = list.filter(t => t.t > now).slice(0, 3); if (!list.length) return; const d = new Date(); const mm = String(d.getMonth()+1).padStart(2,'0'); const dd = String(d.getDate()).padStart(2,'0'); let txt = `${mm}.${dd}\n`; list.forEach(t => txt += `${new Date(t.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false})} ${t.n}\n`); navigator.clipboard.writeText(txt.trim()).then(() => alert("복사됨")); }
 </script>
 </body>
 </html>
